@@ -9,8 +9,8 @@ using RESTFulSense.Controllers;
 namespace Refugee.Core.Api.Controllers
 {
     
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class HomeController : RESTFulController
     {
         [HttpGet]

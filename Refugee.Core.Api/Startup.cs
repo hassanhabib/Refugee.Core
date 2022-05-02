@@ -27,10 +27,12 @@ namespace Refugee.Core.Api
             {
                 options.SwaggerDoc(
                     name: "v1", 
-                    info: new OpenApiInfo {
+                    info: new OpenApiInfo 
+                    {
                             Title = "Refugee.Core.Api",
-                            Version = "v1" }
-                    );
+                            Version = "v1"
+                    }
+                );
             });
         }
 
@@ -47,6 +49,7 @@ namespace Refugee.Core.Api
                     options.SwaggerEndpoint(
                         url: "/swagger/v1/swagger.json",
                         name: "Refugee.Core.Api v1"));
+                
             }
 
             applicationBuilder.UseHttpsRedirection() ;
