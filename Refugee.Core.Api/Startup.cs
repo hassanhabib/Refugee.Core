@@ -25,14 +25,15 @@ namespace Refugee.Core.Api
             
             services.AddSwaggerGen(options =>
             {
+                var openApiInfo = new OpenApiInfo
+                {
+                    Title = "Refugee.Core",
+                    Version = "v1"
+                };
+                
                 options.SwaggerDoc(
                     name: "v1", 
-                    info: new OpenApiInfo 
-                    {
-                            Title = "Refugee.Core.Api",
-                            Version = "v1"
-                    }
-                );
+                    info: openApiInfo);
             });
         }
 
@@ -49,7 +50,6 @@ namespace Refugee.Core.Api
                     options.SwaggerEndpoint(
                         url: "/swagger/v1/swagger.json",
                         name: "Refugee.Core.Api v1"));
-                
             }
 
             applicationBuilder.UseHttpsRedirection() ;
