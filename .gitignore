@@ -348,3 +348,13 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+
+# Rider
+.idea/
+
+# VS Code
+.vscode/
+
+/Refugee.Core.Api/appsettings.Development.json
+
+
