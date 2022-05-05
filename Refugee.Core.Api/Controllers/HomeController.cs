@@ -8,7 +8,6 @@ using RESTFulSense.Controllers;
 
 namespace Refugee.Core.Api.Controllers
 {
-
     [ApiController]
     [Route("api/[controller]")]
     public class HomeController : RESTFulController
