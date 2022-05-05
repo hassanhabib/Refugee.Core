@@ -22,7 +22,7 @@ namespace Refugee.Core.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            
+
             services.AddSwaggerGen(options =>
             {
                 var openApiInfo = new OpenApiInfo
@@ -30,29 +30,29 @@ namespace Refugee.Core.Api
                     Title = "Refugee.Core",
                     Version = "v1"
                 };
-                
+
                 options.SwaggerDoc(
-                    name: "v1", 
+                    name: "v1",
                     info: openApiInfo);
             });
         }
 
         public void Configure(
-            IApplicationBuilder applicationBuilder, 
+            IApplicationBuilder applicationBuilder,
             IWebHostEnvironment webHostEnvironment)
         {
             if (webHostEnvironment.IsDevelopment())
             {
                 applicationBuilder.UseDeveloperExceptionPage();
                 applicationBuilder.UseSwagger();
-                
-                applicationBuilder.UseSwaggerUI(options => 
+
+                applicationBuilder.UseSwaggerUI(options =>
                     options.SwaggerEndpoint(
                         url: "/swagger/v1/swagger.json",
                         name: "Refugee.Core.Api v1"));
             }
 
-            applicationBuilder.UseHttpsRedirection() ;
+            applicationBuilder.UseHttpsRedirection();
             applicationBuilder.UseRouting();
             applicationBuilder.UseAuthorization();
             applicationBuilder.UseEndpoints(endpoints => endpoints.MapControllers());
