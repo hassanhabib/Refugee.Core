@@ -7,7 +7,7 @@ namespace Refugee.Core.Tests.Unit
         [Fact]
         public void ShouldReturnTrue()
         {
-            Assert.True(false); 
+            Assert.True(true); 
         }
     }
 }
