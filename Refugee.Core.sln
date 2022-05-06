@@ -5,7 +5,9 @@ VisualStudioVersion = 17.2.32414.248
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Refugee.Core.Api", "Refugee.Core.Api\Refugee.Core.Api.csproj", "{C63834E9-10BE-4645-84C8-795C1A3409A4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Refugee.Core.Api.Infrastructure.Build", "Refugee.Core.Api.Infrastructure.Build\Refugee.Core.Api.Infrastructure.Build.csproj", "{ABB0CFF8-06FC-47CC-A699-CA28C2B9B0DD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Refugee.Core.Api.Infrastructure.Build", "Refugee.Core.Api.Infrastructure.Build\Refugee.Core.Api.Infrastructure.Build.csproj", "{ABB0CFF8-06FC-47CC-A699-CA28C2B9B0DD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Refugee.Core.Tests.Unit", "Refugee.Core.Tests.Unit\Refugee.Core.Tests.Unit.csproj", "{E1FB6269-F8D9-4225-9128-DE8B309D3A39}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{ABB0CFF8-06FC-47CC-A699-CA28C2B9B0DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ABB0CFF8-06FC-47CC-A699-CA28C2B9B0DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ABB0CFF8-06FC-47CC-A699-CA28C2B9B0DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E1FB6269-F8D9-4225-9128-DE8B309D3A39}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E1FB6269-F8D9-4225-9128-DE8B309D3A39}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E1FB6269-F8D9-4225-9128-DE8B309D3A39}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E1FB6269-F8D9-4225-9128-DE8B309D3A39}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
