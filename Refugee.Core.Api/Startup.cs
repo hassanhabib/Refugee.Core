@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using Refugee.Core.Api.Brokers.Storages;
 
 namespace Refugee.Core.Api
 {
@@ -22,6 +23,8 @@ namespace Refugee.Core.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddDbContext<StorageBroker>();
+            services.AddTransient<IStorageBroker, StorageBroker>();
 
             services.AddSwaggerGen(options =>
             {
