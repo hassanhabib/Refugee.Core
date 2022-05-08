@@ -3,10 +3,8 @@
 // FREE TO USE TO DELIVER HUMANITARIAN AID, HOPE AND LOVE
 // -------------------------------------------------------
 
-using EFxceptions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Microsoft.Extensions.Configuration;
 using RefugeeLand.Core.Api.Models.Refugees;
 using System;
 using System.Linq;
