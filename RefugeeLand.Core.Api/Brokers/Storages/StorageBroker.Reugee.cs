@@ -32,9 +32,12 @@ namespace RefugeeLand.Core.Api.Brokers.Storages
         public IQueryable<Refugee> SelectAllRefugees()
             => this.Refugees;
 
-        public ValueTask<Refugee> SelectRefugeeByIdAsync(Guid refugeeId)
+        public async ValueTask<Refugee> SelectRefugeeByIdAsync(Guid refugeeId)
         {
-            throw new NotImplementedException();
+            using var broker = new StorageBroker(configuration);
+            broker.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+
+            return await broker.Refugees.FindAsync(refugeeId);
         }
 
         public ValueTask<Refugee> UpdateRefugeeAsync(Refugee refugee)
