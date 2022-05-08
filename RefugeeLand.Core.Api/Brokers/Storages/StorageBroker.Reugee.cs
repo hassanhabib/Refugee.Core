@@ -30,9 +30,7 @@ namespace RefugeeLand.Core.Api.Brokers.Storages
         }
 
         public IQueryable<Refugee> SelectAllRefugees()
-        {
-            throw new NotImplementedException();
-        }
+            => this.Refugees;
 
         public ValueTask<Refugee> SelectRefugeeByIdAsync(Guid refugeeId)
         {
