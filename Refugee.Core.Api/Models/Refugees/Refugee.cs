@@ -3,11 +3,9 @@
 // FREE TO USE TO DELIVER HUMANITARIAN AID, HOPE AND LOVE
 // -------------------------------------------------------
 
+using Refugee.Core.Api.Models.Enums;
 using System;
 using System.Collections.Generic;
-using System.Security.Principal;
-using FluentAssertions.Equivalency;
-using Refugee.Core.Api.Models.Enums;
 
 namespace Refugee.Core.Api.Models.Refugees
 {
