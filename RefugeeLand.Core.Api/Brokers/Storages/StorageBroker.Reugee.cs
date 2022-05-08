@@ -40,9 +40,15 @@ namespace RefugeeLand.Core.Api.Brokers.Storages
             return await broker.Refugees.FindAsync(refugeeId);
         }
 
-        public ValueTask<Refugee> UpdateRefugeeAsync(Refugee refugee)
+        public async ValueTask<Refugee> UpdateRefugeeAsync(Refugee refugee)
         {
-            throw new NotImplementedException();
+            using var broker = new StorageBroker(configuration);
+
+            EntityEntry<Refugee> refugeeEntityEntry = broker.Refugees.Update(refugee);
+
+            await broker.SaveChangesAsync();
+
+            return refugeeEntityEntry.Entity;
         }
 
         public ValueTask<Refugee> DeleteRefugeeAsync(Refugee refugee)
