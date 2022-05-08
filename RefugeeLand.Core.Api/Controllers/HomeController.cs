@@ -6,7 +6,7 @@
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
 
-namespace Refugee.Core.Api.Controllers
+namespace RefugeeLand.Core.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]

@@ -3,8 +3,13 @@
 // FREE TO USE TO DELIVER HUMANITARIAN AID, HOPE AND LOVE
 // -------------------------------------------------------
 
-namespace Refugee.Core.Api.Brokers.Storages
+namespace RefugeeLand.Core.Api.Models.Enums
 {
-    public partial interface IStorageBroker
-    { }
+    public enum Gender
+    {
+        Female,
+        Male,
+        Other,
+        Unknown
+    }
 }

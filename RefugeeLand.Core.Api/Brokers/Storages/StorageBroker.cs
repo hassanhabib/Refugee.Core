@@ -3,12 +3,11 @@
 // FREE TO USE TO DELIVER HUMANITARIAN AID, HOPE AND LOVE
 // -------------------------------------------------------
 
-using System;
 using EFxceptions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
-namespace Refugee.Core.Api.Brokers.Storages
+namespace RefugeeLand.Core.Api.Brokers.Storages
 {
     public partial class StorageBroker : EFxceptionsContext, IStorageBroker
     {
@@ -27,7 +26,7 @@ namespace Refugee.Core.Api.Brokers.Storages
 
             optionsBuilder.UseSqlServer(connectionString);
         }
-        
+
         public override void Dispose() { }
     }
 }
