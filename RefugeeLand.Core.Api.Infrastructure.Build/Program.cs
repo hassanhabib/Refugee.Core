@@ -10,7 +10,7 @@ using ADotNet.Models.Pipelines.GithubPipelines.DotNets.Tasks.SetupDotNetTaskV1s;
 
 var githubPipeline = new GithubPipeline
 {
-    Name = "Refugee Core Build Pipeline",
+    Name = "RefugeeLand Core Build Pipeline",
 
     OnEvents = new Events
     {
