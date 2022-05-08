@@ -355,6 +355,6 @@ MigrationBackup/
 # VS Code
 .vscode/
 
-/Refugee.Core.Api/appsettings.Development.json
+/RefugeeLand.Core.Api/appsettings.Development.json
 
 

@@ -5,7 +5,7 @@
 
 using Xunit;
 
-namespace Refugee.Core.Api.Tests.Unit
+namespace RefugeeLand.Core.Api.Tests.Unit
 {
     public class DeleteMe
     {

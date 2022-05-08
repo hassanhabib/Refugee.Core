@@ -9,9 +9,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using Refugee.Core.Api.Brokers.Storages;
+using RefugeeLand.Core.Api.Brokers.Storages;
 
-namespace Refugee.Core.Api
+namespace RefugeeLand.Core.Api
 {
     public class Startup
     {
@@ -52,7 +52,7 @@ namespace Refugee.Core.Api
                 applicationBuilder.UseSwaggerUI(options =>
                     options.SwaggerEndpoint(
                         url: "/swagger/v1/swagger.json",
-                        name: "Refugee.Core.Api v1"));
+                        name: "RefugeeLand.Core.Api v1"));
             }
 
             applicationBuilder.UseHttpsRedirection();

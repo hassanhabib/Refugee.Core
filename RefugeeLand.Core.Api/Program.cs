@@ -6,7 +6,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
-namespace Refugee.Core.Api
+namespace RefugeeLand.Core.Api
 {
     public class Program
     {
