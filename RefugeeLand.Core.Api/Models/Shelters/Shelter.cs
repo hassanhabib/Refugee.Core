@@ -10,7 +10,7 @@ using RefugeeLand.Core.Api.Models.Enums;
 
 namespace RefugeeLand.Core.Api.Models.Shelters
 {
-    public class Shelters
+    public class Shelter
     {
         public Guid Id { get; set; }
         public Guid HostId { get; set; }
@@ -30,6 +30,5 @@ namespace RefugeeLand.Core.Api.Models.Shelters
         public bool IsVerified { get; set; }
         public bool IsShared { get; set; }
         public IEnumerable<Pets> AllowedPets { get; set; }
-        
     }
 }
