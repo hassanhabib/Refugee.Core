@@ -27,9 +27,7 @@ namespace RefugeeLand.Core.Api
             services.AddControllers();
             services.AddLogging();
             services.AddDbContext<StorageBroker>();
-            services.AddTransient<IStorageBroker, StorageBroker>();
-            services.AddTransient<ILoggingBroker, LoggingBroker>();
-            services.AddTransient<IDateTimeBroker, DateTimeBroker>();
+            AddBrokers(services);
 
             services.AddSwaggerGen(options =>
             {
@@ -64,6 +62,13 @@ namespace RefugeeLand.Core.Api
             applicationBuilder.UseRouting();
             applicationBuilder.UseAuthorization();
             applicationBuilder.UseEndpoints(endpoints => endpoints.MapControllers());
+        }
+
+        private static void AddBrokers(IServiceCollection services)
+        {
+            services.AddTransient<IStorageBroker, StorageBroker>();
+            services.AddTransient<ILoggingBroker, LoggingBroker>();
+            services.AddTransient<IDateTimeBroker, DateTimeBroker>();
         }
     }
 }
