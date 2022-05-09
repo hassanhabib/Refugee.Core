@@ -20,6 +20,7 @@ namespace RefugeeLand.Core.Api.Models.Refugees
         public IEnumerable<string> MedicalConditions { get; set; }
         public IEnumerable<string> SkillSets { get; set; }
         public IEnumerable<string> Languages { get; set; }
+        public IEnumerable<string> Nationalities { get; set; }
         public bool IsOpenToWork { get; set; }
         public string AdditionalDetails { get; set; }
         //todo: Replace with Contact information class
