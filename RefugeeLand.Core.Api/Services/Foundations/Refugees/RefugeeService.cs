@@ -23,7 +23,7 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Refugees
             this.dateTimeBroker = dateTimeBroker;
         }
 
-        public ValueTask<Refugee> AddRefugeeAsync(Refugee refugee) =>
-            throw new System.NotImplementedException();
+        public async ValueTask<Refugee> AddRefugeeAsync(Refugee refugee) =>
+            await this.storageBroker.InsertRefugeeAsync(refugee);
     }
 }
