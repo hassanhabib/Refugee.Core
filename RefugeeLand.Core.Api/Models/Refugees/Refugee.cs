@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using RefugeeLand.Core.Api.Models.Enums;
+using RefugeeLand.Core.Api.Models.Family;
 
 namespace RefugeeLand.Core.Api.Models.Refugees
 {
@@ -26,6 +27,7 @@ namespace RefugeeLand.Core.Api.Models.Refugees
         public string Phone { get; set; }
         public string Email { get; set; }
         //todo: Add Family class or RefugeeGroup
+        public FamilyGroup FamilyGroup { get; set; }
         public DateTimeOffset CreatedDate { get; set; }
         public DateTimeOffset UpdatedDate { get; set; }
     }
