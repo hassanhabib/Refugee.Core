@@ -13,14 +13,10 @@ public class RefugeesController : RESTFulController
 {
     private readonly IRefugeeService refugeeService;
 
-    public RefugeesController(IRefugeeService refugeeService)
-    {
+    public RefugeesController(IRefugeeService refugeeService) =>
         this.refugeeService = refugeeService;
-    }
 
     [HttpPost]
-    public async ValueTask<ActionResult<Refugee>> PostRefugeeAsync(Refugee refugee)
-    {
+    public async ValueTask<ActionResult<Refugee>> PostRefugeeAsync(Refugee refugee) =>
         throw new NotImplementedException();
-    }
 }
