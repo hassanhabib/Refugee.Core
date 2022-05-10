@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using RefugeeLand.Core.Api.Models.Enums;
+using RefugeeLand.Core.Api.Models.MedicalConditions;
 
 namespace RefugeeLand.Core.Api.Models.Refugees
 {
@@ -17,7 +18,7 @@ namespace RefugeeLand.Core.Api.Models.Refugees
         public string CurrentLocation { get; set; }
         public Gender Gender { get; set; }
         public DateTimeOffset BirthDate { get; set; }
-        public IEnumerable<string> MedicalConditions { get; set; }
+        public IList<MedicalCondition> MedicalConditions { get; set; }
         public IEnumerable<string> SkillSets { get; set; }
         public IEnumerable<string> Languages { get; set; }
         public bool IsOpenToWork { get; set; }
