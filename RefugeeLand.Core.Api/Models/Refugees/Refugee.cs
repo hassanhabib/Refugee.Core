@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using RefugeeLand.Core.Api.Models.Enums;
+using RefugeeLand.Core.Api.Models.Languages;
 
 namespace RefugeeLand.Core.Api.Models.Refugees
 {
@@ -19,7 +20,7 @@ namespace RefugeeLand.Core.Api.Models.Refugees
         public DateTimeOffset BirthDate { get; set; }
         public IEnumerable<string> MedicalConditions { get; set; }
         public IEnumerable<string> SkillSets { get; set; }
-        public IEnumerable<string> Languages { get; set; }
+        public List<Language> Languages { get; set; }
         public bool IsOpenToWork { get; set; }
         public string AdditionalDetails { get; set; }
         //todo: Replace with Contact information class
