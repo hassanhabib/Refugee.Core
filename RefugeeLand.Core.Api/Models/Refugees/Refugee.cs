@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using RefugeeLand.Core.Api.Models.Enums;
+using RefugeeLand.Core.Api.Models.Nationalities;
 
 namespace RefugeeLand.Core.Api.Models.Refugees
 {
@@ -20,6 +21,7 @@ namespace RefugeeLand.Core.Api.Models.Refugees
         public IEnumerable<string> MedicalConditions { get; set; }
         public IEnumerable<string> SkillSets { get; set; }
         public IEnumerable<string> Languages { get; set; }
+        public IList<Nationality> Nationalities { get; set; }
         public bool IsOpenToWork { get; set; }
         public string AdditionalDetails { get; set; }
         //todo: Replace with Contact information class
