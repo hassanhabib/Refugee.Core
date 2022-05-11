@@ -4,6 +4,7 @@
 // -------------------------------------------------------
 
 using System;
+using RefugeeLand.Core.Api.Models.Enums;
 
 namespace RefugeeLand.Core.Api.Models.Languages
 {
@@ -11,6 +12,6 @@ namespace RefugeeLand.Core.Api.Models.Languages
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
-        public string Proficiency { get; set; }
+        public FluencyLevel FluencyLevel { get; set; } 
     }
 }
