@@ -4,7 +4,9 @@
 // -------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using RefugeeLand.Core.Api.Models.Enums;
+using RefugeeLand.Core.Api.Models.Languages;
 
 namespace RefugeeLand.Core.Api.Models.Refugees
 {
@@ -26,7 +28,7 @@ namespace RefugeeLand.Core.Api.Models.Refugees
         public bool IsOpenToWork { get; set; }
         public string MedicalConditions { get; set; }
         public string SkillSets { get; set; }
-        public string Languages { get; set; }
         public string AdditionalDetails { get; set; }
+        public IList<Language> Languages { get; set; }
     }
 }
