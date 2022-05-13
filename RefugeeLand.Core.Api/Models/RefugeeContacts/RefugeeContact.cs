@@ -5,13 +5,16 @@
 
 
 using System;
+using RefugeeLand.Core.Api.Models.Refugees;
 
 namespace RefugeeLand.Core.Api.Models.ContactInformations;
 
 // can be reused
-public class ContactInformations
+public class RefugeeContact
 {
     public Guid Guid { get; set; }
+
+    public Refugee Refugee { get; set; }
     // full qualified ISO E.123 phone number
     public string Phone { get; set; }
     public string Email { get; set; }
