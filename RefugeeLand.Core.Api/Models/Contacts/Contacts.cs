@@ -6,10 +6,10 @@
 
 using System;
 
-namespace RefugeeLand.Core.Api.Models.ContactInformation;
+namespace RefugeeLand.Core.Api.Models.ContactInformations;
 
 // can be reused
-public class ContactInformation
+public class ContactInformations
 {
     public Guid Guid { get; set; }
     // full qualified ISO E.123 phone number
