@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using RefugeeLand.Core.Api.Models.Enums;
 using RefugeeLand.Core.Api.Models.Languages;
+using RefugeeLand.Core.Api.Models.Nationalities;
 
 namespace RefugeeLand.Core.Api.Models.Refugees
 {
@@ -30,5 +31,6 @@ namespace RefugeeLand.Core.Api.Models.Refugees
         public string SkillSets { get; set; }
         public string AdditionalDetails { get; set; }
         public IList<Language> Languages { get; set; }
+        public IList<Nationality> Nationalities { get; set; }
     }
 }
