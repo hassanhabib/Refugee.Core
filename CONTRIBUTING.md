@@ -1,4 +1,3 @@
-
 # Contributing To Refugee.Land
 
 :+1::tada: Welcome and thanks for taking the time to contribute! :tada::+1:
@@ -11,13 +10,11 @@ Be nice: [Code of Conduct](https://github.com/hassanhabib/Refugee.Core/blob/main
 
 ## I don't want to read this whole thing I just have a question!!!
 
-> **Note:** Please don't file an issue to ask a question. You'll get faster results by using the resources below.
+> **Note:** Please don't file an issue in this repo to ask a question regarding the Standard. You'll get faster results by filing an issue in the official "The Standard FAQ" repo or by using the resources below.
 
-We plan on building an official message board with a detailed FAQ.
+[The Standard FAQ](https://github.com/ElbekDeveloper/The-Standard-FAQ)
 
-In the meantime, please join us on our [discord channel](https://discord.gg/cfwXg2Wwv3), where the community chimes in with helpful advice if you have questions.
-
-- [Discord Refugee Land Channel](https://discord.gg/cfwXg2Wwv3)
+[Discord Refugee Land Channel](https://discord.gg/cfwXg2Wwv3)
 
 ## What should I know before I get started?
 
@@ -32,8 +29,8 @@ In the meantime, please join us on our [discord channel](https://discord.gg/cfwX
 [The Standard Systems Design & Architecture](https://www.youtube.com/watch?v=eHnjdR9DvGk)
 
 > "The Standard is my interpretation of SOLID principles and many other practices and patterns that continue to enrich our designs and development to achieve truly solid systems. The Standard aims to help every engineer find guidance in their day-to-day work. But more importantly, the Standard can ensure every engineer that when they need to build rugged systems that can land on the moon, solve the most complex problems, and ensure the survival of humankind and its evolution--they have the guidance required."
-
-Quoted from "The Standard" by Hassan Habib.
+>
+> "The Standard" by Hassan Habib.
 
 If you have a question around how we do things, check to see if it is documented there.
 
@@ -77,4 +74,3 @@ We would love to have you being part of our team. If you have any questions, fee
 
 Join us on The Standard Community discord.
 - [Discord Refugee Land Channel](https://discord.gg/cfwXg2Wwv3)
-

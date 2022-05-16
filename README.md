@@ -17,6 +17,7 @@ Feel free to join our community. Help us build a platform for people fleeing war
 
 [Code Of Conduct](https://github.com/hassanhabib/Refugee.Core/blob/main/CODE_OF_CONDUCT.md)
 
+[The Standard FAQ](https://github.com/ElbekDeveloper/The-Standard-FAQ)
 
 ## Project Updates From Hassan Habib
 <img width=20 src="https://www.searchmarketingaustralia.com.au/wp-content/uploads/2017/10/original_images_YouTube.png" /> [RFG000: Refugee Land App - Kick Off
@@ -34,4 +35,3 @@ source: https://www.unhcr.org/climate-change-and-disasters.html
 ### Who Is A Refugee
 [Protecting Refugees: questions and answers
 ](https://www.unhcr.org/publications/brochures/3b779dfe2/protecting-refugees-questions-answers.html#:~:text=A%20refugee%20has%20the%20right,from%20torture%20and%20degrading%20treatment.) from the UN Refugee Agency
-
