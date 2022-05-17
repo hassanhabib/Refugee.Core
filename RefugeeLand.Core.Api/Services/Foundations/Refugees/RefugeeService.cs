@@ -11,7 +11,7 @@ using RefugeeLand.Core.Api.Models.Refugees;
 
 namespace RefugeeLand.Core.Api.Services.Foundations.Refugees
 {
-    public class RefugeeService : IRefugeeService
+    public partial class RefugeeService : IRefugeeService
     {
         private readonly IStorageBroker storageBroker;
         private readonly IDateTimeBroker dateTimeBroker;
@@ -27,7 +27,12 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Refugees
             this.loggingBroker = loggingBroker;
         }
 
-        public async ValueTask<Refugee> AddRefugeeAsync(Refugee refugee) =>
-            await this.storageBroker.InsertRefugeeAsync(refugee);
+        public ValueTask<Refugee> AddRefugeeAsync(Refugee refugee) => 
+        TryCatch(async () =>
+        {
+            ValidateRefugeeOnAdd(refugee);
+            
+            return await this.storageBroker.InsertRefugeeAsync(refugee);
+        });
     }
 }
