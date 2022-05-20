@@ -1,4 +1,4 @@
-﻿using Microsoft.Azure.Management.CosmosDB.Fluent;
+﻿using Microsoft.Azure.Management.Sql.Fluent;
 
 namespace RefugeeLand.Core.Api.Infrastructure.Provision.Models.Storages
 {
