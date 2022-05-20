@@ -7,6 +7,10 @@
 	  <ImplicitUsings>disable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Azure.Management.Sql.Fluent" Version="1.38.1" />
+  </ItemGroup>
+
 	<ItemGroup>
 		<None Update="appSetttings.json">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
