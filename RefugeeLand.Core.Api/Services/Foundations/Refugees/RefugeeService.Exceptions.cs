@@ -24,6 +24,10 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Refugees
             {
                 throw CreateAndLogValidationException(nullRefugeeException);
             }
+            catch (InvalidRefugeeException invalidRefugeeException)
+            {
+                throw CreateAndLogValidationException(invalidRefugeeException);
+            }
         }
 
         private RefugeeValidationException CreateAndLogValidationException(Xeption exception)

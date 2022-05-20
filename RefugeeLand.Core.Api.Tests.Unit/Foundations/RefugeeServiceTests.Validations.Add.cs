@@ -57,6 +57,7 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Foundations
             };
 
             var invalidRefugeeException = new InvalidRefugeeException();
+
             invalidRefugeeException.AddData(
                 key: nameof(Refugee.Id),
                 values: "Id is required");
@@ -111,6 +112,7 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Foundations
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }
