@@ -5,6 +5,8 @@
 
 using System;
 using System.Collections.Generic;
+using RefugeeLand.Core.Api.Models.Enums;
+using RefugeeLand.Core.Api.Models.Languages;
 
 namespace RefugeeLand.Core.Api.Models.Refugees
 {
