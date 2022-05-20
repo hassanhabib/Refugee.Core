@@ -1,8 +1,10 @@
-﻿namespace RefugeeLand.Core.Api.Infrastructure.Provision.Models.Storages
+﻿using Microsoft.Azure.Management.CosmosDB.Fluent;
+
+namespace RefugeeLand.Core.Api.Infrastructure.Provision.Models.Storages
 {
     public class SqlDatabase
     {
-        public string AdminName { get; set; }
-        public string AdminAccess { get; set; }
+        public string ConnectionString { get; set; }
+        public ISqlDatabase Database { get; set; }
     }
 }
