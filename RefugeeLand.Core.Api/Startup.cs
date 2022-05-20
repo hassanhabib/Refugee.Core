@@ -9,6 +9,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using RefugeeLand.Core.Api.Brokers.DateTimes;
+using RefugeeLand.Core.Api.Brokers.Loggings;
 using RefugeeLand.Core.Api.Brokers.Storages;
 
 namespace RefugeeLand.Core.Api
@@ -24,7 +26,7 @@ namespace RefugeeLand.Core.Api
         {
             services.AddControllers();
             services.AddDbContext<StorageBroker>();
-            services.AddTransient<IStorageBroker, StorageBroker>();
+            AddBrokers(services);
 
             services.AddSwaggerGen(options =>
             {
@@ -59,6 +61,13 @@ namespace RefugeeLand.Core.Api
             applicationBuilder.UseRouting();
             applicationBuilder.UseAuthorization();
             applicationBuilder.UseEndpoints(endpoints => endpoints.MapControllers());
+        }
+
+        private static void AddBrokers(IServiceCollection services)
+        {
+            services.AddTransient<IStorageBroker, StorageBroker>();
+            services.AddTransient<IDateTimeBroker, DateTimeBroker>();
+            services.AddTransient<ILoggingBroker, LoggingBroker>();
         }
     }
 }
