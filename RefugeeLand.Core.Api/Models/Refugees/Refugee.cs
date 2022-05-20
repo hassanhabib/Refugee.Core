@@ -3,9 +3,9 @@
 // FREE TO USE TO DELIVER HUMANITARIAN AID, HOPE AND LOVE
 // -------------------------------------------------------
 
-using RefugeeLand.Core.Api.Models.Enums;
 using System;
 using System.Collections.Generic;
+using RefugeeLand.Core.Api.Models.Enums;
 
 namespace RefugeeLand.Core.Api.Models.Refugees
 {
@@ -17,9 +17,9 @@ namespace RefugeeLand.Core.Api.Models.Refugees
         public string CurrentLocation { get; set; }
         public Gender Gender { get; set; }
         public DateTimeOffset BirthDate { get; set; }
-        public IEnumerable<string> MedicalConditions { get; set; }
-        public IEnumerable<string> SkillSets { get; set; }
-        public IEnumerable<string> Languages { get; set; }
+        public string MedicalConditions { get; set; }
+        public string SkillSets { get; set; }
+        public IList<string> Languages { get; set; }
         public bool IsOpenToWork { get; set; }
         public string AdditionalDetails { get; set; }
         //todo: Replace with Contact information class
