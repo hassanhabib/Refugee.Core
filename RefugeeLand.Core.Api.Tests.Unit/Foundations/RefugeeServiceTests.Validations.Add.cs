@@ -43,5 +43,74 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Foundations
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public async Task ShouldThrowValidationExceptionOnAddIfRefugeeIsInvalidAndLogItAsync(string invalidText)
+        {
+            // given
+            var invalidRefugee = new Refugee
+            {
+                FirstName = invalidText
+            };
+
+            var invalidRefugeeException = new InvalidRefugeeException();
+            invalidRefugeeException.AddData(
+                key: nameof(Refugee.Id),
+                values: "Id is required");
+
+            invalidRefugeeException.AddData(
+                key: nameof(Refugee.FirstName),
+                values: "Text is required");
+
+            invalidRefugeeException.AddData(
+                key: nameof(Refugee.LastName),
+                values: "Text is required");
+
+            invalidRefugeeException.AddData(
+                key: nameof(Refugee.Gender),
+                values: "Value is required");
+
+            invalidRefugeeException.AddData(
+                key: nameof(Refugee.BirthDate),
+                values: "Date is required");
+
+            invalidRefugeeException.AddData(
+                key: nameof(Refugee.Email),
+                values: "Text is required");
+
+            invalidRefugeeException.AddData(
+                key: nameof(Refugee.CreatedDate),
+                values: "Date is required");
+
+            invalidRefugeeException.AddData(
+                key: nameof(Refugee.UpdatedDate),
+                values: "Date is required");
+
+            var expectedRefugeeException = 
+                new RefugeeValidationException(invalidRefugeeException);
+
+            // when
+            ValueTask<Refugee> addRefugeeTask =
+                this.refugeeService.AddRefugeeAsync(invalidRefugee);
+
+            // then
+            await Assert.ThrowsAsync<RefugeeValidationException>(() =>
+                addRefugeeTask.AsTask());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedRefugeeException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertRefugeeAsync(It.IsAny<Refugee>()), 
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
