@@ -1,10 +1,16 @@
-﻿namespace Refugee.Core.Infrastructure.Provision
+﻿using System.Threading.Tasks;
+using RefugeeLand.Core.Api.Infrastructure.Provision.Services.Processings;
+
+namespace Refugee.Core.Infrastructure.Provision
 {
     internal class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
+            ICloudManagementProcessingService cloudManagementProcessingService =
+                new CloudManagementProcessingService();
 
+            await cloudManagementProcessingService.ProcessAsync();
         }
     }
 }
