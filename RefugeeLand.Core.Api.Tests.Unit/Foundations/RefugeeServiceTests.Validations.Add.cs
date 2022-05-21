@@ -110,5 +110,44 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Foundations
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnAddIfCreatedAndUpdatedDatesAreNotSameAndLogItAsync() 
+        {
+            // given
+            Refugee randomRefugee = CreateRandomRefugee();
+            Refugee invalidRefugee = randomRefugee;
+            DateTimeOffset randomDateTime = GetRandomDateTime();
+            invalidRefugee.UpdatedDate = randomDateTime;
+            var invalidRefugeeException = new InvalidRefugeeException();
+
+            invalidRefugeeException.AddData(
+                key: nameof(Refugee.UpdatedDate),
+                values: $"Date is not the same as {nameof(Refugee.CreatedDate)}");
+
+            var expectedRefugeeValidationException =
+                new RefugeeValidationException(invalidRefugeeException);
+
+            // when
+            ValueTask<Refugee> addRefugeeTask =
+                this.refugeeService.AddRefugeeAsync(invalidRefugee);
+
+            // then
+            await Assert.ThrowsAsync<RefugeeValidationException>(() =>
+                addRefugeeTask.AsTask()); 
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedRefugeeValidationException))), 
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertRefugeeAsync(It.IsAny<Refugee>()), 
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
