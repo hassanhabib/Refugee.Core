@@ -49,7 +49,7 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Refugees
 
         private static dynamic IsInvalid(Gender gender) => new
         {
-            Condition = Enum.IsDefined(typeof(Gender), gender),
+            Condition = Enum.IsDefined(gender) is false,
             Message = "Value is required"
         };
 
