@@ -71,10 +71,6 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Foundations
                 values: "Text is required");
 
             invalidRefugeeException.AddData(
-                key: nameof(Refugee.Gender),
-                values: "Value is required");
-
-            invalidRefugeeException.AddData(
                 key: nameof(Refugee.BirthDate),
                 values: "Date is required");
 

@@ -20,7 +20,6 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Refugees
                 (Rule: IsInvalid(refugee.Id), Parameter:nameof(Refugee.Id)),
                 (Rule: IsInvalid(refugee.FirstName), Parameter:nameof(Refugee.FirstName)),
                 (Rule: IsInvalid(refugee.LastName), Parameter:nameof(Refugee.LastName)),
-                (Rule: IsInvalid(refugee.Gender), Parameter:nameof(Refugee.Gender)),
                 (Rule: IsInvalid(refugee.BirthDate), Parameter:nameof(Refugee.BirthDate)),
                 (Rule: IsInvalid(refugee.Email), Parameter:nameof(Refugee.Email)),
                 (Rule: IsInvalid(refugee.CreatedDate), Parameter:nameof(Refugee.CreatedDate)),
