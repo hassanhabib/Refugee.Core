@@ -30,7 +30,23 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Refugees
                     secondDate: refugee.UpdatedDate,
                     firstDateName: nameof(Refugee.CreatedDate)),
 
-                 Parameter: nameof(Refugee.UpdatedDate)));
+                 Parameter: nameof(Refugee.UpdatedDate)),
+                (Rule: IsNotRecent(refugee.CreatedDate), Parameter: nameof(Refugee.CreatedDate)));
+        }
+
+        private dynamic IsNotRecent(DateTimeOffset date) => new
+        {
+            Condition = IsDateNotRecent(date),
+            Message = "Date is not recent"
+        };
+
+        private bool IsDateNotRecent(DateTimeOffset date)
+        {
+            DateTimeOffset currentDateTime = dateTimeBroker.GetCurrentDateTimeOffset();
+            TimeSpan timeDifference = currentDateTime.Subtract(date);
+            TimeSpan oneMinute = TimeSpan.FromMinutes(1);
+
+            return timeDifference.Duration() > oneMinute.Duration();
         }
 
         private static void ValidateRefugeeIsNotNull(Refugee refugee)
