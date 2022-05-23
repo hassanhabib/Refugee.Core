@@ -23,7 +23,14 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Refugees
                 (Rule: IsInvalid(refugee.BirthDate), Parameter:nameof(Refugee.BirthDate)),
                 (Rule: IsInvalid(refugee.Email), Parameter:nameof(Refugee.Email)),
                 (Rule: IsInvalid(refugee.CreatedDate), Parameter:nameof(Refugee.CreatedDate)),
-                (Rule: IsInvalid(refugee.UpdatedDate), Parameter:nameof(Refugee.UpdatedDate)));
+                (Rule: IsInvalid(refugee.UpdatedDate), Parameter:nameof(Refugee.UpdatedDate)),
+
+                (Rule: IsNotSameAs(
+                    firstDate: refugee.CreatedDate,
+                    secondDate: refugee.UpdatedDate,
+                    firstDateName: nameof(Refugee.CreatedDate)),
+
+                 Parameter: nameof(Refugee.UpdatedDate)));
         }
 
         private static void ValidateRefugeeIsNotNull(Refugee refugee)
@@ -57,6 +64,15 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Refugees
             Condition = date == default,
             Message = "Date is required"
         };
+
+        private static dynamic IsNotSameAs(
+            DateTimeOffset firstDate,
+            DateTimeOffset secondDate,
+            string firstDateName) => new
+            {
+                Condition = firstDate != secondDate,
+                Message = $"Date is not the same as {firstDateName}"
+            };
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
