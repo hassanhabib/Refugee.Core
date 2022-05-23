@@ -86,7 +86,7 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Foundations
                 key: nameof(Refugee.UpdatedDate),
                 values: "Date is required");
 
-            var expectedRefugeeException = 
+            var expectedRefugeeException =
                 new RefugeeValidationException(invalidRefugeeException);
 
             // when
@@ -103,7 +103,7 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Foundations
                         Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.InsertRefugeeAsync(It.IsAny<Refugee>()), 
+                broker.InsertRefugeeAsync(It.IsAny<Refugee>()),
                     Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
@@ -112,7 +112,7 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Foundations
         }
 
         [Fact]
-        public async Task ShouldThrowValidationExceptionOnAddIfCreatedAndUpdatedDatesAreNotSameAndLogItAsync() 
+        public async Task ShouldThrowValidationExceptionOnAddIfCreatedAndUpdatedDatesAreNotSameAndLogItAsync()
         {
             // given
             Refugee randomRefugee = CreateRandomRefugee();
@@ -134,20 +134,69 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Foundations
 
             // then
             await Assert.ThrowsAsync<RefugeeValidationException>(() =>
-                addRefugeeTask.AsTask()); 
+                addRefugeeTask.AsTask());
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
-                    expectedRefugeeValidationException))), 
+                    expectedRefugeeValidationException))),
                         Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.InsertRefugeeAsync(It.IsAny<Refugee>()), 
+                broker.InsertRefugeeAsync(It.IsAny<Refugee>()),
                     Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [MemberData(nameof(MinutesBeforeOrAfter))]
+        public async Task ShouldThrowValidationExceptionOnAddIfCreatedDateIsNotRecentAndLogItAsync(
+            int minutesBeforeOrAfter)
+        {
+            // given
+            DateTimeOffset randomDateTime = GetRandomDateTime();
+            DateTimeOffset invalidDateTime = randomDateTime.AddMinutes(minutesBeforeOrAfter);
+            Refugee randomRefugee = CreateRandomRefugee(invalidDateTime);
+            Refugee invalidRefugee = randomRefugee;
+            var invalidRefugeeException = new InvalidRefugeeException();
+
+            invalidRefugeeException.AddData(
+                key: nameof(Refugee.CreatedDate),
+                values: "Date is not recent");
+
+            var expectedRefugeeValidationException =
+                new RefugeeValidationException(invalidRefugeeException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTime);
+
+            // when
+            ValueTask<Refugee> addRefugeeTask =
+                this.refugeeService.AddRefugeeAsync(invalidRefugee);
+
+            // then
+            await Assert.ThrowsAsync<RefugeeValidationException>(() =>
+                addRefugeeTask.AsTask());
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedRefugeeValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertRefugeeAsync(It.IsAny<Refugee>()),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

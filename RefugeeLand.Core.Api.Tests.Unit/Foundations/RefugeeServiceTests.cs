@@ -12,6 +12,7 @@ using RefugeeLand.Core.Api.Models.Refugees;
 using RefugeeLand.Core.Api.Services.Foundations.Refugees;
 using Tynamix.ObjectFiller;
 using Xeptions;
+using Xunit;
 
 namespace RefugeeLand.Core.Api.Tests.Unit.Foundations
 {
@@ -34,11 +35,32 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Foundations
                 loggingBroker: this.loggingBrokerMock.Object);
         }
 
+        public static TheoryData MinutesBeforeOrAfter()
+        {
+            int randomNumber = GetRandomNumber();
+            int randomNegativeNumber = GetRandomNegativeNumber();
+
+            return new TheoryData<int>
+            {
+                randomNumber,
+                randomNegativeNumber
+            };
+        }
+
+        private static int GetRandomNumber() =>
+            new IntRange(min: 2, max: 9).GetValue();
+
+        private static int GetRandomNegativeNumber() =>
+            -1 * new IntRange(min: 2, max: 9).GetValue();
+
         private static DateTimeOffset GetRandomDateTime() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
         private static Refugee CreateRandomRefugee() =>
             CreateRefugeeFiller(dates: GetRandomDateTime()).Create();
+
+        private static Refugee CreateRandomRefugee(DateTimeOffset dates) =>
+            CreateRefugeeFiller(dates).Create();
 
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException)
         {
