@@ -4,6 +4,7 @@
 // -------------------------------------------------------
 
 using Moq;
+using RefugeeLand.Core.Api.Models.Enums;
 using RefugeeLand.Core.Api.Models.Refugees;
 using RefugeeLand.Core.Api.Models.Refugees.Exceptions;
 using Xunit;
@@ -204,6 +205,48 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Foundations
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnAddIfRefugeeGenderIsInvalidAndLogItAsync()
+        {
+            // given
+            Refugee randomRefugee = CreateRandomRefugee();
+            Refugee invalidRefugee = randomRefugee;
+            invalidRefugee.Gender = GetInvalidEnum<Gender>();
+            var invalidRefugeeException = new InvalidRefugeeException();
+
+            invalidRefugeeException.AddData(
+                key: nameof(Refugee.Gender),
+                values: "Value is invalid");
+
+            var expectedRefugeeValidationException =
+                new RefugeeValidationException(invalidRefugeeException);
+
+            // when
+            ValueTask<Refugee> addRefugeeTask =
+                this.refugeeService.AddRefugeeAsync(invalidRefugee);
+
+            // then
+            await Assert.ThrowsAsync<RefugeeValidationException>(() =>
+                addRefugeeTask.AsTask());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedRefugeeValidationException))),
+                        Times.Once);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertRefugeeAsync(It.IsAny<Refugee>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
     }

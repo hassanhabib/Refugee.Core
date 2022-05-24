@@ -47,6 +47,18 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Foundations
             };
         }
 
+        private static T GetInvalidEnum<T>()
+        {
+            int randomNumber = GetRandomNumber();
+
+            while(Enum.IsDefined(typeof(T), randomNumber) is true)
+            {
+                randomNumber = GetRandomNumber();
+            }
+
+            return (T)(object)randomNumber;
+        }
+
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 9).GetValue();
 
