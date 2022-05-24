@@ -102,6 +102,10 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Foundations
                     expectedRefugeeException))),
                         Times.Once);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertRefugeeAsync(It.IsAny<Refugee>()),
                     Times.Never);
