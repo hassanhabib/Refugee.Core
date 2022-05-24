@@ -31,7 +31,8 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Refugees
                     firstDateName: nameof(Refugee.CreatedDate)),
 
                  Parameter: nameof(Refugee.UpdatedDate)),
-                (Rule: IsNotRecent(refugee.CreatedDate), Parameter: nameof(Refugee.CreatedDate)));
+                (Rule: IsNotRecent(refugee.CreatedDate), Parameter: nameof(Refugee.CreatedDate)),
+                (Rule: IsInvalid(refugee.Gender), Parameter:nameof(Refugee.Gender)));
         }
 
         private dynamic IsNotRecent(DateTimeOffset date) => new
@@ -72,7 +73,7 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Refugees
         private static dynamic IsInvalid(Gender gender) => new
         {
             Condition = Enum.IsDefined(gender) is false,
-            Message = "Value is required"
+            Message = "Value is invalid"
         };
 
         private static dynamic IsInvalid(DateTimeOffset date) => new
