@@ -17,10 +17,15 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Foundations
         public async Task ShouldAddRefugeeAsync()
         {
             // given
-            Refugee randomRefugee = CreateRandomRefugee();
+            DateTimeOffset randomDateTime = GetRandomDateTime();
+            Refugee randomRefugee = CreateRandomRefugee(randomDateTime);
             Refugee inputRefugee = randomRefugee;
             Refugee insertedRefugee = inputRefugee;
             Refugee expectedRefugee = insertedRefugee.DeepClone();
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTime);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.InsertRefugeeAsync(inputRefugee))
@@ -37,8 +42,13 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Foundations
                 broker.InsertRefugeeAsync(inputRefugee),
                     Times.Once);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }
