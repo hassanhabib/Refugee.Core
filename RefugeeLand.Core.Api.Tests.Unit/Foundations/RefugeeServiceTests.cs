@@ -4,6 +4,8 @@
 // -------------------------------------------------------
 
 using System.Linq.Expressions;
+using System.Runtime.Serialization;
+using Microsoft.Data.SqlClient;
 using Moq;
 using RefugeeLand.Core.Api.Brokers.DateTimes;
 using RefugeeLand.Core.Api.Brokers.Loggings;
@@ -58,6 +60,9 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Foundations
 
             return (T)(object)randomNumber;
         }
+
+        private static SqlException GetSqlException() =>
+            (SqlException)FormatterServices.GetUninitializedObject(typeof(SqlException));
 
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 9).GetValue();
