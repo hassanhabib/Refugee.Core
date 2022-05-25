@@ -7,11 +7,6 @@ using Microsoft.Data.SqlClient;
 using Moq;
 using RefugeeLand.Core.Api.Models.Refugees;
 using RefugeeLand.Core.Api.Models.Refugees.Exceptions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace RefugeeLand.Core.Api.Tests.Unit.Foundations
@@ -24,6 +19,7 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Foundations
             // given
             Refugee someRefugee = CreateRandomRefugee();
             SqlException sqlException = GetSqlException();
+
             FailedRefugeeStorageException failedRefugeeStorageException = 
                 new FailedRefugeeStorageException(sqlException);
 
@@ -31,7 +27,8 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Foundations
                 new RefugeeDependencyException(failedRefugeeStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
-            broker.GetCurrentDateTimeOffset()).Throws(sqlException);
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(sqlException);
 
             // when
             ValueTask<Refugee> addRefugeeTask = 
@@ -39,18 +36,20 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Foundations
 
             // then
             await Assert.ThrowsAsync<RefugeeDependencyException>(() =>
-            addRefugeeTask.AsTask());
+                addRefugeeTask.AsTask());
             
             this.loggingBrokerMock.Verify(broker =>
-            broker.LogCritical(It.Is(SameExceptionAs(expectedRefugeeDependencyException))),
-            Times.Once);
+                broker.LogCritical(It.Is(SameExceptionAs(
+                    expectedRefugeeDependencyException))),
+                        Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
-            broker.GetCurrentDateTimeOffset(),Times.Once);
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-            broker.InsertRefugeeAsync(It.IsAny<Refugee>()),
-            Times.Never);
+                broker.InsertRefugeeAsync(It.IsAny<Refugee>()),
+                    Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
