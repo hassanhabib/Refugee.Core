@@ -67,6 +67,9 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Foundations
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 9).GetValue();
 
+        private static string GetRandomString() =>
+            new MnemonicString().GetValue() ;
+
         private static int GetRandomNegativeNumber() =>
             -1 * new IntRange(min: 2, max: 9).GetValue();
 
