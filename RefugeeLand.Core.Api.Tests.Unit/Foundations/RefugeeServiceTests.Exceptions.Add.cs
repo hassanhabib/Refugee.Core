@@ -54,7 +54,6 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Foundations
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
-
-        }
+         }
     }
 }
