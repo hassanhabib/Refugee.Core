@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using RefugeeLand.Core.Api.Models.Enums;
 using RefugeeLand.Core.Api.Models.Languages;
+using RefugeeLand.Core.Api.Models.MedicalConditions;
 using RefugeeLand.Core.Api.Models.Nationalities;
 
 namespace RefugeeLand.Core.Api.Models.Refugees
@@ -27,10 +28,10 @@ namespace RefugeeLand.Core.Api.Models.Refugees
         public DateTimeOffset CreatedDate { get; set; }
         public DateTimeOffset UpdatedDate { get; set; }
         public bool IsOpenToWork { get; set; }
-        public string MedicalConditions { get; set; }
         public string SkillSets { get; set; }
         public string AdditionalDetails { get; set; }
         public IList<Language> Languages { get; set; }
         public IList<Nationality> Nationalities { get; set; }
+        public IList<MedicalCondition> MedicalConditions { get; set; }
     }
 }
