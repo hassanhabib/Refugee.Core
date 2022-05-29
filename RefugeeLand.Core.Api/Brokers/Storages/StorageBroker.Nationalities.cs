@@ -10,6 +10,6 @@ namespace RefugeeLand.Core.Api.Brokers.Storages
 {
     public partial class StorageBroker
     {
-        public DbSet<Nationality> Nationalities { get; set; }
+        // public DbSet<Nationality> Nationalities { get; set; }
     }
 }

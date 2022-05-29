@@ -10,7 +10,7 @@ namespace RefugeeLand.Core.Api.Models.Nationalities
     public class Nationality
     {
         public Guid Id { get; set; }
-        public String Name { get; set; }
-        public String Country { get; set; }
+        public string Name { get; set; }
+        public string Country { get; set; }
     }
 }
