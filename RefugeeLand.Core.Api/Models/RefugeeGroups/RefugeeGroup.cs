@@ -13,7 +13,7 @@ public class RefugeeGroup
 {
     public Guid Id { get; set; }
     public string Name { get; set; }
-    // public IList<Refugee> Refugee { get; set; } Todo: uncomment
+    public IList<Refugee> Refugee { get; set; }
     public DateTimeOffset CreatedDate { get; set; }
     public DateTimeOffset UpdatedDate { get; set; }
 }
