@@ -10,58 +10,47 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace RefugeeLand.Core.Api.Migrations
 {
-    public partial class AddRefugeeMigrationAddNationalities : Migration
+    public partial class AddMedicalConditionsMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "Proficiency",
-                table: "Languages");
-
-            migrationBuilder.AddColumn<int>(
-                name: "FluencyLevel",
-                table: "Languages",
-                type: "int",
-                nullable: false,
-                defaultValue: 0);
+                name: "MedicalConditions",
+                table: "Refugees");
 
             migrationBuilder.CreateTable(
-                name: "Nationalities",
+                name: "MedicalConditions",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Country = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    AdditionalDetails = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     RefugeeId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Nationalities", x => x.Id);
+                    table.PrimaryKey("PK_MedicalConditions", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Nationalities_Refugees_RefugeeId",
+                        name: "FK_MedicalConditions_Refugees_RefugeeId",
                         column: x => x.RefugeeId,
                         principalTable: "Refugees",
                         principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Nationalities_RefugeeId",
-                table: "Nationalities",
+                name: "IX_MedicalConditions_RefugeeId",
+                table: "MedicalConditions",
                 column: "RefugeeId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Nationalities");
-
-            migrationBuilder.DropColumn(
-                name: "FluencyLevel",
-                table: "Languages");
+                name: "MedicalConditions");
 
             migrationBuilder.AddColumn<string>(
-                name: "Proficiency",
-                table: "Languages",
+                name: "MedicalConditions",
+                table: "Refugees",
                 type: "nvarchar(max)",
                 nullable: true);
         }

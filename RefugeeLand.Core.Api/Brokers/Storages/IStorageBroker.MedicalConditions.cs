@@ -3,14 +3,8 @@
 // FREE TO USE TO DELIVER HUMANITARIAN AID, HOPE AND LOVE
 // -------------------------------------------------------
 
-using System;
-
-namespace RefugeeLand.Core.Api.Models.Nationalities
+namespace RefugeeLand.Core.Api.Brokers.Storages
 {
-    public class Nationality
-    {
-        public Guid Id { get; set; }
-        public string Name { get; set; }
-        public string Country { get; set; }
-    }
+    public partial interface IStorageBroker
+    { }
 }

@@ -355,6 +355,10 @@ MigrationBackup/
 # VS Code
 .vscode/
 
+# Development appsettings
 /RefugeeLand.Core.Api/appsettings.Development.json
+
+# Linqpad test folder
+/playground
 
 

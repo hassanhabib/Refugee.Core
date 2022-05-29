@@ -5,12 +5,12 @@
 
 using System;
 
-namespace RefugeeLand.Core.Api.Models.Nationalities
+namespace RefugeeLand.Core.Api.Models.MedicalConditions
 {
-    public class Nationality
+    public class MedicalCondition
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
-        public string Country { get; set; }
+        public string AdditionalDetails { get; set; }
     }
 }

@@ -14,22 +14,11 @@ namespace RefugeeLand.Core.Api.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "Proficiency",
-                table: "Languages");
-
             migrationBuilder.AddColumn<Guid>(
                 name: "RefugeeGroupId",
                 table: "Refugees",
                 type: "uniqueidentifier",
                 nullable: true);
-
-            migrationBuilder.AddColumn<int>(
-                name: "FluencyLevel",
-                table: "Languages",
-                type: "int",
-                nullable: false,
-                defaultValue: 0);
 
             migrationBuilder.CreateTable(
                 name: "RefugeeGroups",
@@ -74,16 +63,6 @@ namespace RefugeeLand.Core.Api.Migrations
             migrationBuilder.DropColumn(
                 name: "RefugeeGroupId",
                 table: "Refugees");
-
-            migrationBuilder.DropColumn(
-                name: "FluencyLevel",
-                table: "Languages");
-
-            migrationBuilder.AddColumn<string>(
-                name: "Proficiency",
-                table: "Languages",
-                type: "nvarchar(max)",
-                nullable: true);
         }
     }
 }

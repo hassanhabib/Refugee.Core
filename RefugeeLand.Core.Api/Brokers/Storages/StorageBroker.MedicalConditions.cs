@@ -3,14 +3,13 @@
 // FREE TO USE TO DELIVER HUMANITARIAN AID, HOPE AND LOVE
 // -------------------------------------------------------
 
-using System;
+using Microsoft.EntityFrameworkCore;
+using RefugeeLand.Core.Api.Models.MedicalConditions;
 
-namespace RefugeeLand.Core.Api.Models.Nationalities
+namespace RefugeeLand.Core.Api.Brokers.Storages
 {
-    public class Nationality
+    public partial class StorageBroker
     {
-        public Guid Id { get; set; }
-        public string Name { get; set; }
-        public string Country { get; set; }
+        public DbSet<MedicalCondition> MedicalConditions { get; set; }
     }
 }
