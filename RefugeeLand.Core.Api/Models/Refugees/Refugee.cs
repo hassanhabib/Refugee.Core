@@ -21,10 +21,9 @@ namespace RefugeeLand.Core.Api.Models.Refugees
         public string CurrentLocation { get; set; }
         public Gender Gender { get; set; }
         public DateTimeOffset BirthDate { get; set; }
-        //todo: Replace with Contact information class
+        //Todo: Replace Phone and Email with ContactInformation class
         public string Phone { get; set; }
         public string Email { get; set; }
-        //todo: Add Family class or RefugeeGroup
         public DateTimeOffset CreatedDate { get; set; }
         public DateTimeOffset UpdatedDate { get; set; }
         public bool IsOpenToWork { get; set; }
