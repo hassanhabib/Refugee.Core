@@ -31,6 +31,6 @@ namespace RefugeeLand.Core.Api.Models.Refugees
         public string SkillSets { get; set; }
         public string AdditionalDetails { get; set; }
         public IList<Language> Languages { get; set; }
-        // public IList<Nationality> Nationalities { get; set; }
+        public IList<Nationality> Nationalities { get; set; }
     }
 }

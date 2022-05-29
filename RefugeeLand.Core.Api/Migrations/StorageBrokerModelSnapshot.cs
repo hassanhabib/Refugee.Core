@@ -44,6 +44,28 @@ namespace RefugeeLand.Core.Api.Migrations
                     b.ToTable("Languages");
                 });
 
+            modelBuilder.Entity("RefugeeLand.Core.Api.Models.Nationalities.Nationality", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Country")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("RefugeeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RefugeeId");
+
+                    b.ToTable("Nationalities");
+                });
+
             modelBuilder.Entity("RefugeeLand.Core.Api.Models.Refugees.Refugee", b =>
                 {
                     b.Property<Guid>("Id")
@@ -104,9 +126,18 @@ namespace RefugeeLand.Core.Api.Migrations
                         .HasForeignKey("RefugeeId");
                 });
 
+            modelBuilder.Entity("RefugeeLand.Core.Api.Models.Nationalities.Nationality", b =>
+                {
+                    b.HasOne("RefugeeLand.Core.Api.Models.Refugees.Refugee", null)
+                        .WithMany("Nationalities")
+                        .HasForeignKey("RefugeeId");
+                });
+
             modelBuilder.Entity("RefugeeLand.Core.Api.Models.Refugees.Refugee", b =>
                 {
                     b.Navigation("Languages");
+
+                    b.Navigation("Nationalities");
                 });
 #pragma warning restore 612, 618
         }
