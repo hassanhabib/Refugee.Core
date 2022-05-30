@@ -8,6 +8,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RefugeeLand.Core.Api.Brokers.Storages;
 
@@ -16,9 +17,10 @@ using RefugeeLand.Core.Api.Brokers.Storages;
 namespace RefugeeLand.Core.Api.Migrations
 {
     [DbContext(typeof(StorageBroker))]
-    partial class StorageBrokerModelSnapshot : ModelSnapshot
+    [Migration("20220529125743_UpdateLanguagesFields")]
+    partial class UpdateLanguagesFields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -47,70 +49,6 @@ namespace RefugeeLand.Core.Api.Migrations
                     b.HasIndex("RefugeeId");
 
                     b.ToTable("Languages");
-                });
-
-            modelBuilder.Entity("RefugeeLand.Core.Api.Models.MedicalConditions.MedicalCondition", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("AdditionalDetails")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid?>("RefugeeId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RefugeeId");
-
-                    b.ToTable("MedicalConditions");
-                });
-
-            modelBuilder.Entity("RefugeeLand.Core.Api.Models.Nationalities.Nationality", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Country")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid?>("RefugeeId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RefugeeId");
-
-                    b.ToTable("Nationalities");
-                });
-
-            modelBuilder.Entity("RefugeeLand.Core.Api.Models.RefugeeGroups.RefugeeGroup", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset>("CreatedDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTimeOffset>("UpdatedDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("RefugeeGroups");
                 });
 
             modelBuilder.Entity("RefugeeLand.Core.Api.Models.Refugees.Refugee", b =>
@@ -146,14 +84,14 @@ namespace RefugeeLand.Core.Api.Migrations
                     b.Property<string>("LastName")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("MedicalConditions")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("MiddleName")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Phone")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid?>("RefugeeGroupId")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("SkillSets")
                         .HasColumnType("nvarchar(max)");
@@ -162,8 +100,6 @@ namespace RefugeeLand.Core.Api.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("RefugeeGroupId");
 
                     b.ToTable("Refugees");
                 });
@@ -175,39 +111,9 @@ namespace RefugeeLand.Core.Api.Migrations
                         .HasForeignKey("RefugeeId");
                 });
 
-            modelBuilder.Entity("RefugeeLand.Core.Api.Models.MedicalConditions.MedicalCondition", b =>
-                {
-                    b.HasOne("RefugeeLand.Core.Api.Models.Refugees.Refugee", null)
-                        .WithMany("MedicalConditions")
-                        .HasForeignKey("RefugeeId");
-                });
-
-            modelBuilder.Entity("RefugeeLand.Core.Api.Models.Nationalities.Nationality", b =>
-                {
-                    b.HasOne("RefugeeLand.Core.Api.Models.Refugees.Refugee", null)
-                        .WithMany("Nationalities")
-                        .HasForeignKey("RefugeeId");
-                });
-
-            modelBuilder.Entity("RefugeeLand.Core.Api.Models.Refugees.Refugee", b =>
-                {
-                    b.HasOne("RefugeeLand.Core.Api.Models.RefugeeGroups.RefugeeGroup", null)
-                        .WithMany("Refugee")
-                        .HasForeignKey("RefugeeGroupId");
-                });
-
-            modelBuilder.Entity("RefugeeLand.Core.Api.Models.RefugeeGroups.RefugeeGroup", b =>
-                {
-                    b.Navigation("Refugee");
-                });
-
             modelBuilder.Entity("RefugeeLand.Core.Api.Models.Refugees.Refugee", b =>
                 {
                     b.Navigation("Languages");
-
-                    b.Navigation("MedicalConditions");
-
-                    b.Navigation("Nationalities");
                 });
 #pragma warning restore 612, 618
         }
