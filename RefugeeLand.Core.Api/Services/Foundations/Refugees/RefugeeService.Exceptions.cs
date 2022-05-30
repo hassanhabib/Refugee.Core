@@ -5,6 +5,7 @@
 
 using System;
 using System.Threading.Tasks;
+using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
 using RefugeeLand.Core.Api.Models.Refugees;
 using RefugeeLand.Core.Api.Models.Refugees.Exceptions;
@@ -36,6 +37,23 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Refugees
 
                 throw CreateAndLogCriticalDependencyException(failedRefugeeStorageException);
             }
+            catch(DuplicateKeyException duplicateKeyException)
+            {
+                var alreadyExistRefugeeException =
+                    new AlreadyExistRefugeeException(duplicateKeyException);
+ 
+                throw CreateAndLogDependencyValidationException(alreadyExistRefugeeException);
+            }           
+        }
+
+        private Exception CreateAndLogDependencyValidationException(Xeption exception)
+        {
+            var refugeeDependencyValidationException =
+                new RefugeeDependencyValidationException(exception);
+
+            this.loggingBroker.LogError(refugeeDependencyValidationException);
+
+            return refugeeDependencyValidationException;
         }
 
         private RefugeeValidationException CreateAndLogValidationException(Xeption exception)
