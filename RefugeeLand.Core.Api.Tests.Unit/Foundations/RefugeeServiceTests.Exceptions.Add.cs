@@ -22,10 +22,10 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Foundations
             Refugee someRefugee = CreateRandomRefugee();
             SqlException sqlException = GetSqlException();
 
-            FailedRefugeeStorageException failedRefugeeStorageException = 
+            FailedRefugeeStorageException failedRefugeeStorageException =
                 new FailedRefugeeStorageException(sqlException);
 
-            var expectedRefugeeDependencyException = 
+            var expectedRefugeeDependencyException =
                 new RefugeeDependencyException(failedRefugeeStorageException);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -33,13 +33,13 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Foundations
                 .Throws(sqlException);
 
             // when
-            ValueTask<Refugee> addRefugeeTask = 
+            ValueTask<Refugee> addRefugeeTask =
                 this.refugeeService.AddRefugeeAsync(someRefugee);
 
             // then
             await Assert.ThrowsAsync<RefugeeDependencyException>(() =>
                 addRefugeeTask.AsTask());
-            
+
             this.loggingBrokerMock.Verify(broker =>
                     broker.LogCritical(It.Is(SameExceptionAs(
                         expectedRefugeeDependencyException))),
@@ -80,27 +80,27 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Foundations
                 this.refugeeService.AddRefugeeAsync(alreadyExistRefugee);
 
             //then
-            await Assert.ThrowsAsync<RefugeeDependencyValidationException>(() => 
+            await Assert.ThrowsAsync<RefugeeDependencyValidationException>(() =>
                 addRefugeeTask.AsTask());
-            
-            this.loggingBrokerMock.Verify(broker => 
+
+            this.loggingBrokerMock.Verify(broker =>
                     broker.LogError(It.Is(SameExceptionAs(
                         expectedRefugeeDependencyValidationException))),
                 Times.Once);
-            
+
             this.storageBrokerMock.Verify(broker =>
                     broker.InsertRefugeeAsync(It.IsAny<Refugee>()),
                 Times.Never);
-            
+
             this.dateTimeBrokerMock.Verify(broker =>
                     broker.GetCurrentDateTimeOffset(),
                 Times.Once);
-            
+
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
-        
+
         [Fact]
         public async Task ShouldThrowDependencyValidationExceptionOnAddIfDbUpdateErrorOccurs()
         {
@@ -122,22 +122,22 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Foundations
                 this.refugeeService.AddRefugeeAsync(someRefugee);
 
             //then
-            await Assert.ThrowsAsync<RefugeeDependencyValidationException>(() => 
+            await Assert.ThrowsAsync<RefugeeDependencyValidationException>(() =>
                 addRefugeeTask.AsTask());
-            
-            this.loggingBrokerMock.Verify(broker => 
+
+            this.loggingBrokerMock.Verify(broker =>
                     broker.LogError(It.Is(SameExceptionAs(
                         expectedRefugeeDependencyValidationException))),
                             Times.Once);
-            
+
             this.storageBrokerMock.Verify(broker =>
                     broker.InsertRefugeeAsync(It.IsAny<Refugee>()),
                         Times.Never);
-            
+
             this.dateTimeBrokerMock.Verify(broker =>
                     broker.GetCurrentDateTimeOffset(),
                         Times.Once);
-            
+
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();

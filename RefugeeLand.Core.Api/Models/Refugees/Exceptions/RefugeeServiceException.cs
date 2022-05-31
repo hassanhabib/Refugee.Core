@@ -9,8 +9,8 @@ namespace RefugeeLand.Core.Api.Models.Refugees.Exceptions
 {
     public class RefugeeServiceException : Xeption
     {
-        public RefugeeServiceException(Xeption innerException) 
-            : base(message : "Refugee service error occurred, contact support", innerException)
+        public RefugeeServiceException(Xeption innerException)
+            : base(message: "Refugee service error occurred, contact support", innerException)
         { }
     }
 }

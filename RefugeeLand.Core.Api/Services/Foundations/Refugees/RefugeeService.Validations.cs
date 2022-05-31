@@ -3,10 +3,10 @@
 // FREE TO USE TO DELIVER HUMANITARIAN AID, HOPE AND LOVE
 // -------------------------------------------------------
 
+using System;
 using RefugeeLand.Core.Api.Models.Enums;
 using RefugeeLand.Core.Api.Models.Refugees;
 using RefugeeLand.Core.Api.Models.Refugees.Exceptions;
-using System;
 
 namespace RefugeeLand.Core.Api.Services.Foundations.Refugees
 {
@@ -17,13 +17,13 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Refugees
             ValidateRefugeeIsNotNull(refugee);
 
             Validate(
-                (Rule: IsInvalid(refugee.Id), Parameter:nameof(Refugee.Id)),
-                (Rule: IsInvalid(refugee.FirstName), Parameter:nameof(Refugee.FirstName)),
-                (Rule: IsInvalid(refugee.LastName), Parameter:nameof(Refugee.LastName)),
-                (Rule: IsInvalid(refugee.BirthDate), Parameter:nameof(Refugee.BirthDate)),
-                (Rule: IsInvalid(refugee.Email), Parameter:nameof(Refugee.Email)),
-                (Rule: IsInvalid(refugee.CreatedDate), Parameter:nameof(Refugee.CreatedDate)),
-                (Rule: IsInvalid(refugee.UpdatedDate), Parameter:nameof(Refugee.UpdatedDate)),
+                (Rule: IsInvalid(refugee.Id), Parameter: nameof(Refugee.Id)),
+                (Rule: IsInvalid(refugee.FirstName), Parameter: nameof(Refugee.FirstName)),
+                (Rule: IsInvalid(refugee.LastName), Parameter: nameof(Refugee.LastName)),
+                (Rule: IsInvalid(refugee.BirthDate), Parameter: nameof(Refugee.BirthDate)),
+                (Rule: IsInvalid(refugee.Email), Parameter: nameof(Refugee.Email)),
+                (Rule: IsInvalid(refugee.CreatedDate), Parameter: nameof(Refugee.CreatedDate)),
+                (Rule: IsInvalid(refugee.UpdatedDate), Parameter: nameof(Refugee.UpdatedDate)),
 
                 (Rule: IsNotSameAs(
                     firstDate: refugee.CreatedDate,
@@ -32,7 +32,7 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Refugees
 
                  Parameter: nameof(Refugee.UpdatedDate)),
                 (Rule: IsNotRecent(refugee.CreatedDate), Parameter: nameof(Refugee.CreatedDate)),
-                (Rule: IsInvalid(refugee.Gender), Parameter:nameof(Refugee.Gender)));
+                (Rule: IsInvalid(refugee.Gender), Parameter: nameof(Refugee.Gender)));
         }
 
         private dynamic IsNotRecent(DateTimeOffset date) => new
@@ -66,7 +66,7 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Refugees
 
         private static dynamic IsInvalid(string text) => new
         {
-            Condition = string.IsNullOrWhiteSpace(text) ,
+            Condition = string.IsNullOrWhiteSpace(text),
             Message = "Text is required"
         };
 

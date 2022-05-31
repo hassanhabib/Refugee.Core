@@ -147,7 +147,7 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Foundations
                         Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(), 
+                broker.GetCurrentDateTimeOffset(),
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>

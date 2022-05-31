@@ -27,11 +27,11 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Refugees
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<Refugee> AddRefugeeAsync(Refugee refugee) => 
+        public ValueTask<Refugee> AddRefugeeAsync(Refugee refugee) =>
         TryCatch(async () =>
         {
             ValidateRefugeeOnAdd(refugee);
-            
+
             return await this.storageBroker.InsertRefugeeAsync(refugee);
         });
     }

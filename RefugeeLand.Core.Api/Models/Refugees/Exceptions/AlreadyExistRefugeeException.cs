@@ -11,6 +11,6 @@ namespace RefugeeLand.Core.Api.Models.Refugees.Exceptions;
 public class AlreadyExistRefugeeException : Xeption
 {
     public AlreadyExistRefugeeException(Exception innerException)
-        : base(message:"Refugee already exists", innerException)
+        : base(message: "Refugee already exists", innerException)
     { }
 }

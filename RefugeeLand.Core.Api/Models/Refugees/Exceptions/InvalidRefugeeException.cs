@@ -9,8 +9,8 @@ namespace RefugeeLand.Core.Api.Models.Refugees.Exceptions
 {
     public class InvalidRefugeeException : Xeption
     {
-        public InvalidRefugeeException() 
+        public InvalidRefugeeException()
             : base(message: "Refugee is invalid")
-            { }
+        { }
     }
 }

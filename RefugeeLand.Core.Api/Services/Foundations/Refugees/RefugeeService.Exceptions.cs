@@ -32,43 +32,33 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Refugees
             {
                 throw CreateAndLogValidationException(invalidRefugeeException);
             }
-            catch(SqlException sqlException)
+            catch (SqlException sqlException)
             {
                 var failedRefugeeStorageException = new FailedRefugeeStorageException(sqlException);
 
                 throw CreateAndLogCriticalDependencyException(failedRefugeeStorageException);
             }
-            catch(DuplicateKeyException duplicateKeyException)
+            catch (DuplicateKeyException duplicateKeyException)
             {
                 var alreadyExistRefugeeException =
                     new AlreadyExistRefugeeException(duplicateKeyException);
- 
+
                 throw CreateAndLogDependencyValidationException(alreadyExistRefugeeException);
             }
-            catch(DbUpdateException dbUpdateException)
-            { 
+            catch (DbUpdateException dbUpdateException)
+            {
                 var failedRefugeeStorageException =
                     new FailedRefugeeStorageException(dbUpdateException);
 
                 throw CreateAndLogDependencyValidationException(failedRefugeeStorageException);
             }
-            catch(Exception serviceException)
+            catch (Exception serviceException)
             {
                 var failedRefugeeServiceException =
                     new FailedRefugeeServiceException(serviceException);
 
                 throw CreateAndLogServiceException(failedRefugeeServiceException);
             }
-        }
-
-        private Exception CreateAndLogDependencyValidationException(Xeption exception)
-        {
-            var refugeeDependencyValidationException =
-                new RefugeeDependencyValidationException(exception);
-
-            this.loggingBroker.LogError(refugeeDependencyValidationException);
-
-            return refugeeDependencyValidationException;
         }
 
         private RefugeeValidationException CreateAndLogValidationException(Xeption exception)
@@ -87,9 +77,19 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Refugees
             return refugeeDependencyException;
         }
 
+        private RefugeeDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
+        {
+            var refugeeDependencyValidationException =
+                new RefugeeDependencyValidationException(exception);
+
+            this.loggingBroker.LogError(refugeeDependencyValidationException);
+
+            return refugeeDependencyValidationException;
+        }
+
         private RefugeeServiceException CreateAndLogServiceException(Xeption exception)
         {
-            var refugeeServiceException =new RefugeeServiceException(exception);
+            var refugeeServiceException = new RefugeeServiceException(exception);
             this.loggingBroker.LogError(refugeeServiceException);
 
             return refugeeServiceException;

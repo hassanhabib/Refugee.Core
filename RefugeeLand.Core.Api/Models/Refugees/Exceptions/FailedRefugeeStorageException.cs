@@ -11,7 +11,7 @@ namespace RefugeeLand.Core.Api.Models.Refugees.Exceptions
     public class FailedRefugeeStorageException : Xeption
     {
         public FailedRefugeeStorageException(Exception innerException)
-            : base(message : "Failed refugee storage error occurred, contact support",
+            : base(message: "Failed refugee storage error occurred, contact support",
                   innerException)
         { }
     }
