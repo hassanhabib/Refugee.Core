@@ -142,5 +142,47 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Foundations
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnAddIfServiceErrorOccursAndLogItAsync()
+        {
+            //given
+            Refugee randomRefugee = CreateRandomRefugee();
+            Refugee someRefugee = randomRefugee;
+            var serviceException = new Exception();
+            var failedRefugeeServiceException = new FailedRefugeeServiceException(serviceException);
+
+            var expectedRefugeeServiceException =
+                new RefugeeServiceException(failedRefugeeServiceException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                    broker.GetCurrentDateTimeOffset())
+                        .Throws(serviceException);
+
+            //when
+            ValueTask<Refugee> addRefugeeTask =
+                this.refugeeService.AddRefugeeAsync(someRefugee);
+
+            //then
+            await Assert.ThrowsAsync<RefugeeServiceException>(() =>
+                addRefugeeTask.AsTask());
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                    broker.GetCurrentDateTimeOffset(),
+                        Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                    broker.LogError(It.Is(SameExceptionAs(
+                        expectedRefugeeServiceException))),
+                            Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                    broker.InsertRefugeeAsync(It.IsAny<Refugee>()),
+                        Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
