@@ -5,6 +5,7 @@
 
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using RefugeeLand.Core.Api.Models.Refugees;
 using RefugeeLand.Core.Api.Models.Refugees.Exceptions;
@@ -94,6 +95,48 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Foundations
             this.dateTimeBrokerMock.Verify(broker =>
                     broker.GetCurrentDateTimeOffset(),
                 Times.Once);
+            
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+        
+        [Fact]
+        public async Task ShouldThrowDependencyValidationExceptionOnAddIfDbUpdateErrorOccurs()
+        {
+            //given
+            Refugee randomRefugee = CreateRandomRefugee();
+            Refugee someRefugee = randomRefugee;
+            var dbUpdateException = new DbUpdateException();
+            var failedRefugeeStorageException = new FailedRefugeeStorageException(dbUpdateException);
+
+            var expectedRefugeeDependencyValidationException =
+                new RefugeeDependencyValidationException(failedRefugeeStorageException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                    broker.GetCurrentDateTimeOffset())
+                        .Throws(dbUpdateException);
+
+            //when
+            ValueTask<Refugee> addRefugeeTask =
+                this.refugeeService.AddRefugeeAsync(someRefugee);
+
+            //then
+            await Assert.ThrowsAsync<RefugeeDependencyValidationException>(() => 
+                addRefugeeTask.AsTask());
+            
+            this.loggingBrokerMock.Verify(broker => 
+                    broker.LogError(It.Is(SameExceptionAs(
+                        expectedRefugeeDependencyValidationException))),
+                            Times.Once);
+            
+            this.storageBrokerMock.Verify(broker =>
+                    broker.InsertRefugeeAsync(It.IsAny<Refugee>()),
+                        Times.Never);
+            
+            this.dateTimeBrokerMock.Verify(broker =>
+                    broker.GetCurrentDateTimeOffset(),
+                        Times.Once);
             
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
