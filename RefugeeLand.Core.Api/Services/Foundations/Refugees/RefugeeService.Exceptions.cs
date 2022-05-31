@@ -52,6 +52,13 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Refugees
 
                 throw CreateAndLogDependencyValidationException(failedRefugeeStorageException);
             }
+            catch(Exception serviceException)
+            {
+                var failedRefugeeServiceException =
+                    new FailedRefugeeServiceException(serviceException);
+
+                throw CreateAndLogServiceException(failedRefugeeServiceException);
+            }
         }
 
         private Exception CreateAndLogDependencyValidationException(Xeption exception)
@@ -78,6 +85,14 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Refugees
             this.loggingBroker.LogCritical(refugeeDependencyException);
 
             return refugeeDependencyException;
+        }
+
+        private RefugeeServiceException CreateAndLogServiceException(Xeption exception)
+        {
+            var refugeeServiceException =new RefugeeServiceException(exception);
+            this.loggingBroker.LogError(refugeeServiceException);
+
+            return refugeeServiceException;
         }
     }
 }
