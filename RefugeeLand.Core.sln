@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RefugeeLand.Core.Api.Infras
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RefugeeLand.Core.Api.Tests.Unit", "RefugeeLand.Core.Api.Tests.Unit\RefugeeLand.Core.Api.Tests.Unit.csproj", "{40F0933D-18CA-430C-9D61-A4F738B72495}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RefugeeLand.Core.Api.Infrastructure.Provision", "RefugeeLand.Core.Api.Infrastructure.Provision\RefugeeLand.Core.Api.Infrastructure.Provision.csproj", "{29E217FA-D672-4E27-B359-F593840964EE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{40F0933D-18CA-430C-9D61-A4F738B72495}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{40F0933D-18CA-430C-9D61-A4F738B72495}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{40F0933D-18CA-430C-9D61-A4F738B72495}.Release|Any CPU.Build.0 = Release|Any CPU
+		{29E217FA-D672-4E27-B359-F593840964EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{29E217FA-D672-4E27-B359-F593840964EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{29E217FA-D672-4E27-B359-F593840964EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{29E217FA-D672-4E27-B359-F593840964EE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
