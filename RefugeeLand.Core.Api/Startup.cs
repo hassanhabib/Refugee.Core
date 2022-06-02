@@ -12,6 +12,7 @@ using Microsoft.OpenApi.Models;
 using RefugeeLand.Core.Api.Brokers.DateTimes;
 using RefugeeLand.Core.Api.Brokers.Loggings;
 using RefugeeLand.Core.Api.Brokers.Storages;
+using RefugeeLand.Core.Api.Services.Foundations.Refugees;
 
 namespace RefugeeLand.Core.Api
 {
@@ -27,6 +28,7 @@ namespace RefugeeLand.Core.Api
             services.AddControllers();
             services.AddDbContext<StorageBroker>();
             AddBrokers(services);
+            AddFoundationServices(services);
 
             services.AddSwaggerGen(options =>
             {
@@ -68,6 +70,11 @@ namespace RefugeeLand.Core.Api
             services.AddTransient<IStorageBroker, StorageBroker>();
             services.AddTransient<IDateTimeBroker, DateTimeBroker>();
             services.AddTransient<ILoggingBroker, LoggingBroker>();
+        }
+
+        private static void AddFoundationServices(IServiceCollection services)
+        {
+            services.AddTransient<IRefugeeService, RefugeeService>();
         }
     }
 }
