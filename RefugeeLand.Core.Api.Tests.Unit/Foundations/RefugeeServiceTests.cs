@@ -73,6 +73,9 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Foundations
         private static DateTimeOffset GetRandomDateTime() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
+        private static string GetRandomString() =>
+            new MnemonicString().GetValue();
+
         private static Refugee CreateRandomRefugee() =>
             CreateRefugeeFiller(dates: GetRandomDateTime()).Create();
 
