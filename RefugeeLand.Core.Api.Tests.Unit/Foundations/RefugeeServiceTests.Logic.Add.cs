@@ -38,16 +38,16 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Foundations
             // then
             actualRefugee.Should().BeEquivalentTo(expectedRefugee);
 
-            this.storageBrokerMock.Verify(broker =>
-                broker.InsertRefugeeAsync(inputRefugee),
-                    Times.Once);
-
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
                     Times.Once);
 
-            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertRefugeeAsync(inputRefugee),
+                    Times.Once);
+
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
