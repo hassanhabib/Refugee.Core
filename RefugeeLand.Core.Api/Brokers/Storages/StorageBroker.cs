@@ -23,7 +23,7 @@ namespace RefugeeLand.Core.Api.Brokers.Storages
         {
             base.OnModelCreating(modelBuilder);
             SetPetMedicalConditionReferences(modelBuilder);
-            // Todo: SetRefugeePetReferences(modelBuilder);
+            SetRefugeePetReferences(modelBuilder);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
