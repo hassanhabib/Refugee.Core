@@ -4,6 +4,9 @@
 // -------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
+using Newtonsoft.Json;
+using RefugeeLand.Core.Api.Models.RefugeePets;
 
 namespace RefugeeLand.Core.Api.Models.Refugees
 {
@@ -25,8 +28,8 @@ namespace RefugeeLand.Core.Api.Models.Refugees
 
         public RefugeeGender Gender { get; set; } 
 
-        // [JsonIgnore] 
-        // public IEnumerable<RefugeePets> RefugeePets { get; set; }
+        [JsonIgnore] 
+        public IEnumerable<RefugeePet> RefugeePets { get; set; }
 
         // [JsonIgnore] 
         // public IEnumerable<RefugeeLanguage> RefugeeLanguages { get; set; }

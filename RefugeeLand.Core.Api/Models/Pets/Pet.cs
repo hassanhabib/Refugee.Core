@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using RefugeeLand.Core.Api.Models.PetMedicalConditions;
+using RefugeeLand.Core.Api.Models.RefugeePets;
 
 namespace RefugeeLand.Core.Api.Models.Pets
 {
@@ -22,7 +23,7 @@ namespace RefugeeLand.Core.Api.Models.Pets
         [JsonIgnore]
         public IEnumerable<PetMedicalCondition> PetMedicalConditions { get; set; }
         
-        // [JsonIgnore]
-        // public IEnumerable<RefugeePet> RefugeePets { get; set; }
+        [JsonIgnore]
+        public IEnumerable<RefugeePet> RefugeePets { get; set; }
     }
 }
