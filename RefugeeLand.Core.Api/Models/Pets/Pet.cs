@@ -4,6 +4,9 @@
 // -------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
+using Newtonsoft.Json;
+using RefugeeLand.Core.Api.Models.PetMedicalConditions;
 
 namespace RefugeeLand.Core.Api.Models.Pets
 {
@@ -16,8 +19,8 @@ namespace RefugeeLand.Core.Api.Models.Pets
         public DateTimeOffset BirthDate { get; set; }
         public string AdditionalDetails { get; set; }
         
-        // [JsonIgnore]
-        // public IEnumerable<PetMedicalCondition> PetMedicalConditions { get; set; }
+        [JsonIgnore]
+        public IEnumerable<PetMedicalCondition> PetMedicalConditions { get; set; }
         
         // [JsonIgnore]
         // public IEnumerable<RefugeePet> RefugeePets { get; set; }

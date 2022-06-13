@@ -4,6 +4,9 @@
 // -------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
+using Newtonsoft.Json;
+using RefugeeLand.Core.Api.Models.PetMedicalConditions;
 
 namespace RefugeeLand.Core.Api.Models.MedicalConditions
 {
@@ -12,5 +15,10 @@ namespace RefugeeLand.Core.Api.Models.MedicalConditions
         public Guid Id { get; set; }
         public string Name { get; set; }
         public string AdditionalDetails { get; set; }
+        
+        [JsonIgnore]
+        public IEnumerable<PetMedicalCondition> PetMedicalConditions { get; set; }
+        
+       // Todo: RefugeeMedicalCondition 
     }
 }
