@@ -3,9 +3,9 @@
 // FREE TO USE TO DELIVER HUMANITARIAN AID, HOPE AND LOVE
 // -------------------------------------------------------
 
-namespace RefugeeLand.Core.Api.Models.Enums
+namespace RefugeeLand.Core.Api.Models.Pets
 {
-    public enum Pets
+    public enum PetType
     {
         Dog,
         Cat,
