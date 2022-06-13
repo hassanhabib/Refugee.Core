@@ -8,6 +8,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RefugeeLand.Core.Api.Brokers.Storages;
 
@@ -16,9 +17,10 @@ using RefugeeLand.Core.Api.Brokers.Storages;
 namespace RefugeeLand.Core.Api.Migrations
 {
     [DbContext(typeof(StorageBroker))]
-    partial class StorageBrokerModelSnapshot : ModelSnapshot
+    [Migration("20220613135438_AddHostModelMigration")]
+    partial class AddHostModelMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -180,21 +182,6 @@ namespace RefugeeLand.Core.Api.Migrations
                     b.ToTable("RefugeeGroups");
                 });
 
-            modelBuilder.Entity("RefugeeLand.Core.Api.Models.RefugeePets.RefugeePet", b =>
-                {
-                    b.Property<Guid>("RefugeeId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("PetId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("RefugeeId", "PetId");
-
-                    b.HasIndex("PetId");
-
-                    b.ToTable("RefugeePets");
-                });
-
             modelBuilder.Entity("RefugeeLand.Core.Api.Models.Refugees.Refugee", b =>
                 {
                     b.Property<Guid>("Id")
@@ -266,25 +253,6 @@ namespace RefugeeLand.Core.Api.Migrations
                     b.Navigation("Pet");
                 });
 
-            modelBuilder.Entity("RefugeeLand.Core.Api.Models.RefugeePets.RefugeePet", b =>
-                {
-                    b.HasOne("RefugeeLand.Core.Api.Models.Pets.Pet", "Pet")
-                        .WithMany("RefugeePets")
-                        .HasForeignKey("PetId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("RefugeeLand.Core.Api.Models.Refugees.Refugee", "Refugee")
-                        .WithMany("RefugeePets")
-                        .HasForeignKey("RefugeeId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Pet");
-
-                    b.Navigation("Refugee");
-                });
-
             modelBuilder.Entity("RefugeeLand.Core.Api.Models.Refugees.Refugee", b =>
                 {
                     b.HasOne("RefugeeLand.Core.Api.Models.RefugeeGroups.RefugeeGroup", null)
@@ -300,18 +268,11 @@ namespace RefugeeLand.Core.Api.Migrations
             modelBuilder.Entity("RefugeeLand.Core.Api.Models.Pets.Pet", b =>
                 {
                     b.Navigation("PetMedicalConditions");
-
-                    b.Navigation("RefugeePets");
                 });
 
             modelBuilder.Entity("RefugeeLand.Core.Api.Models.RefugeeGroups.RefugeeGroup", b =>
                 {
                     b.Navigation("Refugee");
-                });
-
-            modelBuilder.Entity("RefugeeLand.Core.Api.Models.Refugees.Refugee", b =>
-                {
-                    b.Navigation("RefugeePets");
                 });
 #pragma warning restore 612, 618
         }
