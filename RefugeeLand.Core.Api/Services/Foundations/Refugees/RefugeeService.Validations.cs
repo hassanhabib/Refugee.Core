@@ -4,7 +4,6 @@
 // -------------------------------------------------------
 
 using System;
-using RefugeeLand.Core.Api.Models.Enums;
 using RefugeeLand.Core.Api.Models.Refugees;
 using RefugeeLand.Core.Api.Models.Refugees.Exceptions;
 
@@ -21,7 +20,6 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Refugees
                 (Rule: IsInvalid(refugee.FirstName), Parameter: nameof(Refugee.FirstName)),
                 (Rule: IsInvalid(refugee.LastName), Parameter: nameof(Refugee.LastName)),
                 (Rule: IsInvalid(refugee.BirthDate), Parameter: nameof(Refugee.BirthDate)),
-                (Rule: IsInvalid(refugee.Email), Parameter: nameof(Refugee.Email)),
                 (Rule: IsInvalid(refugee.CreatedDate), Parameter: nameof(Refugee.CreatedDate)),
                 (Rule: IsInvalid(refugee.UpdatedDate), Parameter: nameof(Refugee.UpdatedDate)),
 
@@ -70,7 +68,7 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Refugees
             Message = "Text is required"
         };
 
-        private static dynamic IsInvalid(Gender gender) => new
+        private static dynamic IsInvalid(RefugeeGender gender) => new
         {
             Condition = Enum.IsDefined(gender) is false,
             Message = "Value is invalid"

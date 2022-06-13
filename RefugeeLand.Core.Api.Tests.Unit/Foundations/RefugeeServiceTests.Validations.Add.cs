@@ -4,7 +4,6 @@
 // -------------------------------------------------------
 
 using Moq;
-using RefugeeLand.Core.Api.Models.Enums;
 using RefugeeLand.Core.Api.Models.Refugees;
 using RefugeeLand.Core.Api.Models.Refugees.Exceptions;
 using Xunit;
@@ -74,10 +73,6 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Foundations
             invalidRefugeeException.AddData(
                 key: nameof(Refugee.BirthDate),
                 values: "Date is required");
-
-            invalidRefugeeException.AddData(
-                key: nameof(Refugee.Email),
-                values: "Text is required");
 
             invalidRefugeeException.AddData(
                 key: nameof(Refugee.CreatedDate),
@@ -214,7 +209,7 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Foundations
             // given
             Refugee randomRefugee = CreateRandomRefugee();
             Refugee invalidRefugee = randomRefugee;
-            invalidRefugee.Gender = GetInvalidEnum<Gender>();
+            invalidRefugee.Gender = GetInvalidEnum<RefugeeGender>();
             var invalidRefugeeException = new InvalidRefugeeException();
 
             invalidRefugeeException.AddData(
