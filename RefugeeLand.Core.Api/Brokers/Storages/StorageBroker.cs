@@ -19,6 +19,13 @@ namespace RefugeeLand.Core.Api.Brokers.Storages
             this.Database.Migrate();
         }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+            SetPetMedicalConditionReferences(modelBuilder);
+            // Todo: SetRefugeePetReferences(modelBuilder);
+        }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             string connectionString = this.configuration
