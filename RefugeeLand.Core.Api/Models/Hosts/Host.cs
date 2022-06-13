@@ -4,6 +4,9 @@
 // -------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
+using Newtonsoft.Json;
+using RefugeeLand.Core.Api.Models.Shelters;
 
 namespace RefugeeLand.Core.Api.Models.Hosts
 {
@@ -22,8 +25,8 @@ namespace RefugeeLand.Core.Api.Models.Hosts
         public Guid CreatedBy { get; set; }
         public Guid UpdatedBy { get; set; }
 
-        // [JsonIgnore] 
-        // public IEnumerable<Shelter> Shelters { get; set; }
+        [JsonIgnore] 
+        public IEnumerable<Shelter> Shelters { get; set; }
 
         // [JsonIgnore] 
         // public IEnumerable<HostContact> HostContacts { get; set; }

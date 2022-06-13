@@ -3,9 +3,9 @@
 // FREE TO USE TO DELIVER HUMANITARIAN AID, HOPE AND LOVE
 // -------------------------------------------------------
 
-namespace RefugeeLand.Core.Api.Models.Pets
+namespace RefugeeLand.Core.Api.Models.AllowedPets
 {
-    // NOTE: Be careful ! The PetType is also living in the AllowedPet model folder.
+    // NOTE: Be careful ! The PetType is also living in the Pet model folder.
     // If you need to change this file, you should change it over there as well.
     public enum PetType
     {
