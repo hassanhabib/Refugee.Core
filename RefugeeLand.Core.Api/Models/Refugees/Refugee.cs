@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using RefugeeLand.Core.Api.Models.RefugeePets;
+using RefugeeLand.Core.Api.Models.ShelterRefugeeOccupants;
 
 namespace RefugeeLand.Core.Api.Models.Refugees
 {
@@ -30,7 +31,12 @@ namespace RefugeeLand.Core.Api.Models.Refugees
 
         [JsonIgnore] 
         public IEnumerable<RefugeePet> RefugeePets { get; set; }
-
+        
+        // Note : We have a many to many hybrid relational model, to let us track shelter inhabitation status.
+        // This way we can retrieve a list of all shelters being visited by a refugee. (Florian Renard @spectralgo)
+        [JsonIgnore] 
+        public IEnumerable<ShelterRefugeeOccupant> ShelterRefugeeOccupants { get; set; }
+        
         // [JsonIgnore] 
         // public IEnumerable<RefugeeLanguage> RefugeeLanguages { get; set; }
 
