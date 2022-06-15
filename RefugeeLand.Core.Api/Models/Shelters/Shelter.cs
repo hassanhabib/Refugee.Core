@@ -5,8 +5,10 @@
 
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 using RefugeeLand.Core.Api.Models.AllowedPets;
 using RefugeeLand.Core.Api.Models.Hosts;
+using RefugeeLand.Core.Api.Models.ShelterRefugeeOccupants;
 
 namespace RefugeeLand.Core.Api.Models.Shelters
 {
@@ -40,14 +42,16 @@ namespace RefugeeLand.Core.Api.Models.Shelters
         Guid CreatedBy { get; set; }
         Guid UpdatedBy { get; set; }
 
-
-        // [JsonIgnore] 
-        // public IEnumerable<ShelterRefugeeOccupant> ShelterRefugeeOccupants { get; set; }
+        [JsonIgnore] 
+        public IEnumerable<ShelterRefugeeOccupant> ShelterRefugeeOccupants { get; set; }
 
         // [JsonIgnore] 
         // public IEnumerable<ShelterHostOccupant> ShelterHostOccupants { get; set; }
 
         // [JsonIgnore]
         // public IEnumerable<AdditionalFamilyMemberOccupant> AdditionalFamilyMemberOccupants { get; set; }
+
+        // [JsonIgnore]
+        // public IEnumerable<AdditionalResidentOccupant> AdditionalResidentOccupants { get; set; }
     }
 }
