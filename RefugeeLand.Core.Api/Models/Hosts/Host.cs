@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using RefugeeLand.Core.Api.Models.ShelterOffers;
 using RefugeeLand.Core.Api.Models.Shelters;
 
 namespace RefugeeLand.Core.Api.Models.Hosts
@@ -27,6 +28,9 @@ namespace RefugeeLand.Core.Api.Models.Hosts
 
         [JsonIgnore] 
         public IEnumerable<Shelter> Shelters { get; set; }
+
+        [JsonIgnore] 
+        public IEnumerable<ShelterOffer> ShelterOffers { get; set; }
 
         // [JsonIgnore] 
         // public IEnumerable<HostContact> HostContacts { get; set; }
