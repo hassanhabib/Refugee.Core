@@ -26,6 +26,7 @@ namespace RefugeeLand.Core.Api.Brokers.Storages
             SetRefugeePetReferences(modelBuilder);
             SetShelterRefugeeOccupantReferences(modelBuilder);
             SetRefugeeGroupMembershipReferences(modelBuilder);
+            SetShelterOfferReferences(modelBuilder);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

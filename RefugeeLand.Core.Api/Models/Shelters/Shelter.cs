@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using RefugeeLand.Core.Api.Models.AllowedPets;
 using RefugeeLand.Core.Api.Models.Hosts;
+using RefugeeLand.Core.Api.Models.ShelterOffers;
 using RefugeeLand.Core.Api.Models.ShelterRefugeeOccupants;
 
 namespace RefugeeLand.Core.Api.Models.Shelters
@@ -45,6 +46,9 @@ namespace RefugeeLand.Core.Api.Models.Shelters
         [JsonIgnore] 
         public IEnumerable<ShelterRefugeeOccupant> ShelterRefugeeOccupants { get; set; }
 
+        [JsonIgnore] 
+        public IEnumerable<ShelterOffer> ShelterOffers { get; set; }
+        
         // [JsonIgnore] 
         // public IEnumerable<ShelterHostOccupant> ShelterHostOccupants { get; set; }
 
