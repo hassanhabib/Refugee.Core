@@ -5,7 +5,7 @@
 
 using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 using RefugeeLand.Core.Api.Models.Shelters;
 using RefugeeLand.Core.Api.Models.Hosts;
 using RefugeeLand.Core.Api.Models.ShelterRequests;
