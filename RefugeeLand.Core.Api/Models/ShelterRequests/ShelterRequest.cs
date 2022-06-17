@@ -4,34 +4,32 @@
 // -------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
-using Newtonsoft.Json;
-using RefugeeLand.Core.Api.Models.Shelters;
-using RefugeeLand.Core.Api.Models.Hosts;
-using RefugeeLand.Core.Api.Models.ShelterRequests;
+using RefugeeLand.Core.Api.Models.RefugeeGroups;
+using RefugeeLand.Core.Api.Models.Refugees;
+using RefugeeLand.Core.Api.Models.ShelterOffers;
 
-namespace RefugeeLand.Core.Api.Models.ShelterOffers
+namespace RefugeeLand.Core.Api.Models.ShelterRequests
 {
-    public class ShelterOffer
+    public class ShelterRequest
     {
         public Guid Id { get; set; }
-        
+    
         public DateTimeOffset StartDate { get; set; }
         public DateTimeOffset EndDate { get; set; }
-        public ShelterOfferStatus Status { get; set; }
+        public ShelterRequestStatus Status { get; set; }
 
-        public Guid ShelterId { get; set; }
-        public Shelter Shelter { get; set; }
+        public Guid ShelterOfferId { get; set; }
+        public ShelterOffer ShelterOffer { get; set; }
 
-        public Guid HostId { get; set; }
-        public Host Host { get; set; }
+        public Guid RefugeeGroupId { get; set; }
+        public RefugeeGroup RefugeeGroup { get; set; }
+
+        public Guid RefugeeApplicantId { get; set; }
+        public Refugee RefugeeApplicant { get; set; }
 
         public DateTimeOffset CreatedDate { get; set; }
         public DateTimeOffset UpdatedDate { get; set; }
         public Guid CreatedBy { get; set; }
         public Guid UpdatedBy { get; set; }
-
-        [JsonIgnore]
-        public IEnumerable<ShelterRequest> ShelterRequests { get; set; }
     }
 }

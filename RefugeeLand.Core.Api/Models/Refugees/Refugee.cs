@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using RefugeeLand.Core.Api.Models.RefugeeGroupMemberships;
 using RefugeeLand.Core.Api.Models.RefugeePets;
 using RefugeeLand.Core.Api.Models.ShelterRefugeeOccupants;
+using RefugeeLand.Core.Api.Models.ShelterRequests;
 
 namespace RefugeeLand.Core.Api.Models.Refugees
 {
@@ -40,6 +41,9 @@ namespace RefugeeLand.Core.Api.Models.Refugees
         
         [JsonIgnore]
         public IEnumerable<RefugeeGroupMembership> RefugeeGroupMemberships { get; set; }
+        
+        [JsonIgnore]
+        public IEnumerable<ShelterRequest> ShelterRequests { get; set; }
         
         // [JsonIgnore] 
         // public IEnumerable<RefugeeLanguage> RefugeeLanguages { get; set; }
