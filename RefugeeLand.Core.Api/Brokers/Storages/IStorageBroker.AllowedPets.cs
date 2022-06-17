@@ -3,13 +3,8 @@
 // FREE TO USE TO DELIVER HUMANITARIAN AID, HOPE AND LOVE
 // -------------------------------------------------------
 
-using System;
-
-namespace RefugeeLand.Core.Api.Models.AllowedPets
+namespace RefugeeLand.Core.Api.Brokers.Storages
 {
-    public class AllowedPet
-    {
-        public Guid Id { get; set; }
-        public AllowedPetType Type { get; set; }
-    }
+    public partial interface IStorageBroker
+    { }
 }
