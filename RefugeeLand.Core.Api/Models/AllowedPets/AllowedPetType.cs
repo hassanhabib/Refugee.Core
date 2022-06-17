@@ -7,7 +7,7 @@ namespace RefugeeLand.Core.Api.Models.AllowedPets
 {
     // NOTE: Be careful ! The PetType is also living in the Pet model folder.
     // If you need to change this file, you should change it over there as well.
-    public enum PetType
+    public enum AllowedPetType
     {
         Dog,
         Cat,
