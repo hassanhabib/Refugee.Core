@@ -18,7 +18,7 @@ namespace RefugeeLand.Core.Api.Brokers.Storages
         
         public async ValueTask<Host> InsertHostAsync(Host host)
         {
-            using var broker = new StorageBroker(configuration);
+            using var broker = new StorageBroker(this.configuration);
 
             EntityEntry<Host> hostEntityEntry = 
                 await broker.AddAsync(host);
@@ -27,5 +27,12 @@ namespace RefugeeLand.Core.Api.Brokers.Storages
 
             return hostEntityEntry.Entity;
         } 
+        
+        public IQueryable<Host> SelectAllHosts()
+        {
+            using var broker = new StorageBroker(this.configuration);
+
+            return broker.Hosts;
+        }
     }
 }
