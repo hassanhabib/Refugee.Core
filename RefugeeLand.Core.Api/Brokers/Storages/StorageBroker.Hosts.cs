@@ -34,6 +34,7 @@ namespace RefugeeLand.Core.Api.Brokers.Storages
 
             return broker.Hosts;
         }
+        
         public async ValueTask<Host> SelectHostByIdAsync(Guid HostId)
         {
             using var broker = new StorageBroker(this.configuration);
@@ -53,5 +54,18 @@ namespace RefugeeLand.Core.Api.Brokers.Storages
 
             return hostEntityEntry.Entity;
         }
+
+        public async ValueTask<Host> DeleteHostAsync(Host host)
+        {
+            using var broker = new StorageBroker(this.configuration);
+
+            EntityEntry<Host> hostEntityEntry = 
+                broker.Hosts.Remove(host);
+
+            await broker.SaveChangesAsync();
+
+            return hostEntityEntry.Entity;
+        }
+        
     }
 }
