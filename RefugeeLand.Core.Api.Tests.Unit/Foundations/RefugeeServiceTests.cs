@@ -95,6 +95,9 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Foundations
             var filler = new Filler<Refugee>();
 
             filler.Setup()
+                .OnProperty(refugee => refugee.ShelterRequests).IgnoreIt()
+                .OnProperty(refugee => refugee.ShelterRefugeeOccupants).IgnoreIt()
+                .OnProperty(refugee => refugee.RefugeeGroupMemberships).IgnoreIt()
                 .OnType<DateTimeOffset>().Use(dates);
 
             return filler;

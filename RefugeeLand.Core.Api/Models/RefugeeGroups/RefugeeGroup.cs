@@ -5,29 +5,31 @@
 
 using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 using RefugeeLand.Core.Api.Models.RefugeeGroupMemberships;
 using RefugeeLand.Core.Api.Models.Refugees;
+using RefugeeLand.Core.Api.Models.ShelterRequests;
 
-namespace RefugeeLand.Core.Api.Models.RefugeeGroups;
-
-public class RefugeeGroup
+namespace RefugeeLand.Core.Api.Models.RefugeeGroups
 {
+    public class RefugeeGroup
+    {
         public Guid Id { get; set; }
         public string Name { get; set; }
 
-		//One who speaks for the group during negotiations and requests
+        //One who speaks for the group during negotiations and requests
         public Guid RefugeeGroupMainRepresentativeId { get; set; }
         public Refugee RefugeeGroupMainRepresentative { get; set; }
-        
+
         public DateTimeOffset CreatedDate { get; set; }
         public DateTimeOffset UpdatedDate { get; set; }
         public Guid CreatedBy { get; set; }
         public Guid UpdatedBy { get; set; }
-            
-        [JsonIgnore]
+
+        [JsonIgnore] 
         public IEnumerable<RefugeeGroupMembership> RefugeeGroupMemberships { get; set; }
 
-        // [JsonIgnore]
-        // public IEnumerable<ShelterRequest> ShelterRequests { get; set; }
+        [JsonIgnore]
+        public IEnumerable<ShelterRequest> ShelterRequests { get; set; }
+    }
 }

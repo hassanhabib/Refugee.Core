@@ -4,8 +4,11 @@
 // -------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using RefugeeLand.Core.Api.Models.Shelters;
 using RefugeeLand.Core.Api.Models.Hosts;
+using RefugeeLand.Core.Api.Models.ShelterRequests;
 
 namespace RefugeeLand.Core.Api.Models.ShelterOffers
 {
@@ -28,7 +31,7 @@ namespace RefugeeLand.Core.Api.Models.ShelterOffers
         public Guid CreatedBy { get; set; }
         public Guid UpdatedBy { get; set; }
 
-        // [JsonIgnore]
-        // public IList<ShelterRequest> ShelterRequests { get; set; }
+        [JsonIgnore]
+        public IEnumerable<ShelterRequest> ShelterRequests { get; set; }
     }
 }
