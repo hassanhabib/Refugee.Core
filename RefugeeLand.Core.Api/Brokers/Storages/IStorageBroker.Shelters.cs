@@ -11,5 +11,6 @@ namespace RefugeeLand.Core.Api.Brokers.Storages
     public partial interface IStorageBroker
     {
         ValueTask<Shelter> InsertShelterAsync(Shelter shelter);
+        IQueryable<Shelter> SelectAllShelters();
     }
 }

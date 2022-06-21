@@ -26,5 +26,11 @@ namespace RefugeeLand.Core.Api.Brokers.Storages
 
             return shelterEntityEntry.Entity;
         }
+        public IQueryable<Shelter> SelectAllShelters()
+        {
+            using var broker = new StorageBroker(this.configuration);
+
+            return broker.Shelters;
+        }
     }
 }
