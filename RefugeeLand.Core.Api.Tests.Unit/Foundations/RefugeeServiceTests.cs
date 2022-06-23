@@ -77,7 +77,7 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Foundations
             new MnemonicString().GetValue();
 
         private static Refugee CreateRandomRefugee() =>
-            CreateRefugeeFiller(dates: GetRandomDateTime()).Create();
+            CreateRefugeeFiller(dates: DateTimeOffset.UtcNow).Create();
 
         private static Refugee CreateRandomRefugee(DateTimeOffset dates) =>
             CreateRefugeeFiller(dates).Create();
