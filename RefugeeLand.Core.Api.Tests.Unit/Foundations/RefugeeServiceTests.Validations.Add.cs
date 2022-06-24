@@ -3,6 +3,7 @@
 // FREE TO USE TO DELIVER HUMANITARIAN AID, HOPE AND LOVE
 // -------------------------------------------------------
 
+using FluentAssertions;
 using Moq;
 using RefugeeLand.Core.Api.Models.Refugees;
 using RefugeeLand.Core.Api.Models.Refugees.Exceptions;
@@ -26,16 +27,20 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Foundations
             ValueTask<Refugee> addRefugeeTask =
                 this.refugeeService.AddRefugeeAsync(nullRefugee);
 
+            RefugeeValidationException actualRefugeeValidationException =
+                await Assert.ThrowsAsync<RefugeeValidationException>(
+                    addRefugeeTask.AsTask);
+
             // then
-            await Assert.ThrowsAsync<RefugeeValidationException>(() =>
-                addRefugeeTask.AsTask());
+            actualRefugeeValidationException.Should().BeEquivalentTo(
+                expectedRefugeeValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedRefugeeValidationException))),
                         Times.Once);
 
-            this.storageBrokerMock.Verify(broker =>
+            this.storageBrokerMock.Verify(broker => 
                 broker.InsertRefugeeAsync(nullRefugee),
                     Times.Never);
 
@@ -82,16 +87,20 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Foundations
                 key: nameof(Refugee.UpdatedDate),
                 values: "Date is required");
 
-            var expectedRefugeeException =
+            var expectedRefugeeValidationException =
                 new RefugeeValidationException(invalidRefugeeException);
 
             // when
             ValueTask<Refugee> addRefugeeTask =
                 this.refugeeService.AddRefugeeAsync(invalidRefugee);
 
+            RefugeeValidationException actualRefugeeValidationException =
+                await Assert.ThrowsAsync<RefugeeValidationException>(
+                    addRefugeeTask.AsTask);
+
             // then
-            await Assert.ThrowsAsync<RefugeeValidationException>(() =>
-                addRefugeeTask.AsTask());
+            actualRefugeeValidationException.Should().BeEquivalentTo(
+                expectedRefugeeValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
@@ -99,7 +108,7 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Foundations
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
-                    expectedRefugeeException))),
+                    expectedRefugeeValidationException))),
                         Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
@@ -115,7 +124,9 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Foundations
         public async Task ShouldThrowValidationExceptionOnAddIfCreatedAndUpdatedDatesAreNotSameAndLogItAsync()
         {
             // given
-            Refugee randomRefugee = CreateRandomRefugee();
+            
+            DateTimeOffset dateTime = GetRandomDateTime();
+            Refugee randomRefugee = CreateRandomRefugee(dateTime);
             Refugee invalidRefugee = randomRefugee;
             DateTimeOffset randomDateTime = GetRandomDateTime();
             invalidRefugee.UpdatedDate = randomDateTime;
@@ -128,13 +139,21 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Foundations
             var expectedRefugeeValidationException =
                 new RefugeeValidationException(invalidRefugeeException);
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(dateTime);
+
             // when
             ValueTask<Refugee> addRefugeeTask =
                 this.refugeeService.AddRefugeeAsync(invalidRefugee);
 
+            RefugeeValidationException actualRefugeeValidationException =
+                await Assert.ThrowsAsync<RefugeeValidationException>(
+                    addRefugeeTask.AsTask);
+
             // then
-            await Assert.ThrowsAsync<RefugeeValidationException>(() =>
-                addRefugeeTask.AsTask());
+            actualRefugeeValidationException.Should().BeEquivalentTo(
+                expectedRefugeeValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
@@ -181,9 +200,13 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Foundations
             ValueTask<Refugee> addRefugeeTask =
                 this.refugeeService.AddRefugeeAsync(invalidRefugee);
 
+            RefugeeValidationException actualRefugeeValidationException =
+                await Assert.ThrowsAsync<RefugeeValidationException>(
+                    addRefugeeTask.AsTask);
+
             // then
-            await Assert.ThrowsAsync<RefugeeValidationException>(() =>
-                addRefugeeTask.AsTask());
+            actualRefugeeValidationException.Should().BeEquivalentTo(
+                expectedRefugeeValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
@@ -207,7 +230,9 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Foundations
         public async Task ShouldThrowValidationExceptionOnAddIfRefugeeGenderIsInvalidAndLogItAsync()
         {
             // given
-            Refugee randomRefugee = CreateRandomRefugee();
+            
+            DateTimeOffset dateTime = GetRandomDateTime();
+            Refugee randomRefugee = CreateRandomRefugee(dateTime);
             Refugee invalidRefugee = randomRefugee;
             invalidRefugee.Gender = GetInvalidEnum<RefugeeGender>();
             var invalidRefugeeException = new InvalidRefugeeException();
@@ -218,14 +243,22 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Foundations
 
             var expectedRefugeeValidationException =
                 new RefugeeValidationException(invalidRefugeeException);
+            
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(dateTime);
 
             // when
             ValueTask<Refugee> addRefugeeTask =
                 this.refugeeService.AddRefugeeAsync(invalidRefugee);
 
+            RefugeeValidationException actualRefugeeValidationException =
+                await Assert.ThrowsAsync<RefugeeValidationException>(
+                    addRefugeeTask.AsTask);
+
             // then
-            await Assert.ThrowsAsync<RefugeeValidationException>(() =>
-                addRefugeeTask.AsTask());
+            actualRefugeeValidationException.Should().BeEquivalentTo(
+                expectedRefugeeValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
