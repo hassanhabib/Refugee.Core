@@ -3,7 +3,8 @@
 // FREE TO USE TO DELIVER HUMANITARIAN AID, HOPE AND LOVE
 // -------------------------------------------------------
 
-
+using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -25,6 +26,13 @@ namespace RefugeeLand.Core.Api.Brokers.Storages
             await broker.SaveChangesAsync();
 
             return shelterEntityEntry.Entity;
+        }
+
+        public IQueryable<Shelter> SelectAllShelters()
+        {
+            using var broker = new StorageBroker(this.configuration);
+
+            return broker.Shelters;
         }
     }
 }
