@@ -34,5 +34,12 @@ namespace RefugeeLand.Core.Api.Brokers.Storages
 
             return broker.Shelters;
         }
+
+        public async ValueTask<Shelter> SelectShelterByIdAsync(Guid shelterId)
+        {
+            using var broker = new StorageBroker(this.configuration);
+
+            return await broker.Shelters.FindAsync(shelterId);
+        }
     }
 }
