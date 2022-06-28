@@ -82,6 +82,12 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Foundations
         private static Refugee CreateRandomRefugee(DateTimeOffset dates) =>
             CreateRefugeeFiller(dates).Create();
 
+        private static IQueryable<Refugee> CreateRandomRefugees()
+        {
+            return CreateRefugeeFiller(dates: GetRandomDateTime())
+                .Create(count: GetRandomNumber()).AsQueryable();
+        }
+
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException)
         {
             return actualException =>
