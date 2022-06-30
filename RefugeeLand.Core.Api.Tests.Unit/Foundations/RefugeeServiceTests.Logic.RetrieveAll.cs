@@ -37,6 +37,7 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Foundations
                     Times.Once);
             
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
     }
