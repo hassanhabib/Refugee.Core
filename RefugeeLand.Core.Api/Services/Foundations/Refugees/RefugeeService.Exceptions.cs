@@ -76,8 +76,14 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Refugees
 
                 throw CreateAndLogCriticalDependencyException(failedRefugeeStorageException);
             }
+            catch (Exception exception)
+            {
+                var failedRefugeeServiceException =
+                    new FailedRefugeeServiceException(exception);
+
+                throw CreateAndLogServiceException(failedRefugeeServiceException);
+            }
         }
-        
 
         private RefugeeValidationException CreateAndLogValidationException(Xeption exception)
         {
