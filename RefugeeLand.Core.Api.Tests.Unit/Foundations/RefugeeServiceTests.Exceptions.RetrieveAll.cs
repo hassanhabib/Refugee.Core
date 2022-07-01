@@ -55,7 +55,7 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Foundations
         }
 
         [Fact]
-        public void ShouldThrowServiceExceptionOnRetrieveAllIfExceptionOccursAndLogIt()
+        public void ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAndLogIt()
         {
             // given
             var serviceException = new Exception();
