@@ -19,7 +19,7 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Foundations
             //given
             IQueryable<Refugee> randomRefugees = CreateRandomRefugees();
             IQueryable<Refugee> storageRefugees = randomRefugees;
-            IQueryable<Refugee> expectedRefugees = storageRefugees.DeepClone();
+            IQueryable<Refugee> expectedRefugees = storageRefugees;
 
             this.storageBrokerMock.Setup(broker => 
                 broker.SelectAllRefugees())
