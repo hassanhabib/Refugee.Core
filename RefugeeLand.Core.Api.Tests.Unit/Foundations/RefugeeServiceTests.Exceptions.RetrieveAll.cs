@@ -14,7 +14,7 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Foundations
     public partial class RefugeeServiceTests
     {
         [Fact]
-        public async void ShouldThrowCriticalDependencyExceptionOnRetrieveAllIfSqlErrorOccursAndLogIt()
+        public void ShouldThrowCriticalDependencyExceptionOnRetrieveAllIfSqlErrorOccursAndLogIt()
         {
             // given
             SqlException sqlException = GetSqlException();
@@ -52,7 +52,6 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Foundations
 
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            
         }
     }
 }
