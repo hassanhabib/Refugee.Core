@@ -17,7 +17,8 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Foundations
         public async void ShouldRetrieveAllRefugees()
         {
             //given
-            IQueryable<Refugee> randomRefugees = CreateRandomRefugees();
+            DateTimeOffset randomDateTime = GetRandomDateTime();
+            IQueryable<Refugee> randomRefugees = CreateRandomRefugees(randomDateTime);
             IQueryable<Refugee> storageRefugees = randomRefugees;
             IQueryable<Refugee> expectedRefugees = storageRefugees;
 
