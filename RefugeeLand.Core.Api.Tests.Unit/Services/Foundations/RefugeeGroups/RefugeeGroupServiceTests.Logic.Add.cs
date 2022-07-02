@@ -23,9 +23,10 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.RefugeeGroups
             RefugeeGroup insertedRefugeeGroup = inputRefugeeGroup;
             RefugeeGroup expectedRefugeeGroup = insertedRefugeeGroup.DeepClone();
 
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDateTime);
+            // Todo: We are going to need this when we build the structural validation
+            // this.dateTimeBrokerMock.Setup(broker =>
+            //     broker.GetCurrentDateTimeOffset())
+            //         .Returns(randomDateTime);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.InsertRefugeeGroupAsync(inputRefugeeGroup))
@@ -38,9 +39,10 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.RefugeeGroups
             // then
             actualRefugeeGroup.Should().BeEquivalentTo(expectedRefugeeGroup);
 
-            this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
-                    Times.Once);
+            // Todo: We are going to need this when we build the structural validation
+            // this.dateTimeBrokerMock.Verify(broker =>
+            //     broker.GetCurrentDateTimeOffset(),
+            //         Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertRefugeeGroupAsync(inputRefugeeGroup),

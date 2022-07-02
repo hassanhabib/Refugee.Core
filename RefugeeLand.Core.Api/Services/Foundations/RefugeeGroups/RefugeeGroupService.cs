@@ -28,9 +28,7 @@ namespace RefugeeLand.Core.Api.Services.Foundations.RefugeeGroups
             this.loggingBroker = loggingBroker;
         }
 
-        public async ValueTask<RefugeeGroup> AddRefugeeGroupAsync(RefugeeGroup refugeeGroup)
-        {
-            throw new NotImplementedException();
-        }
+        public async ValueTask<RefugeeGroup> AddRefugeeGroupAsync(RefugeeGroup refugeeGroup) =>
+            await this.storageBroker.InsertRefugeeGroupAsync(refugeeGroup);
     }
 }
