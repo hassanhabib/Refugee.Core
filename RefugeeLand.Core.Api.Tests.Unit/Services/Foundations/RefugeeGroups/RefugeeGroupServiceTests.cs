@@ -3,6 +3,7 @@
 // FREE TO USE TO DELIVER HUMANITARIAN AID, HOPE AND LOVE
 // -------------------------------------------------------
 
+using System.Linq.Expressions;
 using Moq;
 using RefugeeLand.Core.Api.Brokers.DateTimes;
 using RefugeeLand.Core.Api.Brokers.Loggings;
@@ -10,6 +11,7 @@ using RefugeeLand.Core.Api.Brokers.Storages;
 using RefugeeLand.Core.Api.Models.RefugeeGroups;
 using RefugeeLand.Core.Api.Services.Foundations.RefugeeGroups;
 using Tynamix.ObjectFiller;
+using Xeptions;
 
 namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.RefugeeGroups
 {
@@ -35,6 +37,14 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.RefugeeGroups
         
         private static DateTimeOffset GetRandomDateTime() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
+        
+        private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException)
+        {
+            return actualException =>
+                actualException.Message == expectedException.Message
+                && actualException.InnerException.Message == expectedException.InnerException.Message
+                && (actualException.InnerException as Xeption).DataEquals(expectedException.InnerException.Data);
+        }
         
         private static RefugeeGroup CreateRandomRefugeeGroup() =>
             CreateRefugeeGroupFiller(dates: DateTimeOffset.UtcNow).Create();
