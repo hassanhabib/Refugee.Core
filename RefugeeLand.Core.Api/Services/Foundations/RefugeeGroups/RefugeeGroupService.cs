@@ -12,7 +12,7 @@ using RefugeeLand.Core.Api.Models.RefugeeGroups;
 
 namespace RefugeeLand.Core.Api.Services.Foundations.RefugeeGroups
 {
-    public class RefugeeGroupService : IRefugeeGroupService
+    public partial class RefugeeGroupService : IRefugeeGroupService
     {
         private readonly IStorageBroker storageBroker;
         private readonly IDateTimeBroker dateTimeBroker;
@@ -28,7 +28,13 @@ namespace RefugeeLand.Core.Api.Services.Foundations.RefugeeGroups
             this.loggingBroker = loggingBroker;
         }
 
-        public async ValueTask<RefugeeGroup> AddRefugeeGroupAsync(RefugeeGroup refugeeGroup) =>
-            await this.storageBroker.InsertRefugeeGroupAsync(refugeeGroup);
+        public ValueTask<RefugeeGroup> AddRefugeeGroupAsync(RefugeeGroup refugeeGroup) =>
+        TryCatch(async () =>
+        {
+            ValidateRefugeeGroup(refugeeGroup);
+            
+            return await this.storageBroker.InsertRefugeeGroupAsync(refugeeGroup);
+        });
+        
     }
 }
