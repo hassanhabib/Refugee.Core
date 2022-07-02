@@ -4,12 +4,11 @@
 // -------------------------------------------------------
 
 using FluentAssertions;
-using Force.DeepCloner;
 using Moq;
 using RefugeeLand.Core.Api.Models.Refugees;
 using Xunit;
 
-namespace RefugeeLand.Core.Api.Tests.Unit.Foundations
+namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Refugees
 {
     public partial class RefugeeServiceTests
     {

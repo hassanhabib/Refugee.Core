@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using RefugeeLand.Core.Api.Infrastructure.Provision.Services.Processings;
 
-namespace Refugee.Core.Infrastructure.Provision
+namespace RefugeeLand.Core.Api.Infrastructure.Provision
 {
     internal class Program
     {
