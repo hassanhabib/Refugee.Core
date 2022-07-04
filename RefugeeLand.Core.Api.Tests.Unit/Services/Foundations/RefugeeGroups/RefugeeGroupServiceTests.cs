@@ -14,6 +14,7 @@ using RefugeeLand.Core.Api.Models.RefugeeGroups;
 using RefugeeLand.Core.Api.Services.Foundations.RefugeeGroups;
 using Tynamix.ObjectFiller;
 using Xeptions;
+using Xunit;
 
 namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.RefugeeGroups
 {
@@ -45,6 +46,25 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.RefugeeGroups
         
         private static int GetRandomNumber() =>
            new IntRange(min: 2, max: 10).GetValue();
+        
+        private static int GetRandomNegativeNumber() => 
+            -1 * new IntRange(min: 2, max: 10).GetValue();
+
+        private static DateTimeOffset GetRandomDateTimeOffset() =>
+            new DateTimeRange(earliestDate: new DateTime()).GetValue();
+
+        public static TheoryData MinutesBeforeOrAfter()
+        {
+            int randomNumber = GetRandomNumber();
+            int randomNegativeNumber = GetRandomNegativeNumber();
+
+            return new TheoryData<int>
+            {
+                randomNumber,
+                randomNegativeNumber
+            };
+        }
+
         
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException)
         {
