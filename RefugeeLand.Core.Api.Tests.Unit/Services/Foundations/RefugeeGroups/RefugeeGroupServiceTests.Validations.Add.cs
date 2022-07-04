@@ -119,7 +119,7 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.RefugeeGroups
                 broker.InsertRefugeeGroupAsync(It.IsAny<RefugeeGroup>()),
                     Times.Never);
 
-            // this.dateTimeBrokerMock.VerifyNoOtherCalls(); Todo: Add this after "Validate" implementing DateTimeBroker 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
@@ -148,10 +148,14 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.RefugeeGroups
             // when
             ValueTask<RefugeeGroup> addRefugeeGroupTask =
                 this.refugeeGroupService.AddRefugeeGroupAsync(invalidRefugeeGroup);
-
+            
+            RefugeeGroupValidationException actualRefugeeGroupValidationException =
+                await Assert.ThrowsAsync<RefugeeGroupValidationException>(
+                    addRefugeeGroupTask.AsTask);
+            
             // then
-            await Assert.ThrowsAsync<RefugeeGroupValidationException>(() =>
-               addRefugeeGroupTask.AsTask());
+            actualRefugeeGroupValidationException.Should().BeEquivalentTo(
+                expectedRefugeeGroupValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(

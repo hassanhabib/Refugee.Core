@@ -11,29 +11,35 @@ namespace RefugeeLand.Core.Api.Services.Foundations.RefugeeGroups
 {
     public partial class RefugeeGroupService
     {
-         private static void ValidateRefugeeGroup(RefugeeGroup refugeeGroup)
-         {
-             ValidateRefugeeGroupIsNotNull(refugeeGroup);
-             Validate(
+        private static void ValidateRefugeeGroup(RefugeeGroup refugeeGroup)
+        {
+            ValidateRefugeeGroupIsNotNull(refugeeGroup);
+            Validate(
                 (Rule: IsInvalid(refugeeGroup.Id), Parameter: nameof(RefugeeGroup.Id)),
                 (Rule: IsInvalid(refugeeGroup.Name), Parameter: nameof(RefugeeGroup.Name)),
                 (Rule: IsInvalid(refugeeGroup.CreatedBy), Parameter: nameof(RefugeeGroup.CreatedBy)),
                 (Rule: IsInvalid(refugeeGroup.UpdatedBy), Parameter: nameof(RefugeeGroup.UpdatedBy)),
                 (Rule: IsInvalid(refugeeGroup.CreatedDate), Parameter: nameof(RefugeeGroup.CreatedDate)),
                 (Rule: IsInvalid(refugeeGroup.UpdatedDate), Parameter: nameof(RefugeeGroup.UpdatedDate)),
-                
-                (Rule: IsInvalid(refugeeGroup.RefugeeGroupMainRepresentativeId), 
-                    Parameter: nameof(RefugeeGroup.RefugeeGroupMainRepresentativeId)));
-         }
 
-         private static void ValidateRefugeeGroupIsNotNull(RefugeeGroup refugeeGroup)
-         {
-             if(refugeeGroup is null)
-             {
-                 throw new NullRefugeeGroupException();
-             }
-         }
-         
+            (Rule: IsInvalid(refugeeGroup.RefugeeGroupMainRepresentativeId),
+                Parameter: nameof(RefugeeGroup.RefugeeGroupMainRepresentativeId)),
+            
+                (Rule: IsNotSame(
+                        firstDate: refugeeGroup.UpdatedDate,
+                        secondDate: refugeeGroup.CreatedDate,
+                        secondDateName: nameof(RefugeeGroup.CreatedDate)),
+                        Parameter: nameof(RefugeeGroup.UpdatedDate)));
+        }
+
+        private static void ValidateRefugeeGroupIsNotNull(RefugeeGroup refugeeGroup)
+        {
+            if (refugeeGroup is null)
+            {
+                throw new NullRefugeeGroupException();
+            }
+        }
+
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,
@@ -50,6 +56,15 @@ namespace RefugeeLand.Core.Api.Services.Foundations.RefugeeGroups
         {
             Condition = String.IsNullOrWhiteSpace(text),
             Message = "Text is required"
+        };
+
+        private static dynamic IsNotSame(
+            DateTimeOffset firstDate,
+            DateTimeOffset secondDate,
+            string secondDateName) => new
+        {
+            Condition = firstDate != secondDate,
+            Message = $"Date is not the same as {secondDateName}"
         };
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
