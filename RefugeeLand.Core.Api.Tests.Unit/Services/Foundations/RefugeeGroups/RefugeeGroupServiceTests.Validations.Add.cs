@@ -94,7 +94,7 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.RefugeeGroups
             invalidRefugeeGroupException.AddData(
                 key: nameof(RefugeeGroup.UpdatedDate),
                 values: "Date is required");
-
+            
             var expectedRefugeeGroupValidationException =
                 new RefugeeGroupValidationException(invalidRefugeeGroupException);
             
@@ -109,6 +109,10 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.RefugeeGroups
             // then
             actualRefugeeGroupValidationException.Should().BeEquivalentTo(
                 expectedRefugeeGroupValidationException);
+            
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -128,10 +132,11 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.RefugeeGroups
         public async Task ShouldThrowValidationExceptionOnAddIfCreateAndUpdateDatesIsNotSameAndLogItAsync()
         {
             // given
-            int randomNumber = GetRandomNumber();
-            RefugeeGroup randomRefugeeGroup = CreateRandomRefugeeGroup();
+            DateTimeOffset dateTime = GetRandomDateTime();
+            RefugeeGroup randomRefugeeGroup = CreateRandomRefugeeGroup(dateTime);
             RefugeeGroup invalidRefugeeGroup = randomRefugeeGroup;
-
+            int randomNumber = GetRandomNumber();
+            
             invalidRefugeeGroup.UpdatedDate =
                 invalidRefugeeGroup.CreatedDate.AddDays(randomNumber);
 
@@ -141,6 +146,10 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.RefugeeGroups
             invalidRefugeeGroupException.AddData(
                 key: nameof(RefugeeGroup.UpdatedDate),
                 values: $"Date is not the same as {nameof(RefugeeGroup.CreatedDate)}");
+            
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(dateTime);
 
             var expectedRefugeeGroupValidationException =
                 new RefugeeGroupValidationException(invalidRefugeeGroupException);
@@ -156,6 +165,10 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.RefugeeGroups
             // then
             actualRefugeeGroupValidationException.Should().BeEquivalentTo(
                 expectedRefugeeGroupValidationException);
+            
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(

@@ -11,7 +11,7 @@ namespace RefugeeLand.Core.Api.Services.Foundations.RefugeeGroups
 {
     public partial class RefugeeGroupService
     {
-        private static void ValidateRefugeeGroup(RefugeeGroup refugeeGroup)
+        private void ValidateRefugeeGroup(RefugeeGroup refugeeGroup)
         {
             ValidateRefugeeGroupIsNotNull(refugeeGroup);
             Validate(
@@ -22,14 +22,16 @@ namespace RefugeeLand.Core.Api.Services.Foundations.RefugeeGroups
                 (Rule: IsInvalid(refugeeGroup.CreatedDate), Parameter: nameof(RefugeeGroup.CreatedDate)),
                 (Rule: IsInvalid(refugeeGroup.UpdatedDate), Parameter: nameof(RefugeeGroup.UpdatedDate)),
 
-            (Rule: IsInvalid(refugeeGroup.RefugeeGroupMainRepresentativeId),
-                Parameter: nameof(RefugeeGroup.RefugeeGroupMainRepresentativeId)),
-            
+                (Rule: IsInvalid(refugeeGroup.RefugeeGroupMainRepresentativeId),
+                    Parameter: nameof(RefugeeGroup.RefugeeGroupMainRepresentativeId)),
+
                 (Rule: IsNotSame(
                         firstDate: refugeeGroup.UpdatedDate,
                         secondDate: refugeeGroup.CreatedDate,
                         secondDateName: nameof(RefugeeGroup.CreatedDate)),
-                        Parameter: nameof(RefugeeGroup.UpdatedDate)));
+                    Parameter: nameof(RefugeeGroup.UpdatedDate)),
+                
+                (Rule: IsNotRecent(refugeeGroup.CreatedDate), Parameter: nameof(RefugeeGroup.CreatedDate)));
         }
 
         private static void ValidateRefugeeGroupIsNotNull(RefugeeGroup refugeeGroup)
@@ -66,6 +68,23 @@ namespace RefugeeLand.Core.Api.Services.Foundations.RefugeeGroups
             Condition = firstDate != secondDate,
             Message = $"Date is not the same as {secondDateName}"
         };
+
+        private dynamic IsNotRecent(DateTimeOffset date) => new
+        {
+            Condition = IsDateNotRecent(date),
+            Message = "Date is not recent"
+        };
+
+        private bool IsDateNotRecent(DateTimeOffset date)
+        {
+            DateTimeOffset currentDateTime =
+                this.dateTimeBroker.GetCurrentDateTimeOffset();
+
+            TimeSpan timeDifference = currentDateTime.Subtract(date);
+            TimeSpan oneMinute = TimeSpan.FromMinutes(1);
+
+            return timeDifference.Duration() > oneMinute;
+        }
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {

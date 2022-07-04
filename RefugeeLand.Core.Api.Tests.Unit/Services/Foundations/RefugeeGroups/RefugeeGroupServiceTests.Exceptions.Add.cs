@@ -18,7 +18,8 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.RefugeeGroups
         public async Task ShouldThrowCriticalDependencyExceptionOnAddIfSqlErrorOccursAndLogItAsync()
         {
             //given
-            RefugeeGroup randomRefugeeGroup = CreateRandomRefugeeGroup();
+            DateTimeOffset randomDateTime = GetRandomDateTime();
+            RefugeeGroup randomRefugeeGroup = CreateRandomRefugeeGroup(randomDateTime);
             SqlException sqlException = GetSqlException();
 
             var failedRefugeeGroupStorageException = 
@@ -26,6 +27,10 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.RefugeeGroups
 
             var expectedRefugeeGroupDependencyException = 
                 new RefugeeGroupDependencyException(failedRefugeeGroupStorageException);
+
+            this.dateTimeBrokerMock.Setup(broker => 
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTime);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.InsertRefugeeGroupAsync(randomRefugeeGroup))
@@ -42,6 +47,10 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.RefugeeGroups
             actualRefugeeGroupDependencyException.Should().BeEquivalentTo(
                 expectedRefugeeGroupDependencyException);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(), 
+                    Times.Once);
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogCritical(It.Is(SameExceptionAs(
                     expectedRefugeeGroupDependencyException))),
@@ -51,6 +60,7 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.RefugeeGroups
                 broker.InsertRefugeeGroupAsync(randomRefugeeGroup),
                     Times.Once);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
