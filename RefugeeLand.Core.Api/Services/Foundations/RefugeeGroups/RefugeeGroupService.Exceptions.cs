@@ -3,7 +3,9 @@
 // FREE TO USE TO DELIVER HUMANITARIAN AID, HOPE AND LOVE
 // -------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
+using Microsoft.Data.SqlClient;
 using RefugeeLand.Core.Api.Models.RefugeeGroups;
 using RefugeeLand.Core.Api.Models.RefugeeGroups.Exceptions;
 using Xeptions;
@@ -24,6 +26,23 @@ namespace RefugeeLand.Core.Api.Services.Foundations.RefugeeGroups
             {
                 throw CreateAndLogValidationException(nullRefugeeGroupException);
             }
+            catch(SqlException sqlException)
+            {
+                var failedRefugeeGroupStorageException =
+                    new FailedRefugeeGroupStorageException(sqlException);
+
+                throw CreateAndLogCriticalDependencyException(failedRefugeeGroupStorageException);
+            }
+        }
+
+        private RefugeeGroupDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
+        {
+            var refugeeGroupDependencyException =
+                new RefugeeGroupDependencyException(exception);
+
+            this.loggingBroker.LogCritical(refugeeGroupDependencyException);
+
+            return refugeeGroupDependencyException;
         }
 
         private RefugeeGroupValidationException CreateAndLogValidationException(Xeption exception)
