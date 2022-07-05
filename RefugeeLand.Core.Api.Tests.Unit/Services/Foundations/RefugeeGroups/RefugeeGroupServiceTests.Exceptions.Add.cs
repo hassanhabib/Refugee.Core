@@ -230,6 +230,53 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.RefugeeGroups
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
+        
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnAddIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            RefugeeGroup randomRefugeeGroup = CreateRandomRefugeeGroup();
+            var serviceException = new Exception();
+
+            var failedRefugeeGroupServiceException =
+                new FailedRefugeeGroupServiceException(serviceException);
+
+            var expectedRefugeeGroupServiceException =
+                new RefugeeGroupServiceException(failedRefugeeGroupServiceException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(serviceException);
+
+            // when
+            ValueTask<RefugeeGroup> addRefugeeGroupTask =
+                this.refugeeGroupService.AddRefugeeGroupAsync(randomRefugeeGroup);
+            
+            RefugeeGroupServiceException actualRefugeeGroupServiceException = 
+                await Assert.ThrowsAsync<RefugeeGroupServiceException>(
+                    addRefugeeGroupTask.AsTask);
+                
+            // then
+            actualRefugeeGroupServiceException.Should().BeEquivalentTo(
+                expectedRefugeeGroupServiceException);
+            
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedRefugeeGroupServiceException))),
+                        Times.Once);
+            
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertRefugeeGroupAsync(It.IsAny<RefugeeGroup>()),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
 
     }
 }
