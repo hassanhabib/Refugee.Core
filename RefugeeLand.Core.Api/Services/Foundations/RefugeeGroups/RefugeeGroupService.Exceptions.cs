@@ -5,6 +5,7 @@
 
 using System;
 using System.Threading.Tasks;
+using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
 using RefugeeLand.Core.Api.Models.RefugeeGroups;
 using RefugeeLand.Core.Api.Models.RefugeeGroups.Exceptions;
@@ -37,6 +38,13 @@ namespace RefugeeLand.Core.Api.Services.Foundations.RefugeeGroups
             {
                 throw CreateAndLogValidationException(invalidRefugeeGroupException);
             }
+            catch (DuplicateKeyException duplicateKeyException)
+            {
+                var alreadyExistsRefugeeGroupException = 
+                    new AlreadyExistsRefugeeGroupException(duplicateKeyException);
+
+                throw CreateAndLogDependencyValidationException(alreadyExistsRefugeeGroupException);
+            }
         }
 
         private RefugeeGroupDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
@@ -55,6 +63,16 @@ namespace RefugeeLand.Core.Api.Services.Foundations.RefugeeGroups
             this.loggingBroker.LogError(refugeeGroupValidationException);
 
             return refugeeGroupValidationException;
+        }
+        
+        private RefugeeGroupDependencyValidationException  CreateAndLogDependencyValidationException(Xeption exception)
+        {
+            var refugeeGroupDependencyValidationException = 
+                new RefugeeGroupDependencyValidationException(exception);
+
+            this.loggingBroker.LogError(refugeeGroupDependencyValidationException);
+
+            return refugeeGroupDependencyValidationException;
         }
     }
 }
