@@ -54,6 +54,13 @@ namespace RefugeeLand.Core.Api.Services.Foundations.RefugeeGroups
 
                 throw CreateAndLogDependencyException(failedRefugeeGroupStorageException);
             }
+            catch(ForeignKeyConstraintConflictException foreignKeyConstraintConflictException)
+            {
+                var invalidRefugeeGroupReferenceException =
+                    new InvalidRefugeeGroupReferenceException(foreignKeyConstraintConflictException);
+
+                throw CreateAndLogDependencyValidationException(invalidRefugeeGroupReferenceException);
+            }
         }
 
         private RefugeeGroupDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
