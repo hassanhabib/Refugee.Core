@@ -7,8 +7,10 @@ using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using RefugeeLand.Core.Api.Models.RefugeeGroups;
 using RefugeeLand.Core.Api.Models.RefugeeGroups.Exceptions;
+using RefugeeLand.Core.Api.Models.RefugeePets;
 using Xeptions;
 
 namespace RefugeeLand.Core.Api.Services.Foundations.RefugeeGroups
@@ -40,10 +42,17 @@ namespace RefugeeLand.Core.Api.Services.Foundations.RefugeeGroups
             }
             catch (DuplicateKeyException duplicateKeyException)
             {
-                var alreadyExistsRefugeeGroupException = 
+                var alreadyExistsRefugeeGroupException =
                     new AlreadyExistsRefugeeGroupException(duplicateKeyException);
 
                 throw CreateAndLogDependencyValidationException(alreadyExistsRefugeeGroupException);
+            }
+            catch (DbUpdateException databaseUpdateException)
+            {
+                var failedRefugeeGroupStorageException =
+                    new FailedRefugeeGroupStorageException(databaseUpdateException);
+
+                throw CreateAndLogDependencyException(failedRefugeeGroupStorageException);
             }
         }
 
@@ -74,5 +83,16 @@ namespace RefugeeLand.Core.Api.Services.Foundations.RefugeeGroups
 
             return refugeeGroupDependencyValidationException;
         }
+        
+        private RefugeeGroupDependencyException CreateAndLogDependencyException(Xeption exception)
+        {
+            var refugeeGroupDependencyException = 
+                new RefugeeGroupDependencyException(exception);
+
+            this.loggingBroker.LogError(refugeeGroupDependencyException);
+
+            return refugeeGroupDependencyException;
+        }
+
     }
 }
