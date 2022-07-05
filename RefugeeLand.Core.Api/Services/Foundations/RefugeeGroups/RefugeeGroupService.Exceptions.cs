@@ -54,12 +54,19 @@ namespace RefugeeLand.Core.Api.Services.Foundations.RefugeeGroups
 
                 throw CreateAndLogDependencyException(failedRefugeeGroupStorageException);
             }
-            catch(ForeignKeyConstraintConflictException foreignKeyConstraintConflictException)
+            catch (ForeignKeyConstraintConflictException foreignKeyConstraintConflictException)
             {
                 var invalidRefugeeGroupReferenceException =
                     new InvalidRefugeeGroupReferenceException(foreignKeyConstraintConflictException);
 
                 throw CreateAndLogDependencyValidationException(invalidRefugeeGroupReferenceException);
+            }
+            catch (Exception serviceException)
+            {
+                var failedRefugeeGroupService = 
+                    new FailedRefugeeGroupServiceException(serviceException);
+
+                throw CreateAndLogServiceException(failedRefugeeGroupService);
             }
         }
 
@@ -100,6 +107,17 @@ namespace RefugeeLand.Core.Api.Services.Foundations.RefugeeGroups
 
             return refugeeGroupDependencyException;
         }
+        
+        private RefugeeGroupServiceException CreateAndLogServiceException(Xeption exception)
+        {
+            var refugeeGroupServiceException = 
+                new RefugeeGroupServiceException(exception);
+
+            this.loggingBroker.LogError(refugeeGroupServiceException);
+
+            return refugeeGroupServiceException;
+        }
+
 
     }
 }
