@@ -3,6 +3,7 @@
 // FREE TO USE TO DELIVER HUMANITARIAN AID, HOPE AND LOVE
 // -------------------------------------------------------
 
+using EFxceptions.Models.Exceptions;
 using FluentAssertions;
 using Microsoft.Data.SqlClient;
 using Moq;
@@ -63,6 +64,62 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.RefugeeGroups
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyValidationExceptionOnAddIfRefugeeGroupAlreadyExistsAndLogItAsync()
+        {
+            //given
+            RefugeeGroup randomRefugeeGroup = CreateRandomRefugeeGroup();
+            RefugeeGroup alreadyExistsRefugeeGroup = randomRefugeeGroup;
+            string randomMessage = GetRandomString();
+
+            var duplicateRefugeeGroupKeyException = 
+                new DuplicateKeyException(randomMessage);
+
+            var alreadyExistsRefugeeGroupException =
+                new AlreadyExistsRefugeeGroupException(duplicateRefugeeGroupKeyException);
+
+            var expectedRefugeeGroupDependencyValidationException = 
+                new RefugeeGroupDependencyValidationException(alreadyExistsRefugeeGroupException);
+
+            this.dateTimeBrokerMock.Setup(broker => 
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(DateTimeOffset.UtcNow);
+            
+            this.storageBrokerMock.Setup(broker =>
+                broker.InsertRefugeeGroupAsync(randomRefugeeGroup))
+                    .Throws(duplicateRefugeeGroupKeyException);
+            
+            //when
+            ValueTask<RefugeeGroup> addRefugeeGroupTask =
+                this.refugeeGroupService.AddRefugeeGroupAsync(alreadyExistsRefugeeGroup);
+
+            RefugeeGroupDependencyValidationException actualRefugeeGroupDependencyValidationException =
+                await Assert.ThrowsAsync<RefugeeGroupDependencyValidationException>(
+                    addRefugeeGroupTask.AsTask);
+            
+            //then
+            actualRefugeeGroupDependencyValidationException.Should().BeEquivalentTo(
+                expectedRefugeeGroupDependencyValidationException);
+            
+            
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedRefugeeGroupDependencyValidationException))),
+                        Times.Once);
+            
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertRefugeeGroupAsync(It.IsAny<RefugeeGroup>()),
+                    Times.Once);
+            
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

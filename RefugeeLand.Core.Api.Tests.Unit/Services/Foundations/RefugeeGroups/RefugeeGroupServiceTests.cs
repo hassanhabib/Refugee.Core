@@ -65,6 +65,8 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.RefugeeGroups
             };
         }
 
+        private static string GetRandomString() =>
+            new MnemonicString().GetValue();
         
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException)
         {
