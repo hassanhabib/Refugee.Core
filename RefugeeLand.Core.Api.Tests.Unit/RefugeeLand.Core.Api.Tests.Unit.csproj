@@ -29,4 +29,8 @@
     <ProjectReference Include="..\RefugeeLand.Core.Api\RefugeeLand.Core.Api.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Services" />
+  </ItemGroup>
+
 </Project>
