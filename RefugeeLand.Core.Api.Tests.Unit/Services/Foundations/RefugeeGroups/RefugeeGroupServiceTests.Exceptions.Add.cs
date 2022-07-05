@@ -6,6 +6,7 @@
 using EFxceptions.Models.Exceptions;
 using FluentAssertions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using RefugeeLand.Core.Api.Models.RefugeeGroups;
 using RefugeeLand.Core.Api.Models.RefugeeGroups.Exceptions;
@@ -120,6 +121,59 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.RefugeeGroups
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+        
+       [Fact]
+        public async Task ShouldThrowDependencyExceptionOnAddIfDatabaseUpdateErrorOccursAndLogItAsync()
+        {
+            // given
+            RefugeeGroup randomRefugeeGroup = CreateRandomRefugeeGroup();
+
+            var databaseUpdateException =
+                new DbUpdateException();
+
+            var failedRefugeeGroupStorageException =
+                new FailedRefugeeGroupStorageException(databaseUpdateException);
+
+            var expectedRefugeeGroupDependencyException =
+                new RefugeeGroupDependencyException(failedRefugeeGroupStorageException);
+            
+            this.dateTimeBrokerMock.Setup(broker => 
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(DateTimeOffset.UtcNow);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.InsertRefugeeGroupAsync(randomRefugeeGroup))
+                    .Throws(databaseUpdateException);
+
+            // when
+            ValueTask<RefugeeGroup> addRefugeeGroupTask =
+                this.refugeeGroupService.AddRefugeeGroupAsync(randomRefugeeGroup);
+
+            RefugeeGroupDependencyException actualRefugeeGroupDependencyException =
+                await Assert.ThrowsAsync<RefugeeGroupDependencyException>(
+                    addRefugeeGroupTask.AsTask);
+
+            // then
+            actualRefugeeGroupDependencyException.Should().BeEquivalentTo(
+                expectedRefugeeGroupDependencyException);
+            
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedRefugeeGroupDependencyException))),
+                        Times.Once);
+            
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertRefugeeGroupAsync(It.IsAny<RefugeeGroup>()),
+                    Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
         }
     }
 }
