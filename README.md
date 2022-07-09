@@ -8,6 +8,11 @@ We believe everyone should be able to feel safe.
 
 Feel free to join our community. Help us build a platform for people fleeing war-torn countries, natural disasters, and other threats.
 
+## WIP
+🎯Refugee has RefugeeGroup
+![Refugee has RefugeeGroup](https://user-images.githubusercontent.com/56794425/178092181-73a20b7f-196b-4079-8d54-eaec9c069754.png)
+
+
 ## Project Coding Standard
 [The Standard](https://github.com/hassanhabib/The-Standard)
 
