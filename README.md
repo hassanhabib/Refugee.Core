@@ -8,6 +8,12 @@ We believe everyone should be able to feel safe.
 
 Feel free to join our community. Help us build a platform for people fleeing war-torn countries, natural disasters, and other threats.
 
+## If you want to contribute:
+Choose an issue from this list and add a comment to let us know.
+### 🎯Refugee has RefugeeGroup:  [Click here to see the list of issues](https://github.com/hassanhabib/Refugee.Core/issues?q=is%3Aopen+is%3Aissue+milestone%3A%22%F0%9F%8E%AF+Refugee+has+RefugeeGroup+-+v0.1%22)
+![Refugee has RefugeeGroup](https://user-images.githubusercontent.com/56794425/178092181-73a20b7f-196b-4079-8d54-eaec9c069754.png)
+
+
 ## Project Coding Standard
 [The Standard](https://github.com/hassanhabib/The-Standard)
 
