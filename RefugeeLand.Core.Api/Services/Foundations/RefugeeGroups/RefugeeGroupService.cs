@@ -37,10 +37,8 @@ namespace RefugeeLand.Core.Api.Services.Foundations.RefugeeGroups
             return await this.storageBroker.InsertRefugeeGroupAsync(refugeeGroup);
         });
 
-        public IQueryable<RefugeeGroup> RetrieveAllRefugeeGroups()
-        {
-            throw new NotImplementedException();
-        }
+        public IQueryable<RefugeeGroup> RetrieveAllRefugeeGroups() =>
+            this.storageBroker.SelectAllRefugeeGroups();
 
     }
 }
