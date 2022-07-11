@@ -4,13 +4,13 @@
 // -------------------------------------------------------
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using RefugeeLand.Core.Api.Models.RefugeeGroups;
 using RefugeeLand.Core.Api.Models.RefugeeGroups.Exceptions;
-using RefugeeLand.Core.Api.Models.RefugeePets;
 using Xeptions;
 
 namespace RefugeeLand.Core.Api.Services.Foundations.RefugeeGroups
@@ -18,6 +18,7 @@ namespace RefugeeLand.Core.Api.Services.Foundations.RefugeeGroups
     public partial class RefugeeGroupService
     {
         private delegate ValueTask<RefugeeGroup> ReturningRefugeeGroupFunction();
+        private delegate IQueryable<RefugeeGroup> ReturningAllRefugeeGroupsFunction();
         
         private async ValueTask<RefugeeGroup> TryCatch(ReturningRefugeeGroupFunction returningRefugeeGroupFunction)
         {
@@ -68,6 +69,22 @@ namespace RefugeeLand.Core.Api.Services.Foundations.RefugeeGroups
 
                 throw CreateAndLogServiceException(failedRefugeeGroupService);
             }
+        }
+
+        private IQueryable<RefugeeGroup> TryCatch(ReturningAllRefugeeGroupsFunction returningAllRefugeeGroupsFunction)
+        {
+            try
+            {
+                return returningAllRefugeeGroupsFunction();
+            }
+            catch (SqlException sqlException)
+            {
+                var failedRefugeeGroupStorageException = 
+                    new FailedRefugeeGroupStorageException(sqlException);
+
+                throw CreateAndLogCriticalDependencyException(failedRefugeeGroupStorageException);
+            }
+            
         }
 
         private RefugeeGroupDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
