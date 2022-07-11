@@ -79,10 +79,17 @@ namespace RefugeeLand.Core.Api.Services.Foundations.RefugeeGroups
             }
             catch (SqlException sqlException)
             {
-                var failedRefugeeGroupStorageException = 
+                var failedRefugeeGroupStorageException =
                     new FailedRefugeeGroupStorageException(sqlException);
 
                 throw CreateAndLogCriticalDependencyException(failedRefugeeGroupStorageException);
+            }
+            catch (Exception exception)
+            {
+                var failedRefugeeGroupServiceException = 
+                    new FailedRefugeeGroupServiceException(exception);
+
+                throw CreateAndLogServiceException(failedRefugeeGroupServiceException);
             }
             
         }
