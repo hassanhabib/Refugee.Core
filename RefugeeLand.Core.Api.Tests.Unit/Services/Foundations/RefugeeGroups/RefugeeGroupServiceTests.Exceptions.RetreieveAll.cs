@@ -53,6 +53,47 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.RefugeeGroups
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+        
+        [Fact]
+        public void ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAndLogIt()
+        {
+            // given
+            var serviceException = new Exception();
+
+            var failedRefugeeGroupServiceException =
+                new FailedRefugeeGroupServiceException(serviceException);
+
+            var expectedRefugeeGroupServiceException =
+                new RefugeeGroupServiceException(failedRefugeeGroupServiceException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectAllRefugeeGroups())
+                    .Throws(serviceException);
+            
+            // when
+            Action retrieveAllRefugeeGroupsAction = () =>
+                this.refugeeGroupService.RetrieveAllRefugeeGroups();
+            
+            RefugeeGroupServiceException actualRefugeeGroupServiceException =
+                Assert.Throws<RefugeeGroupServiceException>(
+                    retrieveAllRefugeeGroupsAction);
+
+            // then
+            actualRefugeeGroupServiceException.Should()
+                .BeEquivalentTo(expectedRefugeeGroupServiceException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectAllRefugeeGroups(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedRefugeeGroupServiceException))),
+                        Times.Once);
+            
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
 
     }
 }
