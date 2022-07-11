@@ -12,6 +12,7 @@ using Microsoft.OpenApi.Models;
 using RefugeeLand.Core.Api.Brokers.DateTimes;
 using RefugeeLand.Core.Api.Brokers.Loggings;
 using RefugeeLand.Core.Api.Brokers.Storages;
+using RefugeeLand.Core.Api.Services.Foundations.RefugeeGroups;
 using RefugeeLand.Core.Api.Services.Foundations.Refugees;
 
 namespace RefugeeLand.Core.Api
@@ -75,6 +76,7 @@ namespace RefugeeLand.Core.Api
         private static void AddFoundationServices(IServiceCollection services)
         {
             services.AddTransient<IRefugeeService, RefugeeService>();
+            services.AddTransient<IRefugeeGroupService, RefugeeGroupService>();
         }
     }
 }
