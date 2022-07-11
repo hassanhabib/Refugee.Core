@@ -4,6 +4,7 @@
 // -------------------------------------------------------
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using RefugeeLand.Core.Api.Brokers.DateTimes;
 using RefugeeLand.Core.Api.Brokers.Loggings;
@@ -35,6 +36,11 @@ namespace RefugeeLand.Core.Api.Services.Foundations.RefugeeGroups
             
             return await this.storageBroker.InsertRefugeeGroupAsync(refugeeGroup);
         });
-        
+
+        public IQueryable<RefugeeGroup> RetrieveAllRefugeeGroups()
+        {
+            throw new NotImplementedException();
+        }
+
     }
 }

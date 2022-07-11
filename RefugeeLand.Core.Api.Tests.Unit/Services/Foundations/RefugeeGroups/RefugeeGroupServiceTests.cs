@@ -82,6 +82,9 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.RefugeeGroups
         private static RefugeeGroup CreateRandomRefugeeGroup(DateTimeOffset dates) =>
             CreateRefugeeGroupFiller(dates).Create();
         
+        private static IQueryable<RefugeeGroup> CreateRandomRefugeeGroups(DateTimeOffset dates) =>
+            CreateRefugeeGroupFiller(dates).Create(count: GetRandomNumber()).AsQueryable();
+        
         private static Filler<RefugeeGroup> CreateRefugeeGroupFiller(DateTimeOffset dates)
         {
             var filler = new Filler<RefugeeGroup>();
