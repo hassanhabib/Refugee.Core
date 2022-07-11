@@ -20,7 +20,7 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.RefugeeGroups
             DateTimeOffset randomDateTime = GetRandomDateTime();
             IQueryable<RefugeeGroup> randomRefugeeGroups = CreateRandomRefugeeGroups(randomDateTime);
             IQueryable<RefugeeGroup> storageRefugeeGroups = randomRefugeeGroups;
-            IQueryable<RefugeeGroup> expectedRefugeeGroups = storageRefugeeGroups.DeepClone();
+            IQueryable<RefugeeGroup> expectedRefugeeGroups = storageRefugeeGroups;
 
             this.storageBrokerMock.Setup(broker => 
                 broker.SelectAllRefugeeGroups())
