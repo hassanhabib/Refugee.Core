@@ -76,6 +76,9 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Refugees
         private static string GetRandomString() =>
             new MnemonicString().GetValue();
 
+        private static IQueryable<Refugee> CreateRandomRefugees(DateTimeOffset dates) =>
+            CreateRefugeeFiller(dates).Create(count: GetRandomNumber()).AsQueryable();
+        
         private static Refugee CreateRandomRefugee() =>
             CreateRefugeeFiller(dates: DateTimeOffset.UtcNow).Create();
 

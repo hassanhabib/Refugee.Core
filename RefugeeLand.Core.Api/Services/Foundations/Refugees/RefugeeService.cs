@@ -3,6 +3,7 @@
 // FREE TO USE TO DELIVER HUMANITARIAN AID, HOPE AND LOVE
 // -------------------------------------------------------
 
+using System.Linq;
 using System.Threading.Tasks;
 using RefugeeLand.Core.Api.Brokers.DateTimes;
 using RefugeeLand.Core.Api.Brokers.Loggings;
@@ -34,5 +35,9 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Refugees
 
             return await this.storageBroker.InsertRefugeeAsync(refugee);
         });
+
+        public IQueryable<Refugee> RetrieveAllRefugees() =>
+        TryCatch(() => this.storageBroker.SelectAllRefugees());
+
     }
 }
