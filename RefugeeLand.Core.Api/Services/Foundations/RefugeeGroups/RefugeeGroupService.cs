@@ -4,6 +4,7 @@
 // -------------------------------------------------------
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using RefugeeLand.Core.Api.Brokers.DateTimes;
 using RefugeeLand.Core.Api.Brokers.Loggings;
@@ -29,12 +30,15 @@ namespace RefugeeLand.Core.Api.Services.Foundations.RefugeeGroups
         }
 
         public ValueTask<RefugeeGroup> AddRefugeeGroupAsync(RefugeeGroup refugeeGroup) =>
-        TryCatch(async () =>
-        {
-            ValidateRefugeeGroup(refugeeGroup);
-            
-            return await this.storageBroker.InsertRefugeeGroupAsync(refugeeGroup);
-        });
-        
+            TryCatch(async () =>
+            {
+                ValidateRefugeeGroup(refugeeGroup);
+
+                return await this.storageBroker.InsertRefugeeGroupAsync(refugeeGroup);
+            });
+
+        public IQueryable<RefugeeGroup> RetrieveAllRefugeeGroups() =>
+        TryCatch(() => this.storageBroker.SelectAllRefugeeGroups());
+
     }
 }

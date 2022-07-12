@@ -13,7 +13,7 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Refugees
     public partial class RefugeeServiceTests
     {
         [Fact]
-        public async void ShouldRetrieveAllRefugees()
+        public void ShouldRetrieveAllRefugees()
         {
             //given
             DateTimeOffset randomDateTime = GetRandomDateTime();
