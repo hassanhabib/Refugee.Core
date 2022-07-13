@@ -13,5 +13,6 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Refugees
     {
         ValueTask<Refugee> AddRefugeeAsync(Refugee refugee);
         IQueryable<Refugee> RetrieveAllRefugees();
+        ValueTask<Refugee> RetrieveRefugeeByIdAsync();
     }
 }
