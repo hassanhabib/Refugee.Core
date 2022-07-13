@@ -25,5 +25,10 @@ namespace RefugeeLand.Core.Api.Models.RefugeeGroupMemberships
 
         public RefugeeGroupMembershipStatus Status { get; set; }
         public string Details { get; set; }
+        
+        public DateTimeOffset CreatedDate { get; set; }
+        public DateTimeOffset UpdatedDate { get; set; }
+        public Guid CreatedBy { get; set; }
+        public Guid UpdatedBy { get; set; }
     }
 }
