@@ -37,6 +37,6 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Refugees
         });
 
         public IQueryable<Refugee> RetreiveAllRefugees() =>
-            this.storageBroker.SelectAllRefugees();
+        TryCatch(() => this.storageBroker.SelectAllRefugees());
     }
 }

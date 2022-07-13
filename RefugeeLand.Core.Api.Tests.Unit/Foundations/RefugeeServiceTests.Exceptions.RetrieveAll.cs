@@ -3,6 +3,7 @@
 // FREE TO USE TO DELIVER HUMANITARIAN AID, HOPE AND LOVE
 // -------------------------------------------------------
 
+using FluentAssertions;
 using Microsoft.Data.SqlClient;
 using Moq;
 using RefugeeLand.Core.Api.Models.Refugees.Exceptions;
@@ -32,8 +33,12 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Foundations
             Action retrieveAllRefugeesAction = () =>
                 this.refugeeService.RetreiveAllRefugees();
 
+            RefugeeDependencyException actualRefugeeDependencyException =
+                Assert.Throws<RefugeeDependencyException>(retrieveAllRefugeesAction);
+
             //then
-            Assert.Throws<RefugeeDependencyException>(retrieveAllRefugeesAction);
+            actualRefugeeDependencyException.Should().BeEquivalentTo(
+                expectedRefugeeDependencyException);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectAllRefugees(),
