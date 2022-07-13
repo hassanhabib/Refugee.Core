@@ -16,7 +16,7 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Foundations
         [Fact]
         public void ShouldThrowCriticalDependencyExceptionOnRetrieveAllIfSqlErrorOccursAndLogIt()
         {
-            //given
+            // given
             SqlException sqlException = GetSqlException();
 
             var failedRefugeeStorageException =
@@ -29,14 +29,14 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Foundations
                 broker.SelectAllRefugees())
                     .Throws(sqlException);
 
-            //when
+            // when
             Action retrieveAllRefugeesAction = () =>
                 this.refugeeService.RetreiveAllRefugees();
 
             RefugeeDependencyException actualRefugeeDependencyException =
                 Assert.Throws<RefugeeDependencyException>(retrieveAllRefugeesAction);
 
-            //then
+            // then
             actualRefugeeDependencyException.Should().BeEquivalentTo(
                 expectedRefugeeDependencyException);
 
@@ -47,6 +47,47 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Foundations
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogCritical(It.Is(SameExceptionAs(
                     expectedRefugeeDependencyException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public void ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAndLogIt()
+        {
+            // given
+            string someMessage = GetRandomString();
+            var serviceException = new Exception(someMessage);
+
+            var failedRefugeeServiceException =
+                new FailedRefugeeServiceException(serviceException);
+
+            var expectedRefugeeServiceException =
+                new RefugeeServiceException(failedRefugeeServiceException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectAllRefugees())
+                    .Throws(serviceException);
+
+            // when
+            Action retrieveAllRefugeesAction = () =>
+                this.refugeeService.RetreiveAllRefugees();
+
+            RefugeeServiceException actualRefugeeServiceException =
+                Assert.Throws<RefugeeServiceException>(retrieveAllRefugeesAction);
+
+            // then
+            actualRefugeeServiceException.Should().BeEquivalentTo(
+                expectedRefugeeServiceException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectAllRefugees(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedRefugeeServiceException))),
                         Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();
