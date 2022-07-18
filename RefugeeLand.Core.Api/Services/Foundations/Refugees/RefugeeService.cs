@@ -40,10 +40,10 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Refugees
         public IQueryable<Refugee> RetrieveAllRefugees() =>
         TryCatch(() => this.storageBroker.SelectAllRefugees());
 
-        public ValueTask<Refugee> RetrieveRefugeeByIdAsync(Guid refugeeId)
+        public ValueTask<Refugee> RetrieveRefugeeByIdAsync(Guid refugeeId) =>
+        TryCatch(async () =>
         {
-            throw new System.NotImplementedException();
-        }
-        
+            return await this.storageBroker.SelectRefugeeByIdAsync(refugeeId);
+        });
     }
 }
