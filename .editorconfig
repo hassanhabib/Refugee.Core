@@ -1,0 +1,26 @@
+# To learn more about .editorconfig see https://aka.ms/editorconfigdocs
+
+# C# or VB files
+[*.{cs,vb}]
+guidelines = 120
+
+#### Core EditorConfig Options ####
+
+#Formatting - header template
+file_header_template = ---------------------------------------------------------------\nCopyright (c) spectralgo. All rights reserved.\nLicensed under the MIT License.\nSee License.txt in the project root for license information.\n---------------------------------------------------------------
+
+# Indentation and spacing
+indent_size = 4
+indent_style = space
+tab_width = 4
+
+# New line preferences
+end_of_line = crlf
+insert_final_newline = false
+
+#### .NET Coding Conventions ####
+
+# Organize usings
+dotnet_sort_system_directives_first = true
+dotnet_separate_import_directive_groups = false
+
