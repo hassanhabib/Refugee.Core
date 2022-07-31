@@ -19,6 +19,10 @@ namespace RefugeeLand.Core.Api.Services.Foundations.hosts
             {
                 throw CreateAndLogValidationException(nullhostException);
             }
+            catch (InvalidhostException invalidhostException)
+            {
+                throw CreateAndLogValidationException(invalidhostException);
+            }
         }
 
         private hostValidationException CreateAndLogValidationException(Xeption exception)
