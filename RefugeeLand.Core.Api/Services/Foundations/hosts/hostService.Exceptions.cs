@@ -54,6 +54,12 @@ namespace RefugeeLand.Core.Api.Services.Foundations.hosts
 
                 throw CreateAndLogDependencyValidationException(invalidhostReferenceException);
             }
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedhostException = new LockedhostException(dbUpdateConcurrencyException);
+
+                throw CreateAndLogDependencyValidationException(lockedhostException);
+            }
             catch (DbUpdateException databaseUpdateException)
             {
                 var failedhostStorageException =
