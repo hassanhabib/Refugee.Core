@@ -209,7 +209,8 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.hosts
                     modifyhostTask.AsTask);
 
             // then
-            actualhostValidationException.Should().BeEquivalentTo(expectedhostValidatonException);
+            actualhostValidationException.Should()
+                .BeEquivalentTo(expectedhostValidatonException);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
@@ -227,6 +228,59 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.hosts
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfhostDoesNotExistAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            host randomhost = CreateRandomModifyhost(randomDateTimeOffset);
+            host nonExisthost = randomhost;
+            host nullhost = null;
+
+            var notFoundhostException =
+                new NotFoundhostException(nonExisthost.Id);
+
+            var expectedhostValidationException =
+                new hostValidationException(notFoundhostException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelecthostByIdAsync(nonExisthost.Id))
+                .ReturnsAsync(nullhost);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                .Returns(randomDateTimeOffset);
+
+            // when 
+            ValueTask<host> modifyhostTask =
+                this.hostService.ModifyhostAsync(nonExisthost);
+
+            hostValidationException actualhostValidationException =
+                await Assert.ThrowsAsync<hostValidationException>(
+                    modifyhostTask.AsTask);
+
+            // then
+            actualhostValidationException.Should()
+                .BeEquivalentTo(expectedhostValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelecthostByIdAsync(nonExisthost.Id),
+                    Times.Once);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedhostValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }
