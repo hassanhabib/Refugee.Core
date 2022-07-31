@@ -109,6 +109,10 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Hosts
             actualHostValidationException.Should()
                 .BeEquivalentTo(expectedHostValidationException);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedHostValidationException))),
@@ -118,9 +122,9 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Hosts
                 broker.UpdateHostAsync(It.IsAny<Host>()),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -139,6 +143,10 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Hosts
             var expectedHostValidationException =
                 new HostValidationException(invalidHostException);
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
             // when
             ValueTask<Host> modifyHostTask =
                 this.hostService.ModifyHostAsync(invalidHost);
@@ -151,6 +159,10 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Hosts
             actualHostValidationException.Should()
                 .BeEquivalentTo(expectedHostValidationException);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedHostValidationException))),
@@ -160,9 +172,9 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Hosts
                 broker.SelectHostByIdAsync(invalidHost.Id),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
