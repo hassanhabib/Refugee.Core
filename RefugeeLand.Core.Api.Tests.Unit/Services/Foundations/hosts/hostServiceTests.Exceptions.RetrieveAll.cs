@@ -49,5 +49,46 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.hosts
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public void ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            string exceptionMessage = GetRandomMessage();
+            var serviceException = new Exception(exceptionMessage);
+
+            var failedhostServiceException =
+                new FailedhostServiceException(serviceException);
+
+            var expectedhostServiceException =
+                new hostServiceException(failedhostServiceException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectAllhosts())
+                    .Throws(serviceException);
+
+            // when
+            Action retrieveAllhostsAction = () =>
+                this.hostService.RetrieveAllhosts();
+
+            hostServiceException actualhostServiceException =
+                Assert.Throws<hostServiceException>(retrieveAllhostsAction);
+
+            // then
+            actualhostServiceException.Should()
+                .BeEquivalentTo(expectedhostServiceException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectAllhosts(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedhostServiceException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
