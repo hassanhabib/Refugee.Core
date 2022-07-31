@@ -32,6 +32,6 @@ namespace RefugeeLand.Core.Api.Services.Foundations.hosts
             });
 
         public IQueryable<host> RetrieveAllhosts() =>
-            this.storageBroker.SelectAllhosts();
+            TryCatch(() => this.storageBroker.SelectAllhosts());
     }
 }

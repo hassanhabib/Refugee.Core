@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -12,6 +13,7 @@ namespace RefugeeLand.Core.Api.Services.Foundations.hosts
     public partial class hostService
     {
         private delegate ValueTask<host> ReturninghostFunction();
+        private delegate IQueryable<host> ReturninghostsFunction();
 
         private async ValueTask<host> TryCatch(ReturninghostFunction returninghostFunction)
         {
@@ -61,6 +63,20 @@ namespace RefugeeLand.Core.Api.Services.Foundations.hosts
                     new FailedhostServiceException(exception);
 
                 throw CreateAndLogServiceException(failedhostServiceException);
+            }
+        }
+
+        private IQueryable<host> TryCatch(ReturninghostsFunction returninghostsFunction)
+        {
+            try
+            {
+                return returninghostsFunction();
+            }
+            catch (SqlException sqlException)
+            {
+                var failedhostStorageException =
+                    new FailedhostStorageException(sqlException);
+                throw CreateAndLogCriticalDependencyException(failedhostStorageException);
             }
         }
 
