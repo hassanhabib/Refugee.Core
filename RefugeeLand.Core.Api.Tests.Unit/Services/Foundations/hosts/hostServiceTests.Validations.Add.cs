@@ -205,5 +205,63 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.hosts
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [MemberData(nameof(MinutesBeforeOrAfter))]
+        public async Task ShouldThrowValidationExceptionOnAddIfCreatedDateIsNotRecentAndLogItAsync(
+            int minutesBeforeOrAfter)
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+
+            DateTimeOffset invalidDateTime =
+                randomDateTimeOffset.AddMinutes(minutesBeforeOrAfter);
+
+            host randomhost = CreateRandomhost(invalidDateTime);
+            host invalidhost = randomhost;
+
+            var invalidhostException =
+                new InvalidhostException();
+
+            invalidhostException.AddData(
+                key: nameof(host.CreatedDate),
+                values: "Date is not recent");
+
+            var expectedhostValidationException =
+                new hostValidationException(invalidhostException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
+            // when
+            ValueTask<host> addhostTask =
+                this.hostService.AddhostAsync(invalidhost);
+
+            hostValidationException actualhostValidationException =
+                await Assert.ThrowsAsync<hostValidationException>(
+                    addhostTask.AsTask);
+
+            // then
+            actualhostValidationException.Should()
+                .BeEquivalentTo(expectedhostValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedhostValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InserthostAsync(It.IsAny<host>()),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
