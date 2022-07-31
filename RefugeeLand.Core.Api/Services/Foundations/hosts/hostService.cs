@@ -22,7 +22,12 @@ namespace RefugeeLand.Core.Api.Services.Foundations.hosts
             this.loggingBroker = loggingBroker;
         }
 
-        public async ValueTask<host> AddhostAsync(host host) =>
-            await this.storageBroker.InserthostAsync(host);
+        public ValueTask<host> AddhostAsync(host host) =>
+            TryCatch(async () =>
+            {
+                ValidatehostOnAdd(host);
+
+                return await this.storageBroker.InserthostAsync(host);
+            });
     }
 }
