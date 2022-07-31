@@ -28,6 +28,10 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Hosts
                     .Returns(randomDateTimeOffset);
 
             this.storageBrokerMock.Setup(broker =>
+                broker.SelectHostByIdAsync(hostId))
+                    .ReturnsAsync(storageHost);
+
+            this.storageBrokerMock.Setup(broker =>
                 broker.UpdateHostAsync(inputHost))
                     .ReturnsAsync(updatedHost);
 
@@ -43,12 +47,16 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Hosts
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
+                broker.SelectHostByIdAsync(inputHost.Id),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
                 broker.UpdateHostAsync(inputHost),
                     Times.Once);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }
