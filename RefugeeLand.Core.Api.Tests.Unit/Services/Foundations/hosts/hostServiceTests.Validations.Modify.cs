@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Force.DeepCloner;
 using Moq;
 using RefugeeLand.Core.Api.Models.hosts;
 using RefugeeLand.Core.Api.Models.hosts.Exceptions;
@@ -122,9 +123,9 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.hosts
                 broker.UpdatehostAsync(It.IsAny<host>()),
                     Times.Never);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -172,9 +173,9 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.hosts
                 broker.SelecthostByIdAsync(invalidhost.Id),
                     Times.Never);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -277,6 +278,65 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.hosts
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedhostValidationException))),
                         Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfStorageCreatedDateNotSameAsCreatedDateAndLogItAsync()
+        {
+            // given
+            int randomNumber = GetRandomNegativeNumber();
+            int randomMinutes = randomNumber;
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            host randomhost = CreateRandomModifyhost(randomDateTimeOffset);
+            host invalidhost = randomhost.DeepClone();
+            host storagehost = invalidhost.DeepClone();
+            storagehost.CreatedDate = storagehost.CreatedDate.AddMinutes(randomMinutes);
+            storagehost.UpdatedDate = storagehost.UpdatedDate.AddMinutes(randomMinutes);
+            var invalidhostException = new InvalidhostException();
+
+            invalidhostException.AddData(
+                key: nameof(host.CreatedDate),
+                values: $"Date is not the same as {nameof(host.CreatedDate)}");
+
+            var expectedhostValidationException =
+                new hostValidationException(invalidhostException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelecthostByIdAsync(invalidhost.Id))
+                .ReturnsAsync(storagehost);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                .Returns(randomDateTimeOffset);
+
+            // when
+            ValueTask<host> modifyhostTask =
+                this.hostService.ModifyhostAsync(invalidhost);
+
+            hostValidationException actualhostValidationException =
+                await Assert.ThrowsAsync<hostValidationException>(
+                    modifyhostTask.AsTask);
+
+            // then
+            actualhostValidationException.Should()
+                .BeEquivalentTo(expectedhostValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelecthostByIdAsync(invalidhost.Id),
+                    Times.Once);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogError(It.Is(SameExceptionAs(
+                   expectedhostValidationException))),
+                       Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
