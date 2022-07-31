@@ -14,10 +14,6 @@ namespace RefugeeLand.Core.Api.Brokers.Storages
         private static void SetPetMedicalConditionReferences(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<PetMedicalCondition>()
-                .HasKey(petMedicalCondition =>
-                    new { petMedicalCondition.PetId, petMedicalCondition.MedicalConditionId });
-
-            modelBuilder.Entity<PetMedicalCondition>()
                 .HasOne(petMedicalCondition => petMedicalCondition.Pet)
                 .WithMany(pet => pet.PetMedicalConditions)
                 .HasForeignKey(petMedicalCondition => petMedicalCondition.PetId)

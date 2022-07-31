@@ -80,11 +80,11 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.RefugeeGroups
                 values: "Id is required");
 
             invalidRefugeeGroupException.AddData(
-                key: nameof(RefugeeGroup.CreatedBy),
+                key: nameof(RefugeeGroup.CreatedByUserId),
                 values: "Id is required");
 
             invalidRefugeeGroupException.AddData(
-                key: nameof(RefugeeGroup.UpdatedBy),
+                key: nameof(RefugeeGroup.UpdatedByUserId),
                 values: "Id is required");
             
             invalidRefugeeGroupException.AddData(

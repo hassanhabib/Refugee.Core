@@ -38,10 +38,10 @@ namespace RefugeeLand.Core.Api.Models.Shelters
         public ShelterPropertyType PropertyType { get; set; }
         public IEnumerable<AllowedPet> AllowedPets { get; set; }
 
-        DateTimeOffset CreatedDate { get; set; }
-        DateTimeOffset UpdatedDate { get; set; }
-        Guid CreatedBy { get; set; }
-        Guid UpdatedBy { get; set; }
+        public DateTimeOffset CreatedDate { get; set; }
+        public DateTimeOffset UpdatedDate { get; set; }
+        public Guid CreatedByUserId { get; set; }
+        public Guid UpdatedByUserId { get; set; }
 
         [JsonIgnore] 
         public IEnumerable<ShelterRefugeeOccupant> ShelterRefugeeOccupants { get; set; }

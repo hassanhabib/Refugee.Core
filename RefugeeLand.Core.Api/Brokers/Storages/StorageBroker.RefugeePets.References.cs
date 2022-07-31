@@ -14,10 +14,6 @@ namespace RefugeeLand.Core.Api.Brokers.Storages
         private static void SetRefugeePetReferences(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<RefugeePet>()
-                .HasKey(refugeePet =>
-                    new { refugeePet.RefugeeId, refugeePet.PetId });
-
-            modelBuilder.Entity<RefugeePet>()
                 .HasOne(refugeePet => refugeePet.Pet)
                 .WithMany(pet => pet.RefugeePets)
                 .HasForeignKey(refugeePet => refugeePet.PetId)

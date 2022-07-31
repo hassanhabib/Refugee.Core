@@ -17,8 +17,8 @@ namespace RefugeeLand.Core.Api.Services.Foundations.RefugeeGroups
             Validate(
                 (Rule: IsInvalid(refugeeGroup.Id), Parameter: nameof(RefugeeGroup.Id)),
                 (Rule: IsInvalid(refugeeGroup.Name), Parameter: nameof(RefugeeGroup.Name)),
-                (Rule: IsInvalid(refugeeGroup.CreatedBy), Parameter: nameof(RefugeeGroup.CreatedBy)),
-                (Rule: IsInvalid(refugeeGroup.UpdatedBy), Parameter: nameof(RefugeeGroup.UpdatedBy)),
+                (Rule: IsInvalid(refugeeGroup.CreatedByUserId), Parameter: nameof(RefugeeGroup.CreatedByUserId)),
+                (Rule: IsInvalid(refugeeGroup.UpdatedByUserId), Parameter: nameof(RefugeeGroup.UpdatedByUserId)),
                 (Rule: IsInvalid(refugeeGroup.CreatedDate), Parameter: nameof(RefugeeGroup.CreatedDate)),
                 (Rule: IsInvalid(refugeeGroup.UpdatedDate), Parameter: nameof(RefugeeGroup.UpdatedDate)),
 

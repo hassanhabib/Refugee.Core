@@ -14,10 +14,6 @@ namespace RefugeeLand.Core.Api.Brokers.Storages
         private static void SetRefugeeGroupMembershipReferences(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<RefugeeGroupMembership>()
-                .HasKey(refugeeGroupMembership =>
-                    new { refugeeGroupMembership.RefugeeId, refugeeGroupMembership.RefugeeGroupId });
-
-            modelBuilder.Entity<RefugeeGroupMembership>()
                 .HasOne(refugeeGroupMembership => refugeeGroupMembership.Refugee)
                 .WithMany(refugee => refugee.RefugeeGroupMemberships)
                 .HasForeignKey(refugeeGroupMembership => refugeeGroupMembership.RefugeeId)

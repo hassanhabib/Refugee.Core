@@ -12,6 +12,12 @@ namespace RefugeeLand.Core.Api.Models.Languages
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
-        public FluencyLevel FluencyLevel { get; set; } 
+        public FluencyLevel FluencyLevel { get; set; }
+        //todo: Bring fluency level enum in this folder
+        
+        public DateTimeOffset CreatedDate { get; set; }
+        public DateTimeOffset UpdatedDate { get; set; }
+        public Guid CreatedByUserId { get; set; }
+        public Guid UpdatedByUserId { get; set; }
     }
 }

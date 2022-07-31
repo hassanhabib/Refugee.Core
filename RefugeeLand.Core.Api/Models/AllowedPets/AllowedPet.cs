@@ -11,5 +11,11 @@ namespace RefugeeLand.Core.Api.Models.AllowedPets
     {
         public Guid Id { get; set; }
         public AllowedPetType Type { get; set; }
+        
+        public DateTimeOffset CreatedDate { get; set; }
+        public DateTimeOffset UpdatedDate { get; set; }
+        public Guid CreatedByUserId { get; set; }
+        public Guid UpdatedByUserId { get; set; }
+        
     }
 }
