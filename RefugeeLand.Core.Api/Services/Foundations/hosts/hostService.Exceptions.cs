@@ -78,6 +78,13 @@ namespace RefugeeLand.Core.Api.Services.Foundations.hosts
                     new FailedhostStorageException(sqlException);
                 throw CreateAndLogCriticalDependencyException(failedhostStorageException);
             }
+            catch (Exception exception)
+            {
+                var failedhostServiceException =
+                    new FailedhostServiceException(exception);
+
+                throw CreateAndLogServiceException(failedhostServiceException);
+            }
         }
 
         private hostValidationException CreateAndLogValidationException(Xeption exception)
