@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
 using RefugeeLand.Core.Api.Models.hosts;
 using RefugeeLand.Core.Api.Models.hosts.Exceptions;
@@ -31,6 +32,13 @@ namespace RefugeeLand.Core.Api.Services.Foundations.hosts
 
                 throw CreateAndLogCriticalDependencyException(failedhostStorageException);
             }
+            catch (DuplicateKeyException duplicateKeyException)
+            {
+                var alreadyExistshostException =
+                    new AlreadyExistshostException(duplicateKeyException);
+
+                throw CreateAndLogDependencyValidationException(alreadyExistshostException);
+            }
         }
 
         private hostValidationException CreateAndLogValidationException(Xeption exception)
@@ -49,6 +57,16 @@ namespace RefugeeLand.Core.Api.Services.Foundations.hosts
             this.loggingBroker.LogCritical(hostDependencyException);
 
             return hostDependencyException;
+        }
+
+        private hostDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
+        {
+            var hostDependencyValidationException =
+                new hostDependencyValidationException(exception);
+
+            this.loggingBroker.LogError(hostDependencyValidationException);
+
+            return hostDependencyValidationException;
         }
     }
 }
