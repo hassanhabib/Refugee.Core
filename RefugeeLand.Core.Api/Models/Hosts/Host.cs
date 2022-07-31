@@ -23,8 +23,8 @@ namespace RefugeeLand.Core.Api.Models.Hosts
 
         public DateTimeOffset CreatedDate { get; set; }
         public DateTimeOffset UpdatedDate { get; set; }
-        public Guid CreatedBy { get; set; }
-        public Guid UpdatedBy { get; set; }
+        public Guid CreatedByUserId { get; set; }
+        public Guid UpdatedByUserId { get; set; }
 
         [JsonIgnore] 
         public IEnumerable<Shelter> Shelters { get; set; }

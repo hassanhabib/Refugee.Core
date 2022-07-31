@@ -11,6 +11,8 @@ namespace RefugeeLand.Core.Api.Models.RefugeeGroupMemberships
 {
     public class RefugeeGroupMembership
     {
+        public Guid Id { get; set; }
+        
         public Guid RefugeeGroupId { get; set; }
         public RefugeeGroup RefugeeGroup { get; set; }
 
@@ -28,7 +30,7 @@ namespace RefugeeLand.Core.Api.Models.RefugeeGroupMemberships
         
         public DateTimeOffset CreatedDate { get; set; }
         public DateTimeOffset UpdatedDate { get; set; }
-        public Guid CreatedBy { get; set; }
-        public Guid UpdatedBy { get; set; }
+        public Guid CreatedByUserId { get; set; }
+        public Guid UpdatedByUserId { get; set; }
     }
 }

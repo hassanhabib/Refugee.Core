@@ -16,6 +16,11 @@ namespace RefugeeLand.Core.Api.Models.MedicalConditions
         public string Name { get; set; }
         public string AdditionalDetails { get; set; }
         
+        public DateTimeOffset CreatedDate { get; set; }
+        public DateTimeOffset UpdatedDate { get; set; }
+        public Guid CreatedByUserId { get; set; }
+        public Guid UpdatedByUserId { get; set; }
+        
         [JsonIgnore]
         public IEnumerable<PetMedicalCondition> PetMedicalConditions { get; set; }
         

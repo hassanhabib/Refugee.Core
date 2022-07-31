@@ -11,6 +11,8 @@ namespace RefugeeLand.Core.Api.Models.ShelterRefugeeOccupants
 {
     public class ShelterRefugeeOccupant
     {
+        public Guid Id { get; set; }
+        
         public Guid ShelterId { get; set; }
         public Shelter Shelter { get; set; }
 

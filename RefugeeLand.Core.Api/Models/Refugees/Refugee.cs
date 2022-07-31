@@ -26,8 +26,8 @@ namespace RefugeeLand.Core.Api.Models.Refugees
 
         public DateTimeOffset CreatedDate { get; set; }
         public DateTimeOffset UpdatedDate { get; set; }
-        public Guid CreatedBy { get; set; }
-        public Guid UpdatedBy { get; set; }
+        public Guid CreatedByUserId { get; set; }
+        public Guid UpdatedByUserId { get; set; }
 
         public RefugeeGender Gender { get; set; } 
 
