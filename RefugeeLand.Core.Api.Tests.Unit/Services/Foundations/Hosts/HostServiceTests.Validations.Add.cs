@@ -27,8 +27,8 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Hosts
                 this.hostService.AddHostAsync(nullHost);
 
             HostValidationException actualHostValidationException =
-                await Assert.ThrowsAsync<HostValidationException>(
-                    addHostTask.AsTask);
+                await Assert.ThrowsAsync<HostValidationException>(() =>
+                    addHostTask.AsTask());
 
             // then
             actualHostValidationException.Should()
@@ -93,12 +93,16 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Hosts
                 this.hostService.AddHostAsync(invalidHost);
 
             HostValidationException actualHostValidationException =
-                await Assert.ThrowsAsync<HostValidationException>(
-                    addHostTask.AsTask);
+                await Assert.ThrowsAsync<HostValidationException>(() =>
+                    addHostTask.AsTask());
 
             // then
             actualHostValidationException.Should()
                 .BeEquivalentTo(expectedHostValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -135,17 +139,25 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Hosts
             var expectedHostValidationException =
                 new HostValidationException(invalidHostException);
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
             // when
             ValueTask<Host> addHostTask =
                 this.hostService.AddHostAsync(invalidHost);
 
             HostValidationException actualHostValidationException =
-                await Assert.ThrowsAsync<HostValidationException>(
-                    addHostTask.AsTask);
+                await Assert.ThrowsAsync<HostValidationException>(() =>
+                    addHostTask.AsTask());
 
             // then
             actualHostValidationException.Should()
                 .BeEquivalentTo(expectedHostValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -156,9 +168,9 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Hosts
                 broker.InsertHostAsync(It.IsAny<Host>()),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -180,17 +192,25 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Hosts
             var expectedHostValidationException =
                 new HostValidationException(invalidHostException);
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
             // when
             ValueTask<Host> addHostTask =
                 this.hostService.AddHostAsync(invalidHost);
 
             HostValidationException actualHostValidationException =
-                await Assert.ThrowsAsync<HostValidationException>(
-                    addHostTask.AsTask);
+                await Assert.ThrowsAsync<HostValidationException>(() =>
+                    addHostTask.AsTask());
 
             // then
             actualHostValidationException.Should()
                 .BeEquivalentTo(expectedHostValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -239,8 +259,8 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Hosts
                 this.hostService.AddHostAsync(invalidHost);
 
             HostValidationException actualHostValidationException =
-                await Assert.ThrowsAsync<HostValidationException>(
-                    addHostTask.AsTask);
+                await Assert.ThrowsAsync<HostValidationException>(() =>
+                    addHostTask.AsTask());
 
             // then
             actualHostValidationException.Should()
