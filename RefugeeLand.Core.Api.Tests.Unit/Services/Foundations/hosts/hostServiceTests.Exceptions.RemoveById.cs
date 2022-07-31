@@ -111,5 +111,48 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.hosts
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowDependencyExceptionOnRemoveWhenSqlExceptionOccursAndLogItAsync()
+        {
+            // given
+            Guid somehostId = Guid.NewGuid();
+            SqlException sqlException = GetSqlException();
+
+            var failedhostStorageException =
+                new FailedhostStorageException(sqlException);
+
+            var expectedhostDependencyException =
+                new hostDependencyException(failedhostStorageException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelecthostByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(sqlException);
+
+            // when
+            ValueTask<host> deletehostTask =
+                this.hostService.RemovehostByIdAsync(somehostId);
+
+            hostDependencyException actualhostDependencyException =
+                await Assert.ThrowsAsync<hostDependencyException>(
+                    deletehostTask.AsTask);
+
+            // then
+            actualhostDependencyException.Should()
+                .BeEquivalentTo(expectedhostDependencyException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelecthostByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogCritical(It.Is(SameExceptionAs(
+                    expectedhostDependencyException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
