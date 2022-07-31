@@ -1,6 +1,8 @@
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using RefugeeLand.Core.Api.Models.hosts;
 using RefugeeLand.Core.Api.Models.hosts.Exceptions;
@@ -54,6 +56,55 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.hosts
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
+                    Times.Never);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyValidationOnRemoveIfDatabaseUpdateConcurrencyErrorOccursAndLogItAsync()
+        {
+            // given
+            Guid somehostId = Guid.NewGuid();
+
+            var databaseUpdateConcurrencyException =
+                new DbUpdateConcurrencyException();
+
+            var lockedhostException =
+                new LockedhostException(databaseUpdateConcurrencyException);
+
+            var expectedhostDependencyValidationException =
+                new hostDependencyValidationException(lockedhostException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelecthostByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(databaseUpdateConcurrencyException);
+
+            // when
+            ValueTask<host> removehostByIdTask =
+                this.hostService.RemovehostByIdAsync(somehostId);
+
+            hostDependencyValidationException actualhostDependencyValidationException =
+                await Assert.ThrowsAsync<hostDependencyValidationException>(
+                    removehostByIdTask.AsTask);
+
+            // then
+            actualhostDependencyValidationException.Should()
+                .BeEquivalentTo(expectedhostDependencyValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelecthostByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedhostDependencyValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.DeletehostAsync(It.IsAny<host>()),
                     Times.Never);
 
             this.storageBrokerMock.VerifyNoOtherCalls();
