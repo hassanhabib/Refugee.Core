@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using FluentAssertions;
@@ -208,6 +209,57 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.hosts
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedhostDependencyValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdatehostAsync(randomhost),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnModifyIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            host randomhost = CreateRandomhost();
+            var serviceException = new Exception();
+
+            var failedhostServiceException =
+                new FailedhostServiceException(serviceException);
+
+            var expectedhostServiceException =
+                new hostServiceException(failedhostServiceException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(serviceException);
+
+            // when
+            ValueTask<host> modifyhostTask =
+                this.hostService.ModifyhostAsync(randomhost);
+
+            hostServiceException actualhostServiceException =
+                await Assert.ThrowsAsync<hostServiceException>(
+                    modifyhostTask.AsTask);
+
+            // then
+            actualhostServiceException.Should()
+                .BeEquivalentTo(expectedhostServiceException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelecthostByIdAsync(randomhost.Id),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedhostServiceException))),
                         Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
