@@ -48,7 +48,12 @@ namespace RefugeeLand.Core.Api.Services.Foundations.hosts
                 return maybehost;
             });
 
-        public async ValueTask<host> ModifyhostAsync(host host) =>
-            await this.storageBroker.UpdatehostAsync(host);
+        public ValueTask<host> ModifyhostAsync(host host) =>
+            TryCatch(async () =>
+            {
+                ValidatehostOnModify(host);
+
+                return await this.storageBroker.UpdatehostAsync(host);
+            });
     }
 }
