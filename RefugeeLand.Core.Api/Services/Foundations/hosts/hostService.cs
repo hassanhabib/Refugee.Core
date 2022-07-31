@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using RefugeeLand.Core.Api.Brokers.DateTimes;
@@ -33,5 +34,8 @@ namespace RefugeeLand.Core.Api.Services.Foundations.hosts
 
         public IQueryable<host> RetrieveAllhosts() =>
             TryCatch(() => this.storageBroker.SelectAllhosts());
+
+        public ValueTask<host> RetrievehostByIdAsync(Guid hostId) =>
+            throw new NotImplementedException();
     }
 }
