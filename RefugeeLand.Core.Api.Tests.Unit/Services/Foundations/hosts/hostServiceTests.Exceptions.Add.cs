@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using EFxceptions.Models.Exceptions;
 using FluentAssertions;
 using Microsoft.Data.SqlClient;
 using Moq;
@@ -50,6 +51,57 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.hosts
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogCritical(It.Is(SameExceptionAs(
                     expectedhostDependencyException))),
+                        Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyValidationExceptionOnAddIfhostAlreadyExsitsAndLogItAsync()
+        {
+            // given
+            host randomhost = CreateRandomhost();
+            host alreadyExistshost = randomhost;
+            string randomMessage = GetRandomMessage();
+
+            var duplicateKeyException =
+                new DuplicateKeyException(randomMessage);
+
+            var alreadyExistshostException =
+                new AlreadyExistshostException(duplicateKeyException);
+
+            var expectedhostDependencyValidationException =
+                new hostDependencyValidationException(alreadyExistshostException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(duplicateKeyException);
+
+            // when
+            ValueTask<host> addhostTask =
+                this.hostService.AddhostAsync(alreadyExistshost);
+
+            // then
+            hostDependencyValidationException actualhostDependencyValidationException =
+                await Assert.ThrowsAsync<hostDependencyValidationException>(
+                    addhostTask.AsTask);
+
+            actualhostDependencyValidationException.Should()
+                .BeEquivalentTo(expectedhostDependencyValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InserthostAsync(It.IsAny<host>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedhostDependencyValidationException))),
                         Times.Once);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
