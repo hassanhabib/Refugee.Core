@@ -47,5 +47,8 @@ namespace RefugeeLand.Core.Api.Services.Foundations.hosts
 
                 return maybehost;
             });
+
+        public ValueTask<host> ModifyhostAsync(host host) =>
+            throw new NotImplementedException();
     }
 }
