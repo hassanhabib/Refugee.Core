@@ -167,5 +167,56 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.hosts
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowDependencyValidationExceptionOnModifyIfDbUpdateConcurrencyErrorOccursAndLogAsync()
+        {
+            // given
+            host randomhost = CreateRandomhost();
+            var databaseUpdateConcurrencyException = new DbUpdateConcurrencyException();
+
+            var lockedhostException =
+                new LockedhostException(databaseUpdateConcurrencyException);
+
+            var expectedhostDependencyValidationException =
+                new hostDependencyValidationException(lockedhostException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(databaseUpdateConcurrencyException);
+
+            // when
+            ValueTask<host> modifyhostTask =
+                this.hostService.ModifyhostAsync(randomhost);
+
+            hostDependencyValidationException actualhostDependencyValidationException =
+                await Assert.ThrowsAsync<hostDependencyValidationException>(
+                    modifyhostTask.AsTask);
+
+            // then
+            actualhostDependencyValidationException.Should()
+                .BeEquivalentTo(expectedhostDependencyValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelecthostByIdAsync(randomhost.Id),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedhostDependencyValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdatehostAsync(randomhost),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
