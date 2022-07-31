@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -54,6 +55,13 @@ namespace RefugeeLand.Core.Api.Services.Foundations.hosts
 
                 throw CreateAndLogDependecyException(failedhostStorageException);
             }
+            catch (Exception exception)
+            {
+                var failedhostServiceException =
+                    new FailedhostServiceException(exception);
+
+                throw CreateAndLogServiceException(failedhostServiceException);
+            }
         }
 
         private hostValidationException CreateAndLogValidationException(Xeption exception)
@@ -91,6 +99,15 @@ namespace RefugeeLand.Core.Api.Services.Foundations.hosts
             this.loggingBroker.LogError(hostDependencyException);
 
             return hostDependencyException;
+        }
+
+        private hostServiceException CreateAndLogServiceException(
+            Xeption exception)
+        {
+            var hostServiceException = new hostServiceException(exception);
+            this.loggingBroker.LogError(hostServiceException);
+
+            return hostServiceException;
         }
     }
 }
