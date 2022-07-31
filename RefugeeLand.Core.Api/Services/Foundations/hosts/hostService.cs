@@ -61,5 +61,8 @@ namespace RefugeeLand.Core.Api.Services.Foundations.hosts
 
                 return await this.storageBroker.UpdatehostAsync(host);
             });
+
+        public ValueTask<host> RemovehostByIdAsync(Guid hostId) =>
+            throw new NotImplementedException();
     }
 }

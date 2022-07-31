@@ -11,5 +11,6 @@ namespace RefugeeLand.Core.Api.Services.Foundations.hosts
         IQueryable<host> RetrieveAllhosts();
         ValueTask<host> RetrievehostByIdAsync(Guid hostId);
         ValueTask<host> ModifyhostAsync(host host);
+        ValueTask<host> RemovehostByIdAsync(Guid hostId);
     }
 }
