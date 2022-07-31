@@ -38,6 +38,14 @@ namespace RefugeeLand.Core.Api.Services.Foundations.hosts
         public void ValidatehostId(Guid hostId) =>
             Validate((Rule: IsInvalid(hostId), Parameter: nameof(host.Id)));
 
+        private static void ValidateStoragehost(host maybehost, Guid hostId)
+        {
+            if (maybehost is null)
+            {
+                throw new NotFoundhostException(hostId);
+            }
+        }
+
         private static void ValidatehostIsNotNull(host host)
         {
             if (host is null)

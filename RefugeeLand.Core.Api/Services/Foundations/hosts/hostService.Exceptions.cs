@@ -36,6 +36,10 @@ namespace RefugeeLand.Core.Api.Services.Foundations.hosts
 
                 throw CreateAndLogCriticalDependencyException(failedhostStorageException);
             }
+            catch (NotFoundhostException notFoundhostException)
+            {
+                throw CreateAndLogValidationException(notFoundhostException);
+            }
             catch (DuplicateKeyException duplicateKeyException)
             {
                 var alreadyExistshostException =
