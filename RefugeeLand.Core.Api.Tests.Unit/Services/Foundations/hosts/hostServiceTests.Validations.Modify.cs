@@ -173,9 +173,9 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.hosts
                 broker.SelecthostByIdAsync(invalidhost.Id),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -279,8 +279,8 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.hosts
                     expectedhostValidationException))),
                         Times.Once);
 
-            this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -338,8 +338,65 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.hosts
                    expectedhostValidationException))),
                        Times.Once);
 
-            this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfCreatedUserIdDontMacthStorageAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            host randomhost = CreateRandomModifyhost(randomDateTimeOffset);
+            host invalidhost = randomhost.DeepClone();
+            host storagehost = invalidhost.DeepClone();
+            invalidhost.CreatedByUserId = Guid.NewGuid();
+            storagehost.UpdatedDate = storagehost.CreatedDate;
+
+            var invalidhostException = new InvalidhostException();
+
+            invalidhostException.AddData(
+                key: nameof(host.CreatedByUserId),
+                values: $"Id is not the same as {nameof(host.CreatedByUserId)}");
+
+            var expectedhostValidationException =
+                new hostValidationException(invalidhostException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelecthostByIdAsync(invalidhost.Id))
+                .ReturnsAsync(storagehost);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                .Returns(randomDateTimeOffset);
+
+            // when
+            ValueTask<host> modifyhostTask =
+                this.hostService.ModifyhostAsync(invalidhost);
+
+            hostValidationException actualhostValidationException =
+                await Assert.ThrowsAsync<hostValidationException>(
+                    modifyhostTask.AsTask);
+
+            // then
+            actualhostValidationException.Should().BeEquivalentTo(expectedhostValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelecthostByIdAsync(invalidhost.Id),
+                    Times.Once);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogError(It.Is(SameExceptionAs(
+                   expectedhostValidationException))),
+                       Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
