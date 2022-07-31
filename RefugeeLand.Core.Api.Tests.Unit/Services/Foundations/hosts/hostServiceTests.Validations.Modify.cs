@@ -106,7 +106,8 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.hosts
                     modifyhostTask.AsTask);
 
             //then
-            actualhostValidationException.Should().BeEquivalentTo(expectedhostValidationException);
+            actualhostValidationException.Should()
+                .BeEquivalentTo(expectedhostValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -147,7 +148,8 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.hosts
                     modifyhostTask.AsTask);
 
             // then
-            actualhostValidationException.Should().BeEquivalentTo(expectedhostValidationException);
+            actualhostValidationException.Should()
+                .BeEquivalentTo(expectedhostValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -161,6 +163,58 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.hosts
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [MemberData(nameof(MinutesBeforeOrAfter))]
+        public async Task ShouldThrowValidationExceptionOnModifyIfUpdatedDateIsNotRecentAndLogItAsync(int minutes)
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            host randomhost = CreateRandomhost(randomDateTimeOffset);
+            randomhost.UpdatedDate = randomDateTimeOffset.AddMinutes(minutes);
+
+            var invalidhostException =
+                new InvalidhostException();
+
+            invalidhostException.AddData(
+                key: nameof(host.UpdatedDate),
+                values: "Date is not recent");
+
+            var expectedhostValidatonException =
+                new hostValidationException(invalidhostException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                .Returns(randomDateTimeOffset);
+
+            // when
+            ValueTask<host> modifyhostTask =
+                this.hostService.ModifyhostAsync(randomhost);
+
+            hostValidationException actualhostValidationException =
+                await Assert.ThrowsAsync<hostValidationException>(
+                    modifyhostTask.AsTask);
+
+            // then
+            actualhostValidationException.Should().BeEquivalentTo(expectedhostValidatonException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedhostValidatonException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelecthostByIdAsync(It.IsAny<Guid>()),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
         }
     }
 }
