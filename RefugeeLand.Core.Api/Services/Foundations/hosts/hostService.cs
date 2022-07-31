@@ -35,7 +35,7 @@ namespace RefugeeLand.Core.Api.Services.Foundations.hosts
         public IQueryable<host> RetrieveAllhosts() =>
             TryCatch(() => this.storageBroker.SelectAllhosts());
 
-        public ValueTask<host> RetrievehostByIdAsync(Guid hostId) =>
-            throw new NotImplementedException();
+        public async ValueTask<host> RetrievehostByIdAsync(Guid hostId) =>
+            await this.storageBroker.SelecthostByIdAsync(hostId);
     }
 }
