@@ -108,5 +108,55 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.hosts
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async void ShouldThrowValidationExceptionOnAddIfReferenceErrorOccursAndLogItAsync()
+        {
+            // given
+            host somehost = CreateRandomhost();
+            string randomMessage = GetRandomMessage();
+            string exceptionMessage = randomMessage;
+
+            var foreignKeyConstraintConflictException =
+                new ForeignKeyConstraintConflictException(exceptionMessage);
+
+            var invalidhostReferenceException =
+                new InvalidhostReferenceException(foreignKeyConstraintConflictException);
+
+            var expectedhostValidationException =
+                new hostDependencyValidationException(invalidhostReferenceException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(foreignKeyConstraintConflictException);
+
+            // when
+            ValueTask<host> addhostTask =
+                this.hostService.AddhostAsync(somehost);
+
+            // then
+            hostDependencyValidationException actualhostDependencyValidationException =
+                await Assert.ThrowsAsync<hostDependencyValidationException>(
+                    addhostTask.AsTask);
+
+            actualhostDependencyValidationException.Should().BeEquivalentTo(expectedhostValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedhostValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InserthostAsync(somehost),
+                    Times.Never());
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
