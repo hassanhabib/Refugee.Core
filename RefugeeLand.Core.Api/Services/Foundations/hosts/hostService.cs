@@ -22,7 +22,7 @@ namespace RefugeeLand.Core.Api.Services.Foundations.hosts
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<host> AddhostAsync(host host) =>
-            throw new System.NotImplementedException();
+        public async ValueTask<host> AddhostAsync(host host) =>
+            await this.storageBroker.InserthostAsync(host);
     }
 }
