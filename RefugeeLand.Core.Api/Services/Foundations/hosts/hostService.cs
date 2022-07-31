@@ -70,6 +70,8 @@ namespace RefugeeLand.Core.Api.Services.Foundations.hosts
                 host maybehost = await this.storageBroker
                     .SelecthostByIdAsync(hostId);
 
+                ValidateStoragehost(maybehost, hostId);
+
                 return await this.storageBroker.DeletehostAsync(maybehost);
             });
     }
