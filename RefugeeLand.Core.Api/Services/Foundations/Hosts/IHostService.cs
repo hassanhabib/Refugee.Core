@@ -10,5 +10,6 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Hosts
         ValueTask<Host> AddHostAsync(Host host);
         IQueryable<Host> RetrieveAllHosts();
         ValueTask<Host> RetrieveHostByIdAsync(Guid hostId);
+        ValueTask<Host> ModifyHostAsync(Host host);
     }
 }
