@@ -77,6 +77,16 @@ namespace RefugeeLand.Core.Api.Services.Foundations.hosts
             }
         }
 
+        private static void ValidateAgainstStoragehostOnModify(host inputhost, host storagehost)
+        {
+            Validate(
+                (Rule: IsNotSame(
+                    firstDate: inputhost.CreatedDate,
+                    secondDate: storagehost.CreatedDate,
+                    secondDateName: nameof(host.CreatedDate)),
+                Parameter: nameof(host.CreatedDate)));
+        }
+
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,
