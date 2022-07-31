@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using RefugeeLand.Core.Api.Models.hosts;
 using RefugeeLand.Core.Api.Models.hosts.Exceptions;
 using Xeptions;
@@ -46,6 +47,13 @@ namespace RefugeeLand.Core.Api.Services.Foundations.hosts
 
                 throw CreateAndLogDependencyValidationException(invalidhostReferenceException);
             }
+            catch (DbUpdateException databaseUpdateException)
+            {
+                var failedhostStorageException =
+                    new FailedhostStorageException(databaseUpdateException);
+
+                throw CreateAndLogDependecyException(failedhostStorageException);
+            }
         }
 
         private hostValidationException CreateAndLogValidationException(Xeption exception)
@@ -74,6 +82,15 @@ namespace RefugeeLand.Core.Api.Services.Foundations.hosts
             this.loggingBroker.LogError(hostDependencyValidationException);
 
             return hostDependencyValidationException;
+        }
+
+        private hostDependencyException CreateAndLogDependecyException(
+            Xeption exception)
+        {
+            var hostDependencyException = new hostDependencyException(exception);
+            this.loggingBroker.LogError(hostDependencyException);
+
+            return hostDependencyException;
         }
     }
 }
