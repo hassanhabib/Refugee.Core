@@ -31,5 +31,13 @@ namespace RefugeeLand.Core.Api.Brokers.Storages
 
             return broker.Hosts;
         }
+
+        public async ValueTask<Host> SelectHostByIdAsync(Guid hostId)
+        {
+            using var broker =
+                new StorageBroker(this.configuration);
+
+            return await broker.Hosts.FindAsync(hostId);
+        }
     }
 }

@@ -9,5 +9,6 @@ namespace RefugeeLand.Core.Api.Brokers.Storages
     {
         ValueTask<Host> InsertHostAsync(Host host);
         IQueryable<Host> SelectAllHosts();
+        ValueTask<Host> SelectHostByIdAsync(Guid hostId);
     }
 }
