@@ -47,7 +47,13 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Hosts
                 (Rule: IsInvalid(host.CreatedDate), Parameter: nameof(Host.CreatedDate)),
                 (Rule: IsInvalid(host.CreatedByUserId), Parameter: nameof(Host.CreatedByUserId)),
                 (Rule: IsInvalid(host.UpdatedDate), Parameter: nameof(Host.UpdatedDate)),
-                (Rule: IsInvalid(host.UpdatedByUserId), Parameter: nameof(Host.UpdatedByUserId)));
+                (Rule: IsInvalid(host.UpdatedByUserId), Parameter: nameof(Host.UpdatedByUserId)),
+
+                (Rule: IsSame(
+                    firstDate: host.UpdatedDate,
+                    secondDate: host.CreatedDate,
+                    secondDateName: nameof(Host.CreatedDate)),
+                Parameter: nameof(Host.UpdatedDate)));
         }
 
         public void ValidateHostId(Guid hostId) =>
@@ -80,6 +86,15 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Hosts
             Condition = date == default,
             Message = "Date is required"
         };
+
+        private static dynamic IsSame(
+            DateTimeOffset firstDate,
+            DateTimeOffset secondDate,
+            string secondDateName) => new
+            {
+                Condition = firstDate == secondDate,
+                Message = $"Date is the same as {secondDateName}"
+            };
 
         private static dynamic IsNotSame(
             DateTimeOffset firstDate,
