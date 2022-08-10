@@ -1,62 +1,65 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
-using FluentAssertions;
-using Force.DeepCloner;
-using Moq;
+using RefugeeLand.Core.Api.Brokers.DateTimes;
+using RefugeeLand.Core.Api.Brokers.Loggings;
+using RefugeeLand.Core.Api.Brokers.Storages;
 using RefugeeLand.Core.Api.Models.Hosts;
-using Xunit;
 
-namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Hosts
+namespace RefugeeLand.Core.Api.Services.Foundations.Hosts
 {
-    public partial class HostServiceTests
+    public partial class HostService : IHostService
     {
-        [Fact]
-        public async Task ShouldModifyHostAsync()
+        private readonly IStorageBroker storageBroker;
+        private readonly IDateTimeBroker dateTimeBroker;
+        private readonly ILoggingBroker loggingBroker;
+
+        public HostService(
+            IStorageBroker storageBroker,
+            IDateTimeBroker dateTimeBroker,
+            ILoggingBroker loggingBroker)
         {
-            // given
-            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            Host randomHost = CreateRandomModifyHost(randomDateTimeOffset);
-            Host inputHost = randomHost;
-            Host storageHost = inputHost.DeepClone();
-            storageHost.UpdatedDate = randomHost.CreatedDate;
-            Host updatedHost = inputHost;
-            Host expectedHost = updatedHost.DeepClone();
-            Guid hostId = inputHost.Id;
-
-            this.dateTimeBrokerMock.Setup(broker =>
-                broker.GetCurrentDateTimeOffset())
-                    .Returns(randomDateTimeOffset);
-
-            this.storageBrokerMock.Setup(broker =>
-                broker.SelectHostByIdAsync(hostId))
-                    .ReturnsAsync(storageHost);
-
-            this.storageBrokerMock.Setup(broker =>
-                broker.UpdateHostAsync(inputHost))
-                    .ReturnsAsync(updatedHost);
-
-            // when
-            Host actualHost =
-                await this.hostService.ModifyHostAsync(inputHost);
-
-            // then
-            actualHost.Should().BeEquivalentTo(expectedHost);
-
-            this.dateTimeBrokerMock.Verify(broker =>
-                broker.GetCurrentDateTimeOffset(),
-                    Times.Once);
-
-            this.storageBrokerMock.Verify(broker =>
-                broker.SelectHostByIdAsync(inputHost.Id),
-                    Times.Once);
-
-            this.storageBrokerMock.Verify(broker =>
-                broker.UpdateHostAsync(inputHost),
-                    Times.Once);
-
-            this.storageBrokerMock.VerifyNoOtherCalls();
-            this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBroker = storageBroker;
+            this.dateTimeBroker = dateTimeBroker;
+            this.loggingBroker = loggingBroker;
         }
+
+        public ValueTask<Host> AddHostAsync(Host host) =>
+            TryCatch(async () =>
+            {
+                ValidateHostOnAdd(host);
+
+                return await this.storageBroker.InsertHostAsync(host);
+            });
+
+        public IQueryable<Host> RetrieveAllHosts() =>
+            TryCatch(() => this.storageBroker.SelectAllHosts());
+
+        public ValueTask<Host> RetrieveHostByIdAsync(Guid hostId) =>
+            TryCatch(async () =>
+            {
+                ValidateHostId(hostId);
+
+                Host maybeHost = await this.storageBroker
+                    .SelectHostByIdAsync(hostId);
+
+                ValidateStorageHost(maybeHost, hostId);
+
+                return maybeHost;
+            });
+
+        public ValueTask<Host> ModifyHostAsync(Host host) =>
+            TryCatch(async () =>
+            {
+                ValidateHostOnModify(host);
+
+                Host maybeHost =
+                    await this.storageBroker.SelectHostByIdAsync(host.Id);
+
+                ValidateStorageHost(maybeHost, host.Id);
+                ValidateAgainstStorageHostOnModify(inputHost: host, storageHost: maybeHost);
+
+                return await this.storageBroker.UpdateHostAsync(host);
+            });
     }
 }
