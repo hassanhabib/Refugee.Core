@@ -39,6 +39,13 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Hosts
 
                 throw CreateAndLogDependencyValidationException(alreadyExistsHostException);
             }
+            catch (ForeignKeyConstraintConflictException foreignKeyConstraintConflictException)
+            {
+                var invalidHostReferenceException =
+                    new InvalidHostReferenceException(foreignKeyConstraintConflictException);
+
+                throw CreateAndLogDependencyValidationException(invalidHostReferenceException);
+            }
         }
 
         private HostValidationException CreateAndLogValidationException(Xeption exception)
