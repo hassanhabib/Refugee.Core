@@ -90,7 +90,13 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Hosts
                     firstId: inputHost.CreatedByUserId,
                     secondId: storageHost.CreatedByUserId,
                     secondIdName: nameof(Host.CreatedByUserId)),
-                Parameter: nameof(Host.CreatedByUserId)));
+                Parameter: nameof(Host.CreatedByUserId)),
+
+                (Rule: IsSame(
+                    firstDate: inputHost.UpdatedDate,
+                    secondDate: storageHost.UpdatedDate,
+                    secondDateName: nameof(Host.UpdatedDate)),
+                Parameter: nameof(Host.UpdatedDate)));
         }
 
         private static dynamic IsInvalid(Guid id) => new
