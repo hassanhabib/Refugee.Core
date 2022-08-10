@@ -38,6 +38,16 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Hosts
         private void ValidateHostOnModify(Host host)
         {
             ValidateHostIsNotNull(host);
+
+            Validate(
+                (Rule: IsInvalid(host.Id), Parameter: nameof(Host.Id)),
+
+                // TODO: Add any other required validation rules
+
+                (Rule: IsInvalid(host.CreatedDate), Parameter: nameof(Host.CreatedDate)),
+                (Rule: IsInvalid(host.CreatedByUserId), Parameter: nameof(Host.CreatedByUserId)),
+                (Rule: IsInvalid(host.UpdatedDate), Parameter: nameof(Host.UpdatedDate)),
+                (Rule: IsInvalid(host.UpdatedByUserId), Parameter: nameof(Host.UpdatedByUserId)));
         }
 
         public void ValidateHostId(Guid hostId) =>
