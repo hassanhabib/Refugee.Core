@@ -1,3 +1,8 @@
+// -------------------------------------------------------
+// Copyright (c) Coalition of the Good-Hearted Engineers
+// FREE TO USE TO DELIVER HUMANITARIAN AID, HOPE AND LOVE
+// -------------------------------------------------------
+
 using System;
 using System.Linq;
 using System.Linq.Expressions;
@@ -97,9 +102,9 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Hosts
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnProperty(host => host.CreatedByUserId).Use(userId)
                 .OnProperty(host => host.UpdatedByUserId).Use(userId)
-
                 .OnProperty(host => host.Shelters).IgnoreIt()
-                .OnProperty(host => host.ShelterOffers).IgnoreIt();            // TODO: Complete the filler setup e.g. ignore related properties etc...
+                .OnProperty(host => host.ShelterOffers).IgnoreIt();
+            
             return filler;
         }
     }
