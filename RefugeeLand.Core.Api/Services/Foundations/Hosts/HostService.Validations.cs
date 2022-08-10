@@ -53,7 +53,9 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Hosts
                     firstDate: host.UpdatedDate,
                     secondDate: host.CreatedDate,
                     secondDateName: nameof(Host.CreatedDate)),
-                Parameter: nameof(Host.UpdatedDate)));
+                Parameter: nameof(Host.UpdatedDate)),
+
+                (Rule: IsNotRecent(host.UpdatedDate), Parameter: nameof(host.UpdatedDate)));
         }
 
         public void ValidateHostId(Guid hostId) =>
