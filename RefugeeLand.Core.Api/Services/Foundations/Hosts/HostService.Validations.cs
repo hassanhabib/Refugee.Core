@@ -24,7 +24,13 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Hosts
                     firstDate: host.UpdatedDate,
                     secondDate: host.CreatedDate,
                     secondDateName: nameof(Host.CreatedDate)),
-                Parameter: nameof(Host.UpdatedDate)));
+                Parameter: nameof(Host.UpdatedDate)),
+
+                (Rule: IsNotSame(
+                    firstId: host.UpdatedByUserId,
+                    secondId: host.CreatedByUserId,
+                    secondIdName: nameof(Host.CreatedByUserId)),
+                Parameter: nameof(Host.UpdatedByUserId)));
         }
 
         private static void ValidateHostIsNotNull(Host host)
@@ -54,6 +60,15 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Hosts
             {
                 Condition = firstDate != secondDate,
                 Message = $"Date is not the same as {secondDateName}"
+            };
+
+        private static dynamic IsNotSame(
+            Guid firstId,
+            Guid secondId,
+            string secondIdName) => new
+            {
+                Condition = firstId != secondId,
+                Message = $"Id is not the same as {secondIdName}"
             };
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
