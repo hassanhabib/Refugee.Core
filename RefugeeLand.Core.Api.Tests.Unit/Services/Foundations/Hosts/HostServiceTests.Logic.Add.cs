@@ -22,6 +22,10 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Hosts
             Host storageHost = inputHost;
             Host expectedHost = storageHost.DeepClone();
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
             this.storageBrokerMock.Setup(broker =>
                 broker.InsertHostAsync(inputHost))
                     .ReturnsAsync(storageHost);
@@ -33,13 +37,17 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Hosts
             // then
             actualHost.Should().BeEquivalentTo(expectedHost);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
+
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertHostAsync(inputHost),
                     Times.Once);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }
