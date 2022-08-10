@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.Serialization;
 using Microsoft.Data.SqlClient;
@@ -62,6 +63,13 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Hosts
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
+
+        private static IQueryable<Host> CreateRandomHosts()
+        {
+            return CreateHostFiller(dateTimeOffset: GetRandomDateTimeOffset())
+                .Create(count: GetRandomNumber())
+                    .AsQueryable();
+        }
 
         private static Host CreateRandomHost() =>
             CreateHostFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
