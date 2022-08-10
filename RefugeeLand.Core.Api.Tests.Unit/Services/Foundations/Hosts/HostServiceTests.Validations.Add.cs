@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -83,6 +84,53 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Hosts
             invalidHostException.AddData(
                 key: nameof(Host.UpdatedByUserId),
                 values: "Id is required");
+
+            var expectedHostValidationException =
+                new HostValidationException(invalidHostException);
+
+            // when
+            ValueTask<Host> addHostTask =
+                this.hostService.AddHostAsync(invalidHost);
+
+            HostValidationException actualHostValidationException =
+                await Assert.ThrowsAsync<HostValidationException>(
+                    addHostTask.AsTask);
+
+            // then
+            actualHostValidationException.Should()
+                .BeEquivalentTo(expectedHostValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedHostValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertHostAsync(It.IsAny<Host>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnAddIfCreateAndUpdateDatesIsNotSameAndLogItAsync()
+        {
+            // given
+            int randomNumber = GetRandomNumber();
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            Host randomHost = CreateRandomHost(randomDateTimeOffset);
+            Host invalidHost = randomHost;
+
+            invalidHost.UpdatedDate =
+                invalidHost.CreatedDate.AddDays(randomNumber);
+
+            var invalidHostException = new InvalidHostException();
+
+            invalidHostException.AddData(
+                key: nameof(Host.UpdatedDate),
+                values: $"Date is not the same as {nameof(Host.CreatedDate)}");
 
             var expectedHostValidationException =
                 new HostValidationException(invalidHostException);
