@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using FluentAssertions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using RefugeeLand.Core.Api.Models.Hosts;
 using RefugeeLand.Core.Api.Models.Hosts.Exceptions;
@@ -139,7 +140,8 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Hosts
                 await Assert.ThrowsAsync<HostDependencyValidationException>(
                     addHostTask.AsTask);
 
-            actualHostDependencyValidationException.Should().BeEquivalentTo(expectedHostValidationException);
+            actualHostDependencyValidationException.Should()
+                .BeEquivalentTo(expectedHostValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
@@ -157,6 +159,55 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Hosts
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyExceptionOnAddIfDatabaseUpdateErrorOccursAndLogItAsync()
+        {
+            // given
+            Host someHost = CreateRandomHost();
+
+            var databaseUpdateException =
+                new DbUpdateException();
+
+            var failedHostStorageException =
+                new FailedHostStorageException(databaseUpdateException);
+
+            var expectedHostDependencyException =
+                new HostDependencyException(failedHostStorageException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(databaseUpdateException);
+
+            // when
+            ValueTask<Host> addHostTask =
+                this.hostService.AddHostAsync(someHost);
+
+            HostDependencyException actualHostDependencyException =
+                await Assert.ThrowsAsync<HostDependencyException>(
+                    addHostTask.AsTask);
+
+            // then
+            actualHostDependencyException.Should()
+                .BeEquivalentTo(expectedHostDependencyException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertHostAsync(It.IsAny<Host>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedHostDependencyException))),
+                        Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }
