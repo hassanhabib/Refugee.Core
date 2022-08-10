@@ -14,6 +14,7 @@ namespace RefugeeLand.Core.Api.Models.Hosts
     public class Host
     {
         public Guid Id { get; set; }
+        // Todo: Implement on foundation hosts add and modify branch after Standardly scaffolding
         public string FirstName { get; set; }
         public string MiddleName { get; set; }
         public string LastName { get; set; }
@@ -26,11 +27,14 @@ namespace RefugeeLand.Core.Api.Models.Hosts
         public Guid CreatedByUserId { get; set; }
         public Guid UpdatedByUserId { get; set; }
 
-        [JsonIgnore] 
-        public IEnumerable<Shelter> Shelters { get; set; }
-
-        [JsonIgnore] 
-        public IEnumerable<ShelterOffer> ShelterOffers { get; set; }
+        // Todo: Ignore property in hosts test filler setup on  after Standardly scaffolding
+        // [JsonIgnore] 
+        // public IEnumerable<Shelter> Shelters { get; set; } 
+        //
+        
+        // Todo: Ignore property in hosts test filler setup on  after Standardly scaffolding
+        // [JsonIgnore] 
+        // public IEnumerable<ShelterOffer> ShelterOffers { get; set; }
 
         // [JsonIgnore] 
         // public IEnumerable<HostContact> HostContacts { get; set; }
