@@ -84,7 +84,11 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Hosts
 
             invalidHostException.AddData(
                 key: nameof(Host.UpdatedDate),
-                values: "Date is required");
+                values:
+                new[] {
+                    "Date is required",
+                    $"Date is the same as {nameof(Host.CreatedDate)}"
+                });
 
             invalidHostException.AddData(
                 key: nameof(Host.UpdatedByUserId),
