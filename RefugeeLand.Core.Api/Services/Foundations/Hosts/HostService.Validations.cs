@@ -30,7 +30,9 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Hosts
                     firstId: host.UpdatedByUserId,
                     secondId: host.CreatedByUserId,
                     secondIdName: nameof(Host.CreatedByUserId)),
-                Parameter: nameof(Host.UpdatedByUserId)));
+                Parameter: nameof(Host.UpdatedByUserId)),
+
+                (Rule: IsNotRecent(host.CreatedDate), Parameter: nameof(Host.CreatedDate)));
         }
 
         private static void ValidateHostIsNotNull(Host host)
@@ -70,6 +72,23 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Hosts
                 Condition = firstId != secondId,
                 Message = $"Id is not the same as {secondIdName}"
             };
+
+        private dynamic IsNotRecent(DateTimeOffset date) => new
+        {
+            Condition = IsDateNotRecent(date),
+            Message = "Date is not recent"
+        };
+
+        private bool IsDateNotRecent(DateTimeOffset date)
+        {
+            DateTimeOffset currentDateTime =
+                this.dateTimeBroker.GetCurrentDateTimeOffset();
+
+            TimeSpan timeDifference = currentDateTime.Subtract(date);
+            TimeSpan oneMinute = TimeSpan.FromMinutes(1);
+
+            return timeDifference.Duration() > oneMinute;
+        }
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
