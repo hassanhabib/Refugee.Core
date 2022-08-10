@@ -12,9 +12,14 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Hosts
 
             Validate(
                 (Rule: IsInvalid(host.Id), Parameter: nameof(Host.Id)),
-
-                // TODO: Add any other required validation rules
-
+                
+                (Rule: IsInvalid(host.FirstName), Parameter: nameof(Host.FirstName)),
+                (Rule: IsInvalid(host.MiddleName), Parameter: nameof(Host.MiddleName)),
+                (Rule: IsInvalid(host.LastName), Parameter: nameof(Host.LastName)),
+                (Rule: IsInvalid(host.AdditionalDetails), Parameter: nameof(Host.AdditionalDetails)),
+                (Rule: IsInvalid(host.Gender), Parameter: nameof(Host.Gender)),
+                (Rule: IsInvalid(host.BirthDate), Parameter: nameof(Host.BirthDate)),
+                
                 (Rule: IsInvalid(host.CreatedDate), Parameter: nameof(Host.CreatedDate)),
                 (Rule: IsInvalid(host.CreatedByUserId), Parameter: nameof(Host.CreatedByUserId)),
                 (Rule: IsInvalid(host.UpdatedDate), Parameter: nameof(Host.UpdatedDate)),
@@ -47,6 +52,18 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Hosts
         {
             Condition = id == Guid.Empty,
             Message = "Id is required"
+        };
+        
+        private static dynamic IsInvalid(string text) => new
+        {
+            Condition = string.IsNullOrWhiteSpace(text),
+            Message = "Text is required"
+        };
+
+        private static dynamic IsInvalid(HostGender gender) => new
+        {
+            Condition = Enum.IsDefined(gender) is false,
+            Message = "Value is invalid"
         };
 
         private static dynamic IsInvalid(DateTimeOffset date) => new
