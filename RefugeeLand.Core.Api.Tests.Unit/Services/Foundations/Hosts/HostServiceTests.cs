@@ -1,4 +1,5 @@
 using System;
+using System.Linq.Expressions;
 using Moq;
 using RefugeeLand.Core.Api.Brokers.DateTimes;
 using RefugeeLand.Core.Api.Brokers.Loggings;
@@ -6,6 +7,7 @@ using RefugeeLand.Core.Api.Brokers.Storages;
 using RefugeeLand.Core.Api.Models.Hosts;
 using RefugeeLand.Core.Api.Services.Foundations.Hosts;
 using Tynamix.ObjectFiller;
+using Xeptions;
 
 namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Hosts
 {
@@ -28,6 +30,9 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Hosts
                 loggingBroker: this.loggingBrokerMock.Object);
         }
 
+        private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
+            actualException => actualException.SameExceptionAs(expectedException);
+
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
@@ -43,9 +48,10 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Hosts
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnProperty(host => host.CreatedByUserId).Use(userId)
                 .OnProperty(host => host.UpdatedByUserId).Use(userId)
-
                 .OnProperty(host => host.Shelters).IgnoreIt()
-                .OnProperty(host => host.ShelterOffers).IgnoreIt();            // TODO: Complete the filler setup e.g. ignore related properties etc...
+                .OnProperty(host => host.ShelterOffers).IgnoreIt();
+
+
             return filler;
         }
     }
