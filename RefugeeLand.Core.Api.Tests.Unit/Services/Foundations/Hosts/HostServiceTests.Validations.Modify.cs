@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -110,6 +111,47 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Hosts
 
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateHostAsync(It.IsAny<Host>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfUpdatedDateIsSameAsCreatedDateAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            Host randomHost = CreateRandomHost(randomDateTimeOffset);
+            Host invalidHost = randomHost;
+            var invalidHostException = new InvalidHostException();
+
+            invalidHostException.AddData(
+                key: nameof(Host.UpdatedDate),
+                values: $"Date is the same as {nameof(Host.CreatedDate)}");
+
+            var expectedHostValidationException =
+                new HostValidationException(invalidHostException);
+
+            // when
+            ValueTask<Host> modifyHostTask =
+                this.hostService.ModifyHostAsync(invalidHost);
+
+            HostValidationException actualHostValidationException =
+                await Assert.ThrowsAsync<HostValidationException>(
+                    modifyHostTask.AsTask);
+
+            // then
+            actualHostValidationException.Should().BeEquivalentTo(expectedHostValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedHostValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectHostByIdAsync(invalidHost.Id),
                     Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
