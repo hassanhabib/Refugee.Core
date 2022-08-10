@@ -57,10 +57,15 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Hosts
         [InlineData(" ")]
         public async Task ShouldThrowValidationExceptionOnModifyIfHostIsInvalidAndLogItAsync(string invalidText)
         {
-            // given 
+            HostGender invalidGender = (HostGender)42; // Forcing out of range to build invalid enum
+
             var invalidHost = new Host
             {
-                // TODO:  Add default values for your properties i.e. Name = invalidText
+                FirstName = invalidText,
+                MiddleName = invalidText,
+                LastName = invalidText,
+                AdditionalDetails = invalidText,
+                Gender = invalidGender
             };
 
             var invalidHostException = new InvalidHostException();
@@ -69,11 +74,29 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Hosts
                 key: nameof(Host.Id),
                 values: "Id is required");
 
-            //invalidHostException.AddData(
-            //    key: nameof(Host.Name),
-            //    values: "Text is required");
-
-            // TODO: Add or remove data here to suit the validation needs for the Host model
+            invalidHostException.AddData(
+                key: nameof(Host.FirstName),
+                values: "Text is required");
+            
+            invalidHostException.AddData(
+                key: nameof(Host.MiddleName),
+                values: "Text is required");
+            
+            invalidHostException.AddData(
+                key: nameof(Host.LastName),
+                values: "Text is required");
+            
+            invalidHostException.AddData(
+                key: nameof(Host.AdditionalDetails),
+                values: "Text is required");
+            
+            invalidHostException.AddData(
+                key: nameof(Host.Gender),
+                values: "Value is invalid");
+            
+            invalidHostException.AddData(
+                key: nameof(Host.BirthDate),
+                values: "Date is required");
 
             invalidHostException.AddData(
                 key: nameof(Host.CreatedDate),
