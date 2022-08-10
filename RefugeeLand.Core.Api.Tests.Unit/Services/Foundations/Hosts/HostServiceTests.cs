@@ -64,6 +64,17 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Hosts
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
+        private static Host CreateRandomModifyHost(DateTimeOffset dateTimeOffset)
+        {
+            int randomDaysInPast = GetRandomNegativeNumber();
+            Host randomHost = CreateRandomHost(dateTimeOffset);
+
+            randomHost.CreatedDate =
+                randomHost.CreatedDate.AddDays(randomDaysInPast);
+
+            return randomHost;
+        }
+
         private static IQueryable<Host> CreateRandomHosts()
         {
             return CreateHostFiller(dateTimeOffset: GetRandomDateTimeOffset())
