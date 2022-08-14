@@ -31,5 +31,13 @@ namespace RefugeeLand.Core.Api.Brokers.Storages
 
             return broker.Nationalities;
         }
+
+        public async ValueTask<Nationality> SelectNationalityByIdAsync(Guid nationalityId)
+        {
+            using var broker =
+                new StorageBroker(this.configuration);
+
+            return await broker.Nationalities.FindAsync(nationalityId);
+        }
     }
 }

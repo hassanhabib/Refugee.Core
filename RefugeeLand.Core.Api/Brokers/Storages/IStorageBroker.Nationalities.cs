@@ -9,5 +9,6 @@ namespace RefugeeLand.Core.Api.Brokers.Storages
     {
         ValueTask<Nationality> InsertNationalityAsync(Nationality nationality);
         IQueryable<Nationality> SelectAllNationalities();
+        ValueTask<Nationality> SelectNationalityByIdAsync(Guid nationalityId);
     }
 }
