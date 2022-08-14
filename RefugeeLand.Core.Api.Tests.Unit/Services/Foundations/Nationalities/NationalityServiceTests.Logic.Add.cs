@@ -22,6 +22,10 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Nationalities
             Nationality storageNationality = inputNationality;
             Nationality expectedNationality = storageNationality.DeepClone();
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
             this.storageBrokerMock.Setup(broker =>
                 broker.InsertNationalityAsync(inputNationality))
                     .ReturnsAsync(storageNationality);
@@ -33,13 +37,17 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Nationalities
             // then
             actualNationality.Should().BeEquivalentTo(expectedNationality);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
+
             this.storageBrokerMock.Verify(broker =>
                 broker.InsertNationalityAsync(inputNationality),
                     Times.Once);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }
