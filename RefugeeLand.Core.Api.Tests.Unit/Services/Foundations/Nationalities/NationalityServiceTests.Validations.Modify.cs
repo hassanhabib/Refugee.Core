@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Force.DeepCloner;
 using Moq;
 using RefugeeLand.Core.Api.Models.Nationalities;
 using RefugeeLand.Core.Api.Models.Nationalities.Exceptions;
@@ -122,9 +123,9 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Nationalities
                 broker.UpdateNationalityAsync(It.IsAny<Nationality>()),
                     Times.Never);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -172,9 +173,9 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Nationalities
                 broker.SelectNationalityByIdAsync(invalidNationality.Id),
                     Times.Never);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -277,6 +278,65 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Nationalities
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedNationalityValidationException))),
                         Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfStorageCreatedDateNotSameAsCreatedDateAndLogItAsync()
+        {
+            // given
+            int randomNumber = GetRandomNegativeNumber();
+            int randomMinutes = randomNumber;
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            Nationality randomNationality = CreateRandomModifyNationality(randomDateTimeOffset);
+            Nationality invalidNationality = randomNationality.DeepClone();
+            Nationality storageNationality = invalidNationality.DeepClone();
+            storageNationality.CreatedDate = storageNationality.CreatedDate.AddMinutes(randomMinutes);
+            storageNationality.UpdatedDate = storageNationality.UpdatedDate.AddMinutes(randomMinutes);
+            var invalidNationalityException = new InvalidNationalityException();
+
+            invalidNationalityException.AddData(
+                key: nameof(Nationality.CreatedDate),
+                values: $"Date is not the same as {nameof(Nationality.CreatedDate)}");
+
+            var expectedNationalityValidationException =
+                new NationalityValidationException(invalidNationalityException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectNationalityByIdAsync(invalidNationality.Id))
+                .ReturnsAsync(storageNationality);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                .Returns(randomDateTimeOffset);
+
+            // when
+            ValueTask<Nationality> modifyNationalityTask =
+                this.nationalityService.ModifyNationalityAsync(invalidNationality);
+
+            NationalityValidationException actualNationalityValidationException =
+                await Assert.ThrowsAsync<NationalityValidationException>(
+                    modifyNationalityTask.AsTask);
+
+            // then
+            actualNationalityValidationException.Should()
+                .BeEquivalentTo(expectedNationalityValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectNationalityByIdAsync(invalidNationality.Id),
+                    Times.Once);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogError(It.Is(SameExceptionAs(
+                   expectedNationalityValidationException))),
+                       Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
