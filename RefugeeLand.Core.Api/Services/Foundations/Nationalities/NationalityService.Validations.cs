@@ -42,7 +42,8 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Nationalities
             Validate(
                 (Rule: IsInvalid(nationality.Id), Parameter: nameof(Nationality.Id)),
 
-                // TODO: Add any other required validation rules
+                (Rule: IsInvalid(nationality.Name), Parameter: nameof(Nationality.Name)),
+                (Rule: IsInvalid(nationality.Country), Parameter: nameof(Nationality.Country)),
 
                 (Rule: IsInvalid(nationality.CreatedDate), Parameter: nameof(Nationality.CreatedDate)),
                 (Rule: IsInvalid(nationality.CreatedByUserId), Parameter: nameof(Nationality.CreatedByUserId)),
@@ -103,6 +104,12 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Nationalities
         {
             Condition = id == Guid.Empty,
             Message = "Id is required"
+        };
+        
+        private static dynamic IsInvalid(string text) => new
+        {
+            Condition = string.IsNullOrWhiteSpace(text),
+            Message = "Text is required"
         };
 
         private static dynamic IsInvalid(DateTimeOffset date) => new
