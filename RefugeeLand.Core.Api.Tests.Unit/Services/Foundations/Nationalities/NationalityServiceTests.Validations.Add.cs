@@ -205,5 +205,63 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Nationalities
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [MemberData(nameof(MinutesBeforeOrAfter))]
+        public async Task ShouldThrowValidationExceptionOnAddIfCreatedDateIsNotRecentAndLogItAsync(
+            int minutesBeforeOrAfter)
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+
+            DateTimeOffset invalidDateTime =
+                randomDateTimeOffset.AddMinutes(minutesBeforeOrAfter);
+
+            Nationality randomNationality = CreateRandomNationality(invalidDateTime);
+            Nationality invalidNationality = randomNationality;
+
+            var invalidNationalityException =
+                new InvalidNationalityException();
+
+            invalidNationalityException.AddData(
+                key: nameof(Nationality.CreatedDate),
+                values: "Date is not recent");
+
+            var expectedNationalityValidationException =
+                new NationalityValidationException(invalidNationalityException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
+            // when
+            ValueTask<Nationality> addNationalityTask =
+                this.nationalityService.AddNationalityAsync(invalidNationality);
+
+            NationalityValidationException actualNationalityValidationException =
+                await Assert.ThrowsAsync<NationalityValidationException>(
+                    addNationalityTask.AsTask);
+
+            // then
+            actualNationalityValidationException.Should()
+                .BeEquivalentTo(expectedNationalityValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedNationalityValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertNationalityAsync(It.IsAny<Nationality>()),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
