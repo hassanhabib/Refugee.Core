@@ -84,7 +84,11 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Nationalities
 
             invalidNationalityException.AddData(
                 key: nameof(Nationality.UpdatedDate),
-                values: "Date is required");
+                values:
+                new[] {
+                    "Date is required",
+                    $"Date is the same as {nameof(Nationality.CreatedDate)}"
+                });
 
             invalidNationalityException.AddData(
                 key: nameof(Nationality.UpdatedByUserId),

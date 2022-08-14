@@ -47,7 +47,13 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Nationalities
                 (Rule: IsInvalid(nationality.CreatedDate), Parameter: nameof(Nationality.CreatedDate)),
                 (Rule: IsInvalid(nationality.CreatedByUserId), Parameter: nameof(Nationality.CreatedByUserId)),
                 (Rule: IsInvalid(nationality.UpdatedDate), Parameter: nameof(Nationality.UpdatedDate)),
-                (Rule: IsInvalid(nationality.UpdatedByUserId), Parameter: nameof(Nationality.UpdatedByUserId)));
+                (Rule: IsInvalid(nationality.UpdatedByUserId), Parameter: nameof(Nationality.UpdatedByUserId)),
+
+                (Rule: IsSame(
+                    firstDate: nationality.UpdatedDate,
+                    secondDate: nationality.CreatedDate,
+                    secondDateName: nameof(Nationality.CreatedDate)),
+                Parameter: nameof(Nationality.UpdatedDate)));
         }
 
         public void ValidateNationalityId(Guid nationalityId) =>
@@ -80,6 +86,15 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Nationalities
             Condition = date == default,
             Message = "Date is required"
         };
+
+        private static dynamic IsSame(
+            DateTimeOffset firstDate,
+            DateTimeOffset secondDate,
+            string secondDateName) => new
+            {
+                Condition = firstDate == secondDate,
+                Message = $"Date is the same as {secondDateName}"
+            };
 
         private static dynamic IsNotSame(
             DateTimeOffset firstDate,
