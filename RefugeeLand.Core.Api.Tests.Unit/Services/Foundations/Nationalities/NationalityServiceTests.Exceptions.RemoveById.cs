@@ -1,6 +1,8 @@
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using RefugeeLand.Core.Api.Models.Nationalities;
 using RefugeeLand.Core.Api.Models.Nationalities.Exceptions;
@@ -54,6 +56,55 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Nationalities
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
+                    Times.Never);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyValidationOnRemoveIfDatabaseUpdateConcurrencyErrorOccursAndLogItAsync()
+        {
+            // given
+            Guid someNationalityId = Guid.NewGuid();
+
+            var databaseUpdateConcurrencyException =
+                new DbUpdateConcurrencyException();
+
+            var lockedNationalityException =
+                new LockedNationalityException(databaseUpdateConcurrencyException);
+
+            var expectedNationalityDependencyValidationException =
+                new NationalityDependencyValidationException(lockedNationalityException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectNationalityByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(databaseUpdateConcurrencyException);
+
+            // when
+            ValueTask<Nationality> removeNationalityByIdTask =
+                this.nationalityService.RemoveNationalityByIdAsync(someNationalityId);
+
+            NationalityDependencyValidationException actualNationalityDependencyValidationException =
+                await Assert.ThrowsAsync<NationalityDependencyValidationException>(
+                    removeNationalityByIdTask.AsTask);
+
+            // then
+            actualNationalityDependencyValidationException.Should()
+                .BeEquivalentTo(expectedNationalityDependencyValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectNationalityByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedNationalityDependencyValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.DeleteNationalityAsync(It.IsAny<Nationality>()),
                     Times.Never);
 
             this.storageBrokerMock.VerifyNoOtherCalls();
