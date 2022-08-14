@@ -52,5 +52,18 @@ namespace RefugeeLand.Core.Api.Brokers.Storages
 
             return nationalityEntityEntry.Entity;
         }
+
+        public async ValueTask<Nationality> DeleteNationalityAsync(Nationality nationality)
+        {
+            using var broker =
+                new StorageBroker(this.configuration);
+
+            EntityEntry<Nationality> nationalityEntityEntry =
+                broker.Nationalities.Remove(nationality);
+
+            await broker.SaveChangesAsync();
+
+            return nationalityEntityEntry.Entity;
+        }
     }
 }

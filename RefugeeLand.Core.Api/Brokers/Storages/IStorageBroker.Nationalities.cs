@@ -11,5 +11,6 @@ namespace RefugeeLand.Core.Api.Brokers.Storages
         IQueryable<Nationality> SelectAllNationalities();
         ValueTask<Nationality> SelectNationalityByIdAsync(Guid nationalityId);
         ValueTask<Nationality> UpdateNationalityAsync(Nationality nationality);
+        ValueTask<Nationality> DeleteNationalityAsync(Nationality nationality);
     }
 }
