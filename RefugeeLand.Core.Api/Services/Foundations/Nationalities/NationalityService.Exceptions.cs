@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using RefugeeLand.Core.Api.Models.Nationalities;
 using RefugeeLand.Core.Api.Models.Nationalities.Exceptions;
 using Xeptions;
@@ -46,6 +47,13 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Nationalities
 
                 throw CreateAndLogDependencyValidationException(invalidNationalityReferenceException);
             }
+            catch (DbUpdateException databaseUpdateException)
+            {
+                var failedNationalityStorageException =
+                    new FailedNationalityStorageException(databaseUpdateException);
+
+                throw CreateAndLogDependencyException(failedNationalityStorageException);
+            }
         }
 
         private NationalityValidationException CreateAndLogValidationException(Xeption exception)
@@ -74,6 +82,15 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Nationalities
             this.loggingBroker.LogError(nationalityDependencyValidationException);
 
             return nationalityDependencyValidationException;
+        }
+
+        private NationalityDependencyException CreateAndLogDependencyException(
+            Xeption exception)
+        {
+            var nationalityDependencyException = new NationalityDependencyException(exception);
+            this.loggingBroker.LogError(nationalityDependencyException);
+
+            return nationalityDependencyException;
         }
     }
 }
