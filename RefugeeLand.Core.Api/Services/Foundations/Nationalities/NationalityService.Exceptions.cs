@@ -19,6 +19,10 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Nationalities
             {
                 throw CreateAndLogValidationException(nullNationalityException);
             }
+            catch (InvalidNationalityException invalidNationalityException)
+            {
+                throw CreateAndLogValidationException(invalidNationalityException);
+            }
         }
 
         private NationalityValidationException CreateAndLogValidationException(Xeption exception)
