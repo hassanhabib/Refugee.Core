@@ -32,6 +32,6 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Nationalities
             });
 
         public IQueryable<Nationality> RetrieveAllNationalities() =>
-            throw new System.NotImplementedException();
+            this.storageBroker.SelectAllNationalities();
     }
 }
