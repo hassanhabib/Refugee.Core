@@ -48,7 +48,12 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Nationalities
                 return maybeNationality;
             });
 
-        public async ValueTask<Nationality> ModifyNationalityAsync(Nationality nationality) =>
-            await this.storageBroker.UpdateNationalityAsync(nationality);
+        public ValueTask<Nationality> ModifyNationalityAsync(Nationality nationality) =>
+            TryCatch(async () =>
+            {
+                ValidateNationalityOnModify(nationality);
+
+                return await this.storageBroker.UpdateNationalityAsync(nationality);
+            });
     }
 }

@@ -35,6 +35,11 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Nationalities
                 (Rule: IsNotRecent(nationality.CreatedDate), Parameter: nameof(Nationality.CreatedDate)));
         }
 
+        private void ValidateNationalityOnModify(Nationality nationality)
+        {
+            ValidateNationalityIsNotNull(nationality);
+        }
+
         public void ValidateNationalityId(Guid nationalityId) =>
             Validate((Rule: IsInvalid(nationalityId), Parameter: nameof(Nationality.Id)));
 
