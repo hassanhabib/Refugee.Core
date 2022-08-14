@@ -209,7 +209,8 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Nationalities
                     modifyNationalityTask.AsTask);
 
             // then
-            actualNationalityValidationException.Should().BeEquivalentTo(expectedNationalityValidatonException);
+            actualNationalityValidationException.Should()
+                .BeEquivalentTo(expectedNationalityValidatonException);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
@@ -227,6 +228,59 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Nationalities
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfNationalityDoesNotExistAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            Nationality randomNationality = CreateRandomModifyNationality(randomDateTimeOffset);
+            Nationality nonExistNationality = randomNationality;
+            Nationality nullNationality = null;
+
+            var notFoundNationalityException =
+                new NotFoundNationalityException(nonExistNationality.Id);
+
+            var expectedNationalityValidationException =
+                new NationalityValidationException(notFoundNationalityException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectNationalityByIdAsync(nonExistNationality.Id))
+                .ReturnsAsync(nullNationality);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                .Returns(randomDateTimeOffset);
+
+            // when 
+            ValueTask<Nationality> modifyNationalityTask =
+                this.nationalityService.ModifyNationalityAsync(nonExistNationality);
+
+            NationalityValidationException actualNationalityValidationException =
+                await Assert.ThrowsAsync<NationalityValidationException>(
+                    modifyNationalityTask.AsTask);
+
+            // then
+            actualNationalityValidationException.Should()
+                .BeEquivalentTo(expectedNationalityValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectNationalityByIdAsync(nonExistNationality.Id),
+                    Times.Once);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedNationalityValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }
