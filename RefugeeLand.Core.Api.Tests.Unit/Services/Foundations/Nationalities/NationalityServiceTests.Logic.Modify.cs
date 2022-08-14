@@ -28,6 +28,10 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Nationalities
                     .Returns(randomDateTimeOffset);
 
             this.storageBrokerMock.Setup(broker =>
+                broker.SelectNationalityByIdAsync(nationalityId))
+                    .ReturnsAsync(storageNationality);
+
+            this.storageBrokerMock.Setup(broker =>
                 broker.UpdateNationalityAsync(inputNationality))
                     .ReturnsAsync(updatedNationality);
 
@@ -43,12 +47,16 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Nationalities
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
+                broker.SelectNationalityByIdAsync(inputNationality.Id),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
                 broker.UpdateNationalityAsync(inputNationality),
                     Times.Once);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

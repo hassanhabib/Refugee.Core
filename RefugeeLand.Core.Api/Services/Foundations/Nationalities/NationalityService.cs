@@ -1,59 +1,62 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
-using RefugeeLand.Core.Api.Brokers.DateTimes;
-using RefugeeLand.Core.Api.Brokers.Loggings;
-using RefugeeLand.Core.Api.Brokers.Storages;
+using FluentAssertions;
+using Force.DeepCloner;
+using Moq;
 using RefugeeLand.Core.Api.Models.Nationalities;
+using Xunit;
 
-namespace RefugeeLand.Core.Api.Services.Foundations.Nationalities
+namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Nationalities
 {
-    public partial class NationalityService : INationalityService
+    public partial class NationalityServiceTests
     {
-        private readonly IStorageBroker storageBroker;
-        private readonly IDateTimeBroker dateTimeBroker;
-        private readonly ILoggingBroker loggingBroker;
-
-        public NationalityService(
-            IStorageBroker storageBroker,
-            IDateTimeBroker dateTimeBroker,
-            ILoggingBroker loggingBroker)
+        [Fact]
+        public async Task ShouldModifyNationalityAsync()
         {
-            this.storageBroker = storageBroker;
-            this.dateTimeBroker = dateTimeBroker;
-            this.loggingBroker = loggingBroker;
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            Nationality randomNationality = CreateRandomModifyNationality(randomDateTimeOffset);
+            Nationality inputNationality = randomNationality;
+            Nationality storageNationality = inputNationality.DeepClone();
+            storageNationality.UpdatedDate = randomNationality.CreatedDate;
+            Nationality updatedNationality = inputNationality;
+            Nationality expectedNationality = updatedNationality.DeepClone();
+            Guid nationalityId = inputNationality.Id;
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectNationalityByIdAsync(nationalityId))
+                    .ReturnsAsync(storageNationality);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.UpdateNationalityAsync(inputNationality))
+                    .ReturnsAsync(updatedNationality);
+
+            // when
+            Nationality actualNationality =
+                await this.nationalityService.ModifyNationalityAsync(inputNationality);
+
+            // then
+            actualNationality.Should().BeEquivalentTo(expectedNationality);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectNationalityByIdAsync(inputNationality.Id),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateNationalityAsync(inputNationality),
+                    Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
-
-        public ValueTask<Nationality> AddNationalityAsync(Nationality nationality) =>
-            TryCatch(async () =>
-            {
-                ValidateNationalityOnAdd(nationality);
-
-                return await this.storageBroker.InsertNationalityAsync(nationality);
-            });
-
-        public IQueryable<Nationality> RetrieveAllNationalities() =>
-            TryCatch(() => this.storageBroker.SelectAllNationalities());
-
-        public ValueTask<Nationality> RetrieveNationalityByIdAsync(Guid nationalityId) =>
-            TryCatch(async () =>
-            {
-                ValidateNationalityId(nationalityId);
-
-                Nationality maybeNationality = await this.storageBroker
-                    .SelectNationalityByIdAsync(nationalityId);
-
-                ValidateStorageNationality(maybeNationality, nationalityId);
-
-                return maybeNationality;
-            });
-
-        public ValueTask<Nationality> ModifyNationalityAsync(Nationality nationality) =>
-            TryCatch(async () =>
-            {
-                ValidateNationalityOnModify(nationality);
-
-                return await this.storageBroker.UpdateNationalityAsync(nationality);
-            });
     }
 }
