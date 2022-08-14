@@ -77,6 +77,16 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Nationalities
             }
         }
 
+        private static void ValidateAgainstStorageNationalityOnModify(Nationality inputNationality, Nationality storageNationality)
+        {
+            Validate(
+                (Rule: IsNotSame(
+                    firstDate: inputNationality.CreatedDate,
+                    secondDate: storageNationality.CreatedDate,
+                    secondDateName: nameof(Nationality.CreatedDate)),
+                Parameter: nameof(Nationality.CreatedDate)));
+        }
+
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,
