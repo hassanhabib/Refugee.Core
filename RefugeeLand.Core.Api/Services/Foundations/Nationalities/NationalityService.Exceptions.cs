@@ -78,6 +78,13 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Nationalities
                     new FailedNationalityStorageException(sqlException);
                 throw CreateAndLogCriticalDependencyException(failedNationalityStorageException);
             }
+            catch (Exception exception)
+            {
+                var failedNationalityServiceException =
+                    new FailedNationalityServiceException(exception);
+
+                throw CreateAndLogServiceException(failedNationalityServiceException);
+            }
         }
 
         private NationalityValidationException CreateAndLogValidationException(Xeption exception)
