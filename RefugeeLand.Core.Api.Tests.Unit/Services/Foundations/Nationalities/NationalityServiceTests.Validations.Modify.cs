@@ -173,9 +173,9 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Nationalities
                 broker.SelectNationalityByIdAsync(invalidNationality.Id),
                     Times.Never);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -279,8 +279,8 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Nationalities
                     expectedNationalityValidationException))),
                         Times.Once);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -338,8 +338,8 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Nationalities
                    expectedNationalityValidationException))),
                        Times.Once);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -395,8 +395,60 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Nationalities
                    expectedNationalityValidationException))),
                        Times.Once);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfStorageUpdatedDateSameAsUpdatedDateAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            Nationality randomNationality = CreateRandomModifyNationality(randomDateTimeOffset);
+            Nationality invalidNationality = randomNationality;
+            Nationality storageNationality = randomNationality.DeepClone();
+
+            var invalidNationalityException = new InvalidNationalityException();
+
+            invalidNationalityException.AddData(
+                key: nameof(Nationality.UpdatedDate),
+                values: $"Date is the same as {nameof(Nationality.UpdatedDate)}");
+
+            var expectedNationalityValidationException =
+                new NationalityValidationException(invalidNationalityException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectNationalityByIdAsync(invalidNationality.Id))
+                .ReturnsAsync(storageNationality);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
+            // when
+            ValueTask<Nationality> modifyNationalityTask =
+                this.nationalityService.ModifyNationalityAsync(invalidNationality);
+
+            // then
+            await Assert.ThrowsAsync<NationalityValidationException>(
+                modifyNationalityTask.AsTask);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedNationalityValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectNationalityByIdAsync(invalidNationality.Id),
+                    Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
