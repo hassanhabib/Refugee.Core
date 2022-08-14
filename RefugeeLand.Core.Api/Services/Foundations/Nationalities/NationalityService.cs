@@ -22,7 +22,7 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Nationalities
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<Nationality> AddNationalityAsync(Nationality nationality) =>
-            throw new System.NotImplementedException();
+        public async ValueTask<Nationality> AddNationalityAsync(Nationality nationality) =>
+            await this.storageBroker.InsertNationalityAsync(nationality);
     }
 }
