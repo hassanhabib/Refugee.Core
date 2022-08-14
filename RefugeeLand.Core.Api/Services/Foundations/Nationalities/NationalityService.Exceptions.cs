@@ -54,6 +54,12 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Nationalities
 
                 throw CreateAndLogDependencyValidationException(invalidNationalityReferenceException);
             }
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedNationalityException = new LockedNationalityException(dbUpdateConcurrencyException);
+
+                throw CreateAndLogDependencyValidationException(lockedNationalityException);
+            }
             catch (DbUpdateException databaseUpdateException)
             {
                 var failedNationalityStorageException =
