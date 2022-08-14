@@ -109,6 +109,10 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Nationalities
             actualNationalityValidationException.Should()
                 .BeEquivalentTo(expectedNationalityValidationException);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedNationalityValidationException))),
@@ -118,9 +122,9 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Nationalities
                 broker.UpdateNationalityAsync(It.IsAny<Nationality>()),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -139,6 +143,10 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Nationalities
             var expectedNationalityValidationException =
                 new NationalityValidationException(invalidNationalityException);
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
             // when
             ValueTask<Nationality> modifyNationalityTask =
                 this.nationalityService.ModifyNationalityAsync(invalidNationality);
@@ -151,6 +159,10 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Nationalities
             actualNationalityValidationException.Should()
                 .BeEquivalentTo(expectedNationalityValidationException);
 
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedNationalityValidationException))),
@@ -160,9 +172,9 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Nationalities
                 broker.SelectNationalityByIdAsync(invalidNationality.Id),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]

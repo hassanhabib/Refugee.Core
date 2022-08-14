@@ -53,7 +53,9 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Nationalities
                     firstDate: nationality.UpdatedDate,
                     secondDate: nationality.CreatedDate,
                     secondDateName: nameof(Nationality.CreatedDate)),
-                Parameter: nameof(Nationality.UpdatedDate)));
+                Parameter: nameof(Nationality.UpdatedDate)),
+
+                (Rule: IsNotRecent(nationality.UpdatedDate), Parameter: nameof(nationality.UpdatedDate)));
         }
 
         public void ValidateNationalityId(Guid nationalityId) =>
