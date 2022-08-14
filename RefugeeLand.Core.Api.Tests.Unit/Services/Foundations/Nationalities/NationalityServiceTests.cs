@@ -64,6 +64,17 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Nationalities
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
+        private static Nationality CreateRandomModifyNationality(DateTimeOffset dateTimeOffset)
+        {
+            int randomDaysInPast = GetRandomNegativeNumber();
+            Nationality randomNationality = CreateRandomNationality(dateTimeOffset);
+
+            randomNationality.CreatedDate =
+                randomNationality.CreatedDate.AddDays(randomDaysInPast);
+
+            return randomNationality;
+        }
+
         private static IQueryable<Nationality> CreateRandomNationalities()
         {
             return CreateNationalityFiller(dateTimeOffset: GetRandomDateTimeOffset())

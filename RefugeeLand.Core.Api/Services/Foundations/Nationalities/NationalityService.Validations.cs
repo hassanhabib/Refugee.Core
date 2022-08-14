@@ -35,6 +35,30 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Nationalities
                 (Rule: IsNotRecent(nationality.CreatedDate), Parameter: nameof(Nationality.CreatedDate)));
         }
 
+        private void ValidateNationalityOnModify(Nationality nationality)
+        {
+            ValidateNationalityIsNotNull(nationality);
+
+            Validate(
+                (Rule: IsInvalid(nationality.Id), Parameter: nameof(Nationality.Id)),
+
+                (Rule: IsInvalid(nationality.Name), Parameter: nameof(Nationality.Name)),
+                (Rule: IsInvalid(nationality.Country), Parameter: nameof(Nationality.Country)),
+
+                (Rule: IsInvalid(nationality.CreatedDate), Parameter: nameof(Nationality.CreatedDate)),
+                (Rule: IsInvalid(nationality.CreatedByUserId), Parameter: nameof(Nationality.CreatedByUserId)),
+                (Rule: IsInvalid(nationality.UpdatedDate), Parameter: nameof(Nationality.UpdatedDate)),
+                (Rule: IsInvalid(nationality.UpdatedByUserId), Parameter: nameof(Nationality.UpdatedByUserId)),
+
+                (Rule: IsSame(
+                    firstDate: nationality.UpdatedDate,
+                    secondDate: nationality.CreatedDate,
+                    secondDateName: nameof(Nationality.CreatedDate)),
+                Parameter: nameof(Nationality.UpdatedDate)),
+
+                (Rule: IsNotRecent(nationality.UpdatedDate), Parameter: nameof(nationality.UpdatedDate)));
+        }
+
         public void ValidateNationalityId(Guid nationalityId) =>
             Validate((Rule: IsInvalid(nationalityId), Parameter: nameof(Nationality.Id)));
 
@@ -54,6 +78,28 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Nationalities
             }
         }
 
+        private static void ValidateAgainstStorageNationalityOnModify(Nationality inputNationality, Nationality storageNationality)
+        {
+            Validate(
+                (Rule: IsNotSame(
+                    firstDate: inputNationality.CreatedDate,
+                    secondDate: storageNationality.CreatedDate,
+                    secondDateName: nameof(Nationality.CreatedDate)),
+                Parameter: nameof(Nationality.CreatedDate)),
+
+                (Rule: IsNotSame(
+                    firstId: inputNationality.CreatedByUserId,
+                    secondId: storageNationality.CreatedByUserId,
+                    secondIdName: nameof(Nationality.CreatedByUserId)),
+                Parameter: nameof(Nationality.CreatedByUserId)),
+
+                (Rule: IsSame(
+                    firstDate: inputNationality.UpdatedDate,
+                    secondDate: storageNationality.UpdatedDate,
+                    secondDateName: nameof(Nationality.UpdatedDate)),
+                Parameter: nameof(Nationality.UpdatedDate)));
+        }
+
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,
@@ -71,6 +117,15 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Nationalities
             Condition = date == default,
             Message = "Date is required"
         };
+
+        private static dynamic IsSame(
+            DateTimeOffset firstDate,
+            DateTimeOffset secondDate,
+            string secondDateName) => new
+            {
+                Condition = firstDate == secondDate,
+                Message = $"Date is the same as {secondDateName}"
+            };
 
         private static dynamic IsNotSame(
             DateTimeOffset firstDate,
