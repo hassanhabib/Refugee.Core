@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using FluentAssertions;
@@ -203,6 +204,53 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Nationalities
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedNationalityDependencyException))),
+                        Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnAddIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            Nationality someNationality = CreateRandomNationality();
+            var serviceException = new Exception();
+
+            var failedNationalityServiceException =
+                new FailedNationalityServiceException(serviceException);
+
+            var expectedNationalityServiceException =
+                new NationalityServiceException(failedNationalityServiceException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(serviceException);
+
+            // when
+            ValueTask<Nationality> addNationalityTask =
+                this.nationalityService.AddNationalityAsync(someNationality);
+
+            NationalityServiceException actualNationalityServiceException =
+                await Assert.ThrowsAsync<NationalityServiceException>(
+                    addNationalityTask.AsTask);
+
+            // then
+            actualNationalityServiceException.Should()
+                .BeEquivalentTo(expectedNationalityServiceException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertNationalityAsync(It.IsAny<Nationality>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedNationalityServiceException))),
                         Times.Once);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
