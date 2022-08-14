@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -54,6 +55,13 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Nationalities
 
                 throw CreateAndLogDependencyException(failedNationalityStorageException);
             }
+            catch (Exception exception)
+            {
+                var failedNationalityServiceException =
+                    new FailedNationalityServiceException(exception);
+
+                throw CreateAndLogServiceException(failedNationalityServiceException);
+            }
         }
 
         private NationalityValidationException CreateAndLogValidationException(Xeption exception)
@@ -91,6 +99,15 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Nationalities
             this.loggingBroker.LogError(nationalityDependencyException);
 
             return nationalityDependencyException;
+        }
+
+        private NationalityServiceException CreateAndLogServiceException(
+            Xeption exception)
+        {
+            var nationalityServiceException = new NationalityServiceException(exception);
+            this.loggingBroker.LogError(nationalityServiceException);
+
+            return nationalityServiceException;
         }
     }
 }
