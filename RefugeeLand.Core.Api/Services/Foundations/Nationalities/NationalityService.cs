@@ -62,12 +62,15 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Nationalities
                 return await this.storageBroker.UpdateNationalityAsync(nationality);
             });
 
-        public async ValueTask<Nationality> RemoveNationalityByIdAsync(Guid nationalityId)
-        {
-            Nationality maybeNationality = await this.storageBroker
+        public ValueTask<Nationality> RemoveNationalityByIdAsync(Guid nationalityId) =>
+            TryCatch(async () =>
+            {
+                ValidateNationalityId(nationalityId);
+
+                Nationality maybeNationality = await this.storageBroker
                     .SelectNationalityByIdAsync(nationalityId);
 
-            return await this.storageBroker.DeleteNationalityAsync(maybeNationality);
-        }
+                return await this.storageBroker.DeleteNationalityAsync(maybeNationality);
+            });
     }
 }
