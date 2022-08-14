@@ -35,7 +35,15 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Nationalities
         public IQueryable<Nationality> RetrieveAllNationalities() =>
             TryCatch(() => this.storageBroker.SelectAllNationalities());
 
-        public async ValueTask<Nationality> RetrieveNationalityByIdAsync(Guid nationalityId) =>
-            await this.storageBroker.SelectNationalityByIdAsync(nationalityId);
+        public ValueTask<Nationality> RetrieveNationalityByIdAsync(Guid nationalityId) =>
+            TryCatch(async () =>
+            {
+                ValidateNationalityId(nationalityId);
+
+                Nationality maybeNationality = await this.storageBroker
+                    .SelectNationalityByIdAsync(nationalityId);
+
+                return maybeNationality;
+            });
     }
 }
