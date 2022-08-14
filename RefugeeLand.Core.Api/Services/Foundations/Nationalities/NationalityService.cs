@@ -61,5 +61,8 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Nationalities
 
                 return await this.storageBroker.UpdateNationalityAsync(nationality);
             });
+
+        public ValueTask<Nationality> RemoveNationalityByIdAsync(Guid nationalityId) =>
+            throw new NotImplementedException();
     }
 }

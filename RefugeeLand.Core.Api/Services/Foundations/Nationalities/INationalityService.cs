@@ -11,5 +11,6 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Nationalities
         IQueryable<Nationality> RetrieveAllNationalities();
         ValueTask<Nationality> RetrieveNationalityByIdAsync(Guid nationalityId);
         ValueTask<Nationality> ModifyNationalityAsync(Nationality nationality);
+        ValueTask<Nationality> RemoveNationalityByIdAsync(Guid nationalityId);
     }
 }
