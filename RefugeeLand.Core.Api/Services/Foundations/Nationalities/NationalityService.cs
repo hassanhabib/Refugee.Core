@@ -43,6 +43,8 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Nationalities
                 Nationality maybeNationality = await this.storageBroker
                     .SelectNationalityByIdAsync(nationalityId);
 
+                ValidateStorageNationality(maybeNationality, nationalityId);
+
                 return maybeNationality;
             });
     }
