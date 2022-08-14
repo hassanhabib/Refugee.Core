@@ -49,5 +49,46 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Nationalities
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public void ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            string exceptionMessage = GetRandomMessage();
+            var serviceException = new Exception(exceptionMessage);
+
+            var failedNationalityServiceException =
+                new FailedNationalityServiceException(serviceException);
+
+            var expectedNationalityServiceException =
+                new NationalityServiceException(failedNationalityServiceException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectAllNationalities())
+                    .Throws(serviceException);
+
+            // when
+            Action retrieveAllNationalitiesAction = () =>
+                this.nationalityService.RetrieveAllNationalities();
+
+            NationalityServiceException actualNationalityServiceException =
+                Assert.Throws<NationalityServiceException>(retrieveAllNationalitiesAction);
+
+            // then
+            actualNationalityServiceException.Should()
+                .BeEquivalentTo(expectedNationalityServiceException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectAllNationalities(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedNationalityServiceException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
