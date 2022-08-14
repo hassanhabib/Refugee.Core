@@ -30,7 +30,8 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Nationalities
                     addNationalityTask.AsTask);
 
             // then
-            actualNationalityValidationException.Should().BeEquivalentTo(expectedNationalityValidationException);
+            actualNationalityValidationException.Should()
+                .BeEquivalentTo(expectedNationalityValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -40,6 +41,76 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Nationalities
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public async Task ShouldThrowValidationExceptionOnAddIfNationalityIsInvalidAndLogItAsync(string invalidText)
+        {
+            // given
+            var invalidNationality = new Nationality
+            {
+                // TODO:  Add default values for your properties i.e. Name = invalidText
+            };
+
+            var invalidNationalityException =
+                new InvalidNationalityException();
+
+            invalidNationalityException.AddData(
+                key: nameof(Nationality.Id),
+                values: "Id is required");
+
+            //invalidNationalityException.AddData(
+            //    key: nameof(Nationality.Name),
+            //    values: "Text is required");
+
+            // TODO: Add or remove data here to suit the validation needs for the Nationality model
+
+            invalidNationalityException.AddData(
+                key: nameof(Nationality.CreatedDate),
+                values: "Date is required");
+
+            invalidNationalityException.AddData(
+                key: nameof(Nationality.CreatedByUserId),
+                values: "Id is required");
+
+            invalidNationalityException.AddData(
+                key: nameof(Nationality.UpdatedDate),
+                values: "Date is required");
+
+            invalidNationalityException.AddData(
+                key: nameof(Nationality.UpdatedByUserId),
+                values: "Id is required");
+
+            var expectedNationalityValidationException =
+                new NationalityValidationException(invalidNationalityException);
+
+            // when
+            ValueTask<Nationality> addNationalityTask =
+                this.nationalityService.AddNationalityAsync(invalidNationality);
+
+            NationalityValidationException actualNationalityValidationException =
+                await Assert.ThrowsAsync<NationalityValidationException>(
+                    addNationalityTask.AsTask);
+
+            // then
+            actualNationalityValidationException.Should()
+                .BeEquivalentTo(expectedNationalityValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedNationalityValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertNationalityAsync(It.IsAny<Nationality>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }
