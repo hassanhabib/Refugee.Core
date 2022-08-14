@@ -38,6 +38,16 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Nationalities
         private void ValidateNationalityOnModify(Nationality nationality)
         {
             ValidateNationalityIsNotNull(nationality);
+
+            Validate(
+                (Rule: IsInvalid(nationality.Id), Parameter: nameof(Nationality.Id)),
+
+                // TODO: Add any other required validation rules
+
+                (Rule: IsInvalid(nationality.CreatedDate), Parameter: nameof(Nationality.CreatedDate)),
+                (Rule: IsInvalid(nationality.CreatedByUserId), Parameter: nameof(Nationality.CreatedByUserId)),
+                (Rule: IsInvalid(nationality.UpdatedDate), Parameter: nameof(Nationality.UpdatedDate)),
+                (Rule: IsInvalid(nationality.UpdatedByUserId), Parameter: nameof(Nationality.UpdatedByUserId)));
         }
 
         public void ValidateNationalityId(Guid nationalityId) =>
