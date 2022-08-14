@@ -23,5 +23,13 @@ namespace RefugeeLand.Core.Api.Brokers.Storages
 
             return nationalityEntityEntry.Entity;
         }
+
+        public IQueryable<Nationality> SelectAllNationalities()
+        {
+            using var broker =
+                new StorageBroker(this.configuration);
+
+            return broker.Nationalities;
+        }
     }
 }
