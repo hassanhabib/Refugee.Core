@@ -106,7 +106,8 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Nationalities
                     modifyNationalityTask.AsTask);
 
             //then
-            actualNationalityValidationException.Should().BeEquivalentTo(expectedNationalityValidationException);
+            actualNationalityValidationException.Should()
+                .BeEquivalentTo(expectedNationalityValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -147,7 +148,8 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Nationalities
                     modifyNationalityTask.AsTask);
 
             // then
-            actualNationalityValidationException.Should().BeEquivalentTo(expectedNationalityValidationException);
+            actualNationalityValidationException.Should()
+                .BeEquivalentTo(expectedNationalityValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -161,6 +163,58 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Nationalities
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [MemberData(nameof(MinutesBeforeOrAfter))]
+        public async Task ShouldThrowValidationExceptionOnModifyIfUpdatedDateIsNotRecentAndLogItAsync(int minutes)
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            Nationality randomNationality = CreateRandomNationality(randomDateTimeOffset);
+            randomNationality.UpdatedDate = randomDateTimeOffset.AddMinutes(minutes);
+
+            var invalidNationalityException =
+                new InvalidNationalityException();
+
+            invalidNationalityException.AddData(
+                key: nameof(Nationality.UpdatedDate),
+                values: "Date is not recent");
+
+            var expectedNationalityValidatonException =
+                new NationalityValidationException(invalidNationalityException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                .Returns(randomDateTimeOffset);
+
+            // when
+            ValueTask<Nationality> modifyNationalityTask =
+                this.nationalityService.ModifyNationalityAsync(randomNationality);
+
+            NationalityValidationException actualNationalityValidationException =
+                await Assert.ThrowsAsync<NationalityValidationException>(
+                    modifyNationalityTask.AsTask);
+
+            // then
+            actualNationalityValidationException.Should().BeEquivalentTo(expectedNationalityValidatonException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedNationalityValidatonException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectNationalityByIdAsync(It.IsAny<Guid>()),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
         }
     }
 }
