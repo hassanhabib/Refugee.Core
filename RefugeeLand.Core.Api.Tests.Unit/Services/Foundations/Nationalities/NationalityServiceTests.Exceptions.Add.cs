@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using EFxceptions.Models.Exceptions;
 using FluentAssertions;
 using Microsoft.Data.SqlClient;
 using Moq;
@@ -50,6 +51,57 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Nationalities
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogCritical(It.Is(SameExceptionAs(
                     expectedNationalityDependencyException))),
+                        Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyValidationExceptionOnAddIfNationalityAlreadyExsitsAndLogItAsync()
+        {
+            // given
+            Nationality randomNationality = CreateRandomNationality();
+            Nationality alreadyExistsNationality = randomNationality;
+            string randomMessage = GetRandomMessage();
+
+            var duplicateKeyException =
+                new DuplicateKeyException(randomMessage);
+
+            var alreadyExistsNationalityException =
+                new AlreadyExistsNationalityException(duplicateKeyException);
+
+            var expectedNationalityDependencyValidationException =
+                new NationalityDependencyValidationException(alreadyExistsNationalityException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(duplicateKeyException);
+
+            // when
+            ValueTask<Nationality> addNationalityTask =
+                this.nationalityService.AddNationalityAsync(alreadyExistsNationality);
+
+            // then
+            NationalityDependencyValidationException actualNationalityDependencyValidationException =
+                await Assert.ThrowsAsync<NationalityDependencyValidationException>(
+                    addNationalityTask.AsTask);
+
+            actualNationalityDependencyValidationException.Should()
+                .BeEquivalentTo(expectedNationalityDependencyValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertNationalityAsync(It.IsAny<Nationality>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedNationalityDependencyValidationException))),
                         Times.Once);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
