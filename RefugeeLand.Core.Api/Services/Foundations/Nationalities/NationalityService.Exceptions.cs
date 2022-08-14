@@ -36,6 +36,10 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Nationalities
 
                 throw CreateAndLogCriticalDependencyException(failedNationalityStorageException);
             }
+            catch (NotFoundNationalityException notFoundNationalityException)
+            {
+                throw CreateAndLogValidationException(notFoundNationalityException);
+            }
             catch (DuplicateKeyException duplicateKeyException)
             {
                 var alreadyExistsNationalityException =

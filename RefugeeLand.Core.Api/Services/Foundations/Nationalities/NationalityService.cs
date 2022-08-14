@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using RefugeeLand.Core.Api.Brokers.DateTimes;
@@ -33,5 +34,18 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Nationalities
 
         public IQueryable<Nationality> RetrieveAllNationalities() =>
             TryCatch(() => this.storageBroker.SelectAllNationalities());
+
+        public ValueTask<Nationality> RetrieveNationalityByIdAsync(Guid nationalityId) =>
+            TryCatch(async () =>
+            {
+                ValidateNationalityId(nationalityId);
+
+                Nationality maybeNationality = await this.storageBroker
+                    .SelectNationalityByIdAsync(nationalityId);
+
+                ValidateStorageNationality(maybeNationality, nationalityId);
+
+                return maybeNationality;
+            });
     }
 }
