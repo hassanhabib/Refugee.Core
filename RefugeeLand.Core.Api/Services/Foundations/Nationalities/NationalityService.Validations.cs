@@ -24,7 +24,13 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Nationalities
                     firstDate: nationality.UpdatedDate,
                     secondDate: nationality.CreatedDate,
                     secondDateName: nameof(Nationality.CreatedDate)),
-                Parameter: nameof(Nationality.UpdatedDate)));
+                Parameter: nameof(Nationality.UpdatedDate)),
+
+                (Rule: IsNotSame(
+                    firstId: nationality.UpdatedByUserId,
+                    secondId: nationality.CreatedByUserId,
+                    secondIdName: nameof(Nationality.CreatedByUserId)),
+                Parameter: nameof(Nationality.UpdatedByUserId)));
         }
 
         private static void ValidateNationalityIsNotNull(Nationality nationality)
@@ -54,6 +60,15 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Nationalities
             {
                 Condition = firstDate != secondDate,
                 Message = $"Date is not the same as {secondDateName}"
+            };
+
+        private static dynamic IsNotSame(
+            Guid firstId,
+            Guid secondId,
+            string secondIdName) => new
+            {
+                Condition = firstId != secondId,
+                Message = $"Id is not the same as {secondIdName}"
             };
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
