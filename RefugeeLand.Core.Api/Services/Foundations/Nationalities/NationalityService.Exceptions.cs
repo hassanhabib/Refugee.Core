@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
 using RefugeeLand.Core.Api.Models.Nationalities;
 using RefugeeLand.Core.Api.Models.Nationalities.Exceptions;
@@ -31,6 +32,13 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Nationalities
 
                 throw CreateAndLogCriticalDependencyException(failedNationalityStorageException);
             }
+            catch (DuplicateKeyException duplicateKeyException)
+            {
+                var alreadyExistsNationalityException =
+                    new AlreadyExistsNationalityException(duplicateKeyException);
+
+                throw CreateAndLogDependencyValidationException(alreadyExistsNationalityException);
+            }
         }
 
         private NationalityValidationException CreateAndLogValidationException(Xeption exception)
@@ -49,6 +57,16 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Nationalities
             this.loggingBroker.LogCritical(nationalityDependencyException);
 
             return nationalityDependencyException;
+        }
+
+        private NationalityDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
+        {
+            var nationalityDependencyValidationException =
+                new NationalityDependencyValidationException(exception);
+
+            this.loggingBroker.LogError(nationalityDependencyValidationException);
+
+            return nationalityDependencyValidationException;
         }
     }
 }
