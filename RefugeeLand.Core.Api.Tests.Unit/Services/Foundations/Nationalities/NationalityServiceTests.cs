@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.Serialization;
 using Microsoft.Data.SqlClient;
@@ -62,6 +63,13 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Nationalities
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
+
+        private static IQueryable<Nationality> CreateRandomNationalities()
+        {
+            return CreateNationalityFiller(dateTimeOffset: GetRandomDateTimeOffset())
+                .Create(count: GetRandomNumber())
+                    .AsQueryable();
+        }
 
         private static Nationality CreateRandomNationality() =>
             CreateNationalityFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
