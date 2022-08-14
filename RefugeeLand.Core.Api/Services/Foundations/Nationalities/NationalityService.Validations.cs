@@ -84,7 +84,13 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Nationalities
                     firstDate: inputNationality.CreatedDate,
                     secondDate: storageNationality.CreatedDate,
                     secondDateName: nameof(Nationality.CreatedDate)),
-                Parameter: nameof(Nationality.CreatedDate)));
+                Parameter: nameof(Nationality.CreatedDate)),
+
+                (Rule: IsNotSame(
+                    firstId: inputNationality.CreatedByUserId,
+                    secondId: storageNationality.CreatedByUserId,
+                    secondIdName: nameof(Nationality.CreatedByUserId)),
+                Parameter: nameof(Nationality.CreatedByUserId)));
         }
 
         private static dynamic IsInvalid(Guid id) => new
