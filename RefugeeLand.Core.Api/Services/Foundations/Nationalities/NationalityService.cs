@@ -32,6 +32,6 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Nationalities
             });
 
         public IQueryable<Nationality> RetrieveAllNationalities() =>
-            this.storageBroker.SelectAllNationalities();
+            TryCatch(() => this.storageBroker.SelectAllNationalities());
     }
 }

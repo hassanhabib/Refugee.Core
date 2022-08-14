@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -12,6 +13,7 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Nationalities
     public partial class NationalityService
     {
         private delegate ValueTask<Nationality> ReturningNationalityFunction();
+        private delegate IQueryable<Nationality> ReturningNationalitiesFunction();
 
         private async ValueTask<Nationality> TryCatch(ReturningNationalityFunction returningNationalityFunction)
         {
@@ -61,6 +63,20 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Nationalities
                     new FailedNationalityServiceException(exception);
 
                 throw CreateAndLogServiceException(failedNationalityServiceException);
+            }
+        }
+
+        private IQueryable<Nationality> TryCatch(ReturningNationalitiesFunction returningNationalitiesFunction)
+        {
+            try
+            {
+                return returningNationalitiesFunction();
+            }
+            catch (SqlException sqlException)
+            {
+                var failedNationalityStorageException =
+                    new FailedNationalityStorageException(sqlException);
+                throw CreateAndLogCriticalDependencyException(failedNationalityStorageException);
             }
         }
 
