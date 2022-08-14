@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Microsoft.Data.SqlClient;
 using RefugeeLand.Core.Api.Models.Nationalities;
 using RefugeeLand.Core.Api.Models.Nationalities.Exceptions;
 using Xeptions;
@@ -23,6 +24,13 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Nationalities
             {
                 throw CreateAndLogValidationException(invalidNationalityException);
             }
+            catch (SqlException sqlException)
+            {
+                var failedNationalityStorageException =
+                    new FailedNationalityStorageException(sqlException);
+
+                throw CreateAndLogCriticalDependencyException(failedNationalityStorageException);
+            }
         }
 
         private NationalityValidationException CreateAndLogValidationException(Xeption exception)
@@ -33,6 +41,14 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Nationalities
             this.loggingBroker.LogError(nationalityValidationException);
 
             return nationalityValidationException;
+        }
+
+        private NationalityDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
+        {
+            var nationalityDependencyException = new NationalityDependencyException(exception);
+            this.loggingBroker.LogCritical(nationalityDependencyException);
+
+            return nationalityDependencyException;
         }
     }
 }
