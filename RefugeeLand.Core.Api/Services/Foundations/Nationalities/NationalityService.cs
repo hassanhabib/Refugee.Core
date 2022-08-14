@@ -1,3 +1,8 @@
+// -------------------------------------------------------
+// Copyright (c) Coalition of the Good-Hearted Engineers
+// FREE TO USE TO DELIVER HUMANITARIAN AID, HOPE AND LOVE
+// -------------------------------------------------------
+
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -60,6 +65,19 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Nationalities
                 ValidateAgainstStorageNationalityOnModify(inputNationality: nationality, storageNationality: maybeNationality);
 
                 return await this.storageBroker.UpdateNationalityAsync(nationality);
+            });
+
+        public ValueTask<Nationality> RemoveNationalityByIdAsync(Guid nationalityId) =>
+            TryCatch(async () =>
+            {
+                ValidateNationalityId(nationalityId);
+
+                Nationality maybeNationality = await this.storageBroker
+                    .SelectNationalityByIdAsync(nationalityId);
+
+                ValidateStorageNationality(maybeNationality, nationalityId);
+
+                return await this.storageBroker.DeleteNationalityAsync(maybeNationality);
             });
     }
 }
