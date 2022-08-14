@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using FluentAssertions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using RefugeeLand.Core.Api.Models.Nationalities;
 using RefugeeLand.Core.Api.Models.Nationalities.Exceptions;
@@ -139,7 +140,8 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Nationalities
                 await Assert.ThrowsAsync<NationalityDependencyValidationException>(
                     addNationalityTask.AsTask);
 
-            actualNationalityDependencyValidationException.Should().BeEquivalentTo(expectedNationalityValidationException);
+            actualNationalityDependencyValidationException.Should()
+                .BeEquivalentTo(expectedNationalityValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
@@ -157,6 +159,55 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Nationalities
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyExceptionOnAddIfDatabaseUpdateErrorOccursAndLogItAsync()
+        {
+            // given
+            Nationality someNationality = CreateRandomNationality();
+
+            var databaseUpdateException =
+                new DbUpdateException();
+
+            var failedNationalityStorageException =
+                new FailedNationalityStorageException(databaseUpdateException);
+
+            var expectedNationalityDependencyException =
+                new NationalityDependencyException(failedNationalityStorageException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(databaseUpdateException);
+
+            // when
+            ValueTask<Nationality> addNationalityTask =
+                this.nationalityService.AddNationalityAsync(someNationality);
+
+            NationalityDependencyException actualNationalityDependencyException =
+                await Assert.ThrowsAsync<NationalityDependencyException>(
+                    addNationalityTask.AsTask);
+
+            // then
+            actualNationalityDependencyException.Should()
+                .BeEquivalentTo(expectedNationalityDependencyException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertNationalityAsync(It.IsAny<Nationality>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedNationalityDependencyException))),
+                        Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }
