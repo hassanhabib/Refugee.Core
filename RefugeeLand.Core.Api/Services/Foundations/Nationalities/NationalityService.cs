@@ -47,5 +47,8 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Nationalities
 
                 return maybeNationality;
             });
+
+        public ValueTask<Nationality> ModifyNationalityAsync(Nationality nationality) =>
+            throw new NotImplementedException();
     }
 }
