@@ -60,7 +60,8 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Nationalities
             // given 
             var invalidNationality = new Nationality
             {
-                // TODO:  Add default values for your properties i.e. Name = invalidText
+                Name = invalidText,
+                Country = invalidText
             };
 
             var invalidNationalityException = new InvalidNationalityException();
@@ -69,11 +70,13 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Nationalities
                 key: nameof(Nationality.Id),
                 values: "Id is required");
 
-            //invalidNationalityException.AddData(
-            //    key: nameof(Nationality.Name),
-            //    values: "Text is required");
-
-            // TODO: Add or remove data here to suit the validation needs for the Nationality model
+            invalidNationalityException.AddData(
+                key: nameof(Nationality.Name),
+                values: "Text is required");
+            
+            invalidNationalityException.AddData(
+                key: nameof(Nationality.Country),
+                values: "Text is required");
 
             invalidNationalityException.AddData(
                 key: nameof(Nationality.CreatedDate),
