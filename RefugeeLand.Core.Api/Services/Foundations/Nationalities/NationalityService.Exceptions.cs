@@ -39,6 +39,13 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Nationalities
 
                 throw CreateAndLogDependencyValidationException(alreadyExistsNationalityException);
             }
+            catch (ForeignKeyConstraintConflictException foreignKeyConstraintConflictException)
+            {
+                var invalidNationalityReferenceException =
+                    new InvalidNationalityReferenceException(foreignKeyConstraintConflictException);
+
+                throw CreateAndLogDependencyValidationException(invalidNationalityReferenceException);
+            }
         }
 
         private NationalityValidationException CreateAndLogValidationException(Xeption exception)
