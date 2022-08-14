@@ -167,5 +167,56 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Nationalities
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowDependencyValidationExceptionOnModifyIfDbUpdateConcurrencyErrorOccursAndLogAsync()
+        {
+            // given
+            Nationality randomNationality = CreateRandomNationality();
+            var databaseUpdateConcurrencyException = new DbUpdateConcurrencyException();
+
+            var lockedNationalityException =
+                new LockedNationalityException(databaseUpdateConcurrencyException);
+
+            var expectedNationalityDependencyValidationException =
+                new NationalityDependencyValidationException(lockedNationalityException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(databaseUpdateConcurrencyException);
+
+            // when
+            ValueTask<Nationality> modifyNationalityTask =
+                this.nationalityService.ModifyNationalityAsync(randomNationality);
+
+            NationalityDependencyValidationException actualNationalityDependencyValidationException =
+                await Assert.ThrowsAsync<NationalityDependencyValidationException>(
+                    modifyNationalityTask.AsTask);
+
+            // then
+            actualNationalityDependencyValidationException.Should()
+                .BeEquivalentTo(expectedNationalityDependencyValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectNationalityByIdAsync(randomNationality.Id),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedNationalityDependencyValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateNationalityAsync(randomNationality),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
