@@ -111,5 +111,48 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Nationalities
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowDependencyExceptionOnRemoveWhenSqlExceptionOccursAndLogItAsync()
+        {
+            // given
+            Guid someNationalityId = Guid.NewGuid();
+            SqlException sqlException = GetSqlException();
+
+            var failedNationalityStorageException =
+                new FailedNationalityStorageException(sqlException);
+
+            var expectedNationalityDependencyException =
+                new NationalityDependencyException(failedNationalityStorageException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectNationalityByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(sqlException);
+
+            // when
+            ValueTask<Nationality> deleteNationalityTask =
+                this.nationalityService.RemoveNationalityByIdAsync(someNationalityId);
+
+            NationalityDependencyException actualNationalityDependencyException =
+                await Assert.ThrowsAsync<NationalityDependencyException>(
+                    deleteNationalityTask.AsTask);
+
+            // then
+            actualNationalityDependencyException.Should()
+                .BeEquivalentTo(expectedNationalityDependencyException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectNationalityByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogCritical(It.Is(SameExceptionAs(
+                    expectedNationalityDependencyException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
