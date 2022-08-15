@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -60,6 +61,34 @@ namespace RefugeeLand.Core.Api.Controllers
                     this.nationalityService.RetrieveAllNationalities();
 
                 return Ok(retrievedNationalities);
+            }
+            catch (NationalityDependencyException nationalityDependencyException)
+            {
+                return InternalServerError(nationalityDependencyException);
+            }
+            catch (NationalityServiceException nationalityServiceException)
+            {
+                return InternalServerError(nationalityServiceException);
+            }
+        }
+
+        [HttpGet("{nationalityId}")]
+        public async ValueTask<ActionResult<Nationality>> GetNationalityByIdAsync(Guid nationalityId)
+        {
+            try
+            {
+                Nationality nationality = await this.nationalityService.RetrieveNationalityByIdAsync(nationalityId);
+
+                return Ok(nationality);
+            }
+            catch (NationalityValidationException nationalityValidationException)
+                when (nationalityValidationException.InnerException is NotFoundNationalityException)
+            {
+                return NotFound(nationalityValidationException.InnerException);
+            }
+            catch (NationalityValidationException nationalityValidationException)
+            {
+                return BadRequest(nationalityValidationException.InnerException);
             }
             catch (NationalityDependencyException nationalityDependencyException)
             {
