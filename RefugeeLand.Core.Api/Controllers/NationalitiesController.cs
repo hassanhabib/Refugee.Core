@@ -1,3 +1,8 @@
+// -------------------------------------------------------
+// Copyright (c) Coalition of the Good-Hearted Engineers
+// FREE TO USE TO DELIVER HUMANITARIAN AID, HOPE AND LOVE
+// -------------------------------------------------------
+
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -128,6 +133,44 @@ namespace RefugeeLand.Core.Api.Controllers
                when (nationalityDependencyValidationException.InnerException is AlreadyExistsNationalityException)
             {
                 return Conflict(nationalityDependencyValidationException.InnerException);
+            }
+            catch (NationalityDependencyException nationalityDependencyException)
+            {
+                return InternalServerError(nationalityDependencyException);
+            }
+            catch (NationalityServiceException nationalityServiceException)
+            {
+                return InternalServerError(nationalityServiceException);
+            }
+        }
+
+        [HttpDelete("{nationalityId}")]
+        public async ValueTask<ActionResult<Nationality>> DeleteNationalityByIdAsync(Guid nationalityId)
+        {
+            try
+            {
+                Nationality deletedNationality =
+                    await this.nationalityService.RemoveNationalityByIdAsync(nationalityId);
+
+                return Ok(deletedNationality);
+            }
+            catch (NationalityValidationException nationalityValidationException)
+                when (nationalityValidationException.InnerException is NotFoundNationalityException)
+            {
+                return NotFound(nationalityValidationException.InnerException);
+            }
+            catch (NationalityValidationException nationalityValidationException)
+            {
+                return BadRequest(nationalityValidationException.InnerException);
+            }
+            catch (NationalityDependencyValidationException nationalityDependencyValidationException)
+                when (nationalityDependencyValidationException.InnerException is LockedNationalityException)
+            {
+                return Locked(nationalityDependencyValidationException.InnerException);
+            }
+            catch (NationalityDependencyValidationException nationalityDependencyValidationException)
+            {
+                return BadRequest(nationalityDependencyValidationException);
             }
             catch (NationalityDependencyException nationalityDependencyException)
             {

@@ -103,7 +103,6 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Nationalities
                 .OnProperty(nationality => nationality.CreatedByUserId).Use(userId)
                 .OnProperty(nationality => nationality.UpdatedByUserId).Use(userId);
 
-            // TODO: Complete the filler setup e.g. ignore related properties etc...
 
             return filler;
         }
