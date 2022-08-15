@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
@@ -39,6 +40,26 @@ namespace RefugeeLand.Core.Api.Controllers
                when (nationalityDependencyValidationException.InnerException is AlreadyExistsNationalityException)
             {
                 return Conflict(nationalityDependencyValidationException.InnerException);
+            }
+            catch (NationalityDependencyException nationalityDependencyException)
+            {
+                return InternalServerError(nationalityDependencyException);
+            }
+            catch (NationalityServiceException nationalityServiceException)
+            {
+                return InternalServerError(nationalityServiceException);
+            }
+        }
+
+        [HttpGet]
+        public ActionResult<IQueryable<Nationality>> GetAllNationalities()
+        {
+            try
+            {
+                IQueryable<Nationality> retrievedNationalities =
+                    this.nationalityService.RetrieveAllNationalities();
+
+                return Ok(retrievedNationalities);
             }
             catch (NationalityDependencyException nationalityDependencyException)
             {
