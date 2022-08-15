@@ -16,7 +16,7 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.Hosts
     public partial class HostServiceTests
     {
         [Fact]
-        public async Task ShouldThrowValidationExceptionOnAddIfHostIsNullAndLogItAsync()
+        public async Task shouldThrowValidationExceptionOnAddIfHostIsNullAndLogItAsync()
         {
             // given
             Host nullHost = null;
