@@ -99,5 +99,44 @@ namespace RefugeeLand.Core.Api.Controllers
                 return InternalServerError(nationalityServiceException);
             }
         }
+
+        [HttpPut]
+        public async ValueTask<ActionResult<Nationality>> PutNationalityAsync(Nationality nationality)
+        {
+            try
+            {
+                Nationality modifiedNationality =
+                    await this.nationalityService.ModifyNationalityAsync(nationality);
+
+                return Ok(modifiedNationality);
+            }
+            catch (NationalityValidationException nationalityValidationException)
+                when (nationalityValidationException.InnerException is NotFoundNationalityException)
+            {
+                return NotFound(nationalityValidationException.InnerException);
+            }
+            catch (NationalityValidationException nationalityValidationException)
+            {
+                return BadRequest(nationalityValidationException.InnerException);
+            }
+            catch (NationalityDependencyValidationException nationalityValidationException)
+                when (nationalityValidationException.InnerException is InvalidNationalityReferenceException)
+            {
+                return FailedDependency(nationalityValidationException.InnerException);
+            }
+            catch (NationalityDependencyValidationException nationalityDependencyValidationException)
+               when (nationalityDependencyValidationException.InnerException is AlreadyExistsNationalityException)
+            {
+                return Conflict(nationalityDependencyValidationException.InnerException);
+            }
+            catch (NationalityDependencyException nationalityDependencyException)
+            {
+                return InternalServerError(nationalityDependencyException);
+            }
+            catch (NationalityServiceException nationalityServiceException)
+            {
+                return InternalServerError(nationalityServiceException);
+            }
+        }
     }
 }
