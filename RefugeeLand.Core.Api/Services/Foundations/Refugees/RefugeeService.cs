@@ -3,6 +3,7 @@
 // FREE TO USE TO DELIVER HUMANITARIAN AID, HOPE AND LOVE
 // -------------------------------------------------------
 
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using RefugeeLand.Core.Api.Brokers.DateTimes;
@@ -39,5 +40,7 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Refugees
         public IQueryable<Refugee> RetrieveAllRefugees() =>
         TryCatch(() => this.storageBroker.SelectAllRefugees());
 
+        public ValueTask<Refugee> RetrieveRefugeeByIdAsync(Guid refugeeId) => 
+            throw new NotImplementedException();
     }
 }
