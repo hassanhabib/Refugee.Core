@@ -6,7 +6,6 @@
 
     <ItemGroup>
         <PackageReference Include="EFxceptions" Version="0.4.5" />
-        <PackageReference Include="EFxceptions.Identity" Version="0.4.5" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.10">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
