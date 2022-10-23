@@ -31,5 +31,13 @@ namespace RefugeeLand.Core.Api.Brokers.Storages
 
             return broker.RefugeeGroupMemberships;
         }
+
+        public async ValueTask<RefugeeGroupMembership> SelectRefugeeGroupMembershipByIdAsync(Guid refugeeGroupMembershipId)
+        {
+            using var broker =
+                new StorageBroker(this.configuration);
+
+            return await broker.RefugeeGroupMemberships.FindAsync(refugeeGroupMembershipId);
+        }
     }
 }
