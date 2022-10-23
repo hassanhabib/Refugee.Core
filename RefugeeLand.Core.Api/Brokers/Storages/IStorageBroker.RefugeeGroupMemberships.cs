@@ -11,5 +11,6 @@ namespace RefugeeLand.Core.Api.Brokers.Storages
         IQueryable<RefugeeGroupMembership> SelectAllRefugeeGroupMemberships();
         ValueTask<RefugeeGroupMembership> SelectRefugeeGroupMembershipByIdAsync(Guid refugeeGroupMembershipId);
         ValueTask<RefugeeGroupMembership> UpdateRefugeeGroupMembershipAsync(RefugeeGroupMembership refugeeGroupMembership);
+        ValueTask<RefugeeGroupMembership> DeleteRefugeeGroupMembershipAsync(RefugeeGroupMembership refugeeGroupMembership);
     }
 }

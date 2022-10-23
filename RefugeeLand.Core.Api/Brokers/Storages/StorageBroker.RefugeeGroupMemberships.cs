@@ -52,5 +52,18 @@ namespace RefugeeLand.Core.Api.Brokers.Storages
 
             return refugeeGroupMembershipEntityEntry.Entity;
         }
+
+        public async ValueTask<RefugeeGroupMembership> DeleteRefugeeGroupMembershipAsync(RefugeeGroupMembership refugeeGroupMembership)
+        {
+            using var broker =
+                new StorageBroker(this.configuration);
+
+            EntityEntry<RefugeeGroupMembership> refugeeGroupMembershipEntityEntry =
+                broker.RefugeeGroupMemberships.Remove(refugeeGroupMembership);
+
+            await broker.SaveChangesAsync();
+
+            return refugeeGroupMembershipEntityEntry.Entity;
+        }
     }
 }
