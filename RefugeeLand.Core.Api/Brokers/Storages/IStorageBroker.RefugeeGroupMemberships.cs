@@ -8,5 +8,6 @@ namespace RefugeeLand.Core.Api.Brokers.Storages
     public partial interface IStorageBroker
     {
         ValueTask<RefugeeGroupMembership> InsertRefugeeGroupMembershipAsync(RefugeeGroupMembership refugeeGroupMembership);
+        IQueryable<RefugeeGroupMembership> SelectAllRefugeeGroupMemberships();
     }
 }
