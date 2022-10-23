@@ -25,7 +25,7 @@ namespace RefugeeLand.Core.Api.Brokers.Storages
             SetPetMedicalConditionReferences(modelBuilder);
             SetRefugeePetReferences(modelBuilder);
             SetShelterRefugeeOccupantReferences(modelBuilder);
-            // SetRefugeeGroupMembershipReferences(modelBuilder);
+            AddRefugeeGroupMembershipConfigurations(modelBuilder);
             SetShelterOfferReferences(modelBuilder);
             SetShelterRequestReferences(modelBuilder);
         }
