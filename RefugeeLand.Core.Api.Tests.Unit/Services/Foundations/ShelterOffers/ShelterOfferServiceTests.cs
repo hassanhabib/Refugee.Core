@@ -97,6 +97,8 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.ShelterOffers
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnProperty(shelterOffer => shelterOffer.CreatedByUserId).Use(userId)
                 .OnProperty(shelterOffer => shelterOffer.UpdatedByUserId).Use(userId)
+                .OnProperty(shelterOffer => shelterOffer.Host).IgnoreIt()
+                .OnProperty(shelterOffer => shelterOffer.Shelter).IgnoreIt()
                 .OnProperty(shelterOffer => shelterOffer.ShelterRequests).IgnoreIt();
 
             return filler;
