@@ -11,7 +11,7 @@ namespace RefugeeLand.Core.Api.Brokers.Storages
     public partial class StorageBroker
     {
         
-        private static void SetShelterRequestReferences(ModelBuilder modelBuilder)
+        private static void AddShelterRequestConfigurations(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<ShelterRequest>()
                 .HasOne(shelterRequest => shelterRequest.ShelterOffer)
