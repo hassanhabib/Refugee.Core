@@ -90,7 +90,13 @@ namespace RefugeeLand.Core.Api.Services.Foundations.ShelterOffers
                     firstId: inputShelterOffer.CreatedByUserId,
                     secondId: storageShelterOffer.CreatedByUserId,
                     secondIdName: nameof(ShelterOffer.CreatedByUserId)),
-                Parameter: nameof(ShelterOffer.CreatedByUserId)));
+                Parameter: nameof(ShelterOffer.CreatedByUserId)),
+
+                (Rule: IsSame(
+                    firstDate: inputShelterOffer.UpdatedDate,
+                    secondDate: storageShelterOffer.UpdatedDate,
+                    secondDateName: nameof(ShelterOffer.UpdatedDate)),
+                Parameter: nameof(ShelterOffer.UpdatedDate)));
         }
 
         private static dynamic IsInvalid(Guid id) => new
