@@ -15,5 +15,8 @@ namespace RefugeeLand.Core.Api.Brokers.Storages
             await InsertAsync(shelterOffer);
 
         public IQueryable<ShelterOffer> SelectAllShelterOffers()=> SelectAll<ShelterOffer>();
+
+        public async ValueTask<ShelterOffer> SelectShelterOfferByIdAsync(Guid shelterOfferId) =>
+            await SelectAsync<ShelterOffer>(shelterOfferId);
     }
 }
