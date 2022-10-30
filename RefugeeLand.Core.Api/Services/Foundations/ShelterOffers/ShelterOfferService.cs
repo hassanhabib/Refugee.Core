@@ -22,7 +22,7 @@ namespace RefugeeLand.Core.Api.Services.Foundations.ShelterOffers
             this.loggingBroker = loggingBroker;
         }
 
-        public ValueTask<ShelterOffer> AddShelterOfferAsync(ShelterOffer shelterOffer) =>
-            throw new System.NotImplementedException();
+        public async ValueTask<ShelterOffer> AddShelterOfferAsync(ShelterOffer shelterOffer) =>
+            await this.storageBroker.InsertShelterOfferAsync(shelterOffer);
     }
 }
