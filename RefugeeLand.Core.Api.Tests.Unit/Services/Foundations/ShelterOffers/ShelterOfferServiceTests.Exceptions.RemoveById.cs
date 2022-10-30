@@ -111,5 +111,48 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.ShelterOffers
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowDependencyExceptionOnRemoveWhenSqlExceptionOccursAndLogItAsync()
+        {
+            // given
+            Guid someShelterOfferId = Guid.NewGuid();
+            SqlException sqlException = GetSqlException();
+
+            var failedShelterOfferStorageException =
+                new FailedShelterOfferStorageException(sqlException);
+
+            var expectedShelterOfferDependencyException =
+                new ShelterOfferDependencyException(failedShelterOfferStorageException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectShelterOfferByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(sqlException);
+
+            // when
+            ValueTask<ShelterOffer> deleteShelterOfferTask =
+                this.shelterOfferService.RemoveShelterOfferByIdAsync(someShelterOfferId);
+
+            ShelterOfferDependencyException actualShelterOfferDependencyException =
+                await Assert.ThrowsAsync<ShelterOfferDependencyException>(
+                    deleteShelterOfferTask.AsTask);
+
+            // then
+            actualShelterOfferDependencyException.Should()
+                .BeEquivalentTo(expectedShelterOfferDependencyException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectShelterOfferByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogCritical(It.Is(SameExceptionAs(
+                    expectedShelterOfferDependencyException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
