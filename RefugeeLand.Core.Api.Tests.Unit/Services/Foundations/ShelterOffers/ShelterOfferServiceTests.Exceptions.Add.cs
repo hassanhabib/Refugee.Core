@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using FluentAssertions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using RefugeeLand.Core.Api.Models.ShelterOffers;
 using RefugeeLand.Core.Api.Models.ShelterOffers.Exceptions;
@@ -139,7 +140,8 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.ShelterOffers
                 await Assert.ThrowsAsync<ShelterOfferDependencyValidationException>(
                     addShelterOfferTask.AsTask);
 
-            actualShelterOfferDependencyValidationException.Should().BeEquivalentTo(expectedShelterOfferValidationException);
+            actualShelterOfferDependencyValidationException.Should()
+                .BeEquivalentTo(expectedShelterOfferValidationException);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
@@ -157,6 +159,55 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.ShelterOffers
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyExceptionOnAddIfDatabaseUpdateErrorOccursAndLogItAsync()
+        {
+            // given
+            ShelterOffer someShelterOffer = CreateRandomShelterOffer();
+
+            var databaseUpdateException =
+                new DbUpdateException();
+
+            var failedShelterOfferStorageException =
+                new FailedShelterOfferStorageException(databaseUpdateException);
+
+            var expectedShelterOfferDependencyException =
+                new ShelterOfferDependencyException(failedShelterOfferStorageException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(databaseUpdateException);
+
+            // when
+            ValueTask<ShelterOffer> addShelterOfferTask =
+                this.shelterOfferService.AddShelterOfferAsync(someShelterOffer);
+
+            ShelterOfferDependencyException actualShelterOfferDependencyException =
+                await Assert.ThrowsAsync<ShelterOfferDependencyException>(
+                    addShelterOfferTask.AsTask);
+
+            // then
+            actualShelterOfferDependencyException.Should()
+                .BeEquivalentTo(expectedShelterOfferDependencyException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertShelterOfferAsync(It.IsAny<ShelterOffer>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedShelterOfferDependencyException))),
+                        Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }
