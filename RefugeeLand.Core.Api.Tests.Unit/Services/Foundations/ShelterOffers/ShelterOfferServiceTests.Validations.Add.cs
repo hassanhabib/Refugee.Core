@@ -30,7 +30,8 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.ShelterOffers
                     addShelterOfferTask.AsTask);
 
             // then
-            actualShelterOfferValidationException.Should().BeEquivalentTo(expectedShelterOfferValidationException);
+            actualShelterOfferValidationException.Should()
+                .BeEquivalentTo(expectedShelterOfferValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -40,6 +41,76 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.ShelterOffers
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public async Task ShouldThrowValidationExceptionOnAddIfShelterOfferIsInvalidAndLogItAsync(string invalidText)
+        {
+            // given
+            var invalidShelterOffer = new ShelterOffer
+            {
+                // TODO:  Add default values for your properties i.e. Name = invalidText
+            };
+
+            var invalidShelterOfferException =
+                new InvalidShelterOfferException();
+
+            invalidShelterOfferException.AddData(
+                key: nameof(ShelterOffer.Id),
+                values: "Id is required");
+
+            //invalidShelterOfferException.AddData(
+            //    key: nameof(ShelterOffer.Name),
+            //    values: "Text is required");
+
+            // TODO: Add or remove data here to suit the validation needs for the ShelterOffer model
+
+            invalidShelterOfferException.AddData(
+                key: nameof(ShelterOffer.CreatedDate),
+                values: "Date is required");
+
+            invalidShelterOfferException.AddData(
+                key: nameof(ShelterOffer.CreatedByUserId),
+                values: "Id is required");
+
+            invalidShelterOfferException.AddData(
+                key: nameof(ShelterOffer.UpdatedDate),
+                values: "Date is required");
+
+            invalidShelterOfferException.AddData(
+                key: nameof(ShelterOffer.UpdatedByUserId),
+                values: "Id is required");
+
+            var expectedShelterOfferValidationException =
+                new ShelterOfferValidationException(invalidShelterOfferException);
+
+            // when
+            ValueTask<ShelterOffer> addShelterOfferTask =
+                this.shelterOfferService.AddShelterOfferAsync(invalidShelterOffer);
+
+            ShelterOfferValidationException actualShelterOfferValidationException =
+                await Assert.ThrowsAsync<ShelterOfferValidationException>(
+                    addShelterOfferTask.AsTask);
+
+            // then
+            actualShelterOfferValidationException.Should()
+                .BeEquivalentTo(expectedShelterOfferValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedShelterOfferValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertShelterOfferAsync(It.IsAny<ShelterOffer>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }
