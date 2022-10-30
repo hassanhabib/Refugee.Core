@@ -84,7 +84,11 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.ShelterOffers
 
             invalidShelterOfferException.AddData(
                 key: nameof(ShelterOffer.UpdatedDate),
-                values: "Date is required");
+                values:
+                new[] {
+                    "Date is required",
+                    $"Date is the same as {nameof(ShelterOffer.CreatedDate)}"
+                });
 
             invalidShelterOfferException.AddData(
                 key: nameof(ShelterOffer.UpdatedByUserId),
