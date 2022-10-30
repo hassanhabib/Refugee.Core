@@ -53,5 +53,48 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.ShelterOffers
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnRetrieveByIdIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            Guid someId = Guid.NewGuid();
+            var serviceException = new Exception();
+
+            var failedShelterOfferServiceException =
+                new FailedShelterOfferServiceException(serviceException);
+
+            var expectedShelterOfferServiceException =
+                new ShelterOfferServiceException(failedShelterOfferServiceException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectShelterOfferByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(serviceException);
+
+            // when
+            ValueTask<ShelterOffer> retrieveShelterOfferByIdTask =
+                this.shelterOfferService.RetrieveShelterOfferByIdAsync(someId);
+
+            ShelterOfferServiceException actualShelterOfferServiceException =
+                await Assert.ThrowsAsync<ShelterOfferServiceException>(
+                    retrieveShelterOfferByIdTask.AsTask);
+
+            // then
+            actualShelterOfferServiceException.Should()
+                .BeEquivalentTo(expectedShelterOfferServiceException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectShelterOfferByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogError(It.Is(SameExceptionAs(
+                   expectedShelterOfferServiceException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
