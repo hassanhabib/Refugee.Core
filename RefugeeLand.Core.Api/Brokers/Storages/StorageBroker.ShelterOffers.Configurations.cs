@@ -7,8 +7,17 @@ namespace RefugeeLand.Core.Api.Brokers.Storages
     {
         private static void AddShelterOfferConfigurations(ModelBuilder modelBuilder)
         {
-            // TODO: Add your fluent configurations here
-            // TODO: Call this method from StorageBroker.cs AddConfigurations method
+            modelBuilder.Entity<ShelterOffer>()
+                .HasOne(shelterOffer => shelterOffer.Shelter)
+                .WithMany(shelter => shelter.ShelterOffers)
+                .HasForeignKey(shelterOffer => shelterOffer.ShelterId)
+                .OnDelete(DeleteBehavior.NoAction);
+            
+            modelBuilder.Entity<ShelterOffer>()
+                .HasOne(shelterOffer => shelterOffer.Host)
+                .WithMany(host => host.ShelterOffers)
+                .HasForeignKey(shelterOffer => shelterOffer.HostId)
+                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }
