@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using FluentAssertions;
@@ -208,6 +209,57 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.ShelterOffers
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedShelterOfferDependencyValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateShelterOfferAsync(randomShelterOffer),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnModifyIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            ShelterOffer randomShelterOffer = CreateRandomShelterOffer();
+            var serviceException = new Exception();
+
+            var failedShelterOfferServiceException =
+                new FailedShelterOfferServiceException(serviceException);
+
+            var expectedShelterOfferServiceException =
+                new ShelterOfferServiceException(failedShelterOfferServiceException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(serviceException);
+
+            // when
+            ValueTask<ShelterOffer> modifyShelterOfferTask =
+                this.shelterOfferService.ModifyShelterOfferAsync(randomShelterOffer);
+
+            ShelterOfferServiceException actualShelterOfferServiceException =
+                await Assert.ThrowsAsync<ShelterOfferServiceException>(
+                    modifyShelterOfferTask.AsTask);
+
+            // then
+            actualShelterOfferServiceException.Should()
+                .BeEquivalentTo(expectedShelterOfferServiceException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectShelterOfferByIdAsync(randomShelterOffer.Id),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedShelterOfferServiceException))),
                         Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
