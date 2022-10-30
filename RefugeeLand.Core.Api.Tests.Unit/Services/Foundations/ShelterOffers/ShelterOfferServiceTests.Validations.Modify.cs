@@ -209,7 +209,8 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.ShelterOffers
                     modifyShelterOfferTask.AsTask);
 
             // then
-            actualShelterOfferValidationException.Should().BeEquivalentTo(expectedShelterOfferValidatonException);
+            actualShelterOfferValidationException.Should()
+                .BeEquivalentTo(expectedShelterOfferValidatonException);
 
             this.dateTimeBrokerMock.Verify(broker =>
                 broker.GetCurrentDateTimeOffset(),
@@ -227,6 +228,59 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.ShelterOffers
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfShelterOfferDoesNotExistAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            ShelterOffer randomShelterOffer = CreateRandomModifyShelterOffer(randomDateTimeOffset);
+            ShelterOffer nonExistShelterOffer = randomShelterOffer;
+            ShelterOffer nullShelterOffer = null;
+
+            var notFoundShelterOfferException =
+                new NotFoundShelterOfferException(nonExistShelterOffer.Id);
+
+            var expectedShelterOfferValidationException =
+                new ShelterOfferValidationException(notFoundShelterOfferException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectShelterOfferByIdAsync(nonExistShelterOffer.Id))
+                .ReturnsAsync(nullShelterOffer);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                .Returns(randomDateTimeOffset);
+
+            // when 
+            ValueTask<ShelterOffer> modifyShelterOfferTask =
+                this.shelterOfferService.ModifyShelterOfferAsync(nonExistShelterOffer);
+
+            ShelterOfferValidationException actualShelterOfferValidationException =
+                await Assert.ThrowsAsync<ShelterOfferValidationException>(
+                    modifyShelterOfferTask.AsTask);
+
+            // then
+            actualShelterOfferValidationException.Should()
+                .BeEquivalentTo(expectedShelterOfferValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectShelterOfferByIdAsync(nonExistShelterOffer.Id),
+                    Times.Once);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedShelterOfferValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }
