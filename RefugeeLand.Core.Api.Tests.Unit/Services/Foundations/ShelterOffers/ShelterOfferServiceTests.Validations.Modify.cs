@@ -173,9 +173,9 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.ShelterOffers
                 broker.SelectShelterOfferByIdAsync(invalidShelterOffer.Id),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -279,8 +279,8 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.ShelterOffers
                     expectedShelterOfferValidationException))),
                         Times.Once);
 
-            this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -338,8 +338,65 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.ShelterOffers
                    expectedShelterOfferValidationException))),
                        Times.Once);
 
-            this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfCreatedUserIdDontMacthStorageAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            ShelterOffer randomShelterOffer = CreateRandomModifyShelterOffer(randomDateTimeOffset);
+            ShelterOffer invalidShelterOffer = randomShelterOffer.DeepClone();
+            ShelterOffer storageShelterOffer = invalidShelterOffer.DeepClone();
+            invalidShelterOffer.CreatedByUserId = Guid.NewGuid();
+            storageShelterOffer.UpdatedDate = storageShelterOffer.CreatedDate;
+
+            var invalidShelterOfferException = new InvalidShelterOfferException();
+
+            invalidShelterOfferException.AddData(
+                key: nameof(ShelterOffer.CreatedByUserId),
+                values: $"Id is not the same as {nameof(ShelterOffer.CreatedByUserId)}");
+
+            var expectedShelterOfferValidationException =
+                new ShelterOfferValidationException(invalidShelterOfferException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectShelterOfferByIdAsync(invalidShelterOffer.Id))
+                .ReturnsAsync(storageShelterOffer);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                .Returns(randomDateTimeOffset);
+
+            // when
+            ValueTask<ShelterOffer> modifyShelterOfferTask =
+                this.shelterOfferService.ModifyShelterOfferAsync(invalidShelterOffer);
+
+            ShelterOfferValidationException actualShelterOfferValidationException =
+                await Assert.ThrowsAsync<ShelterOfferValidationException>(
+                    modifyShelterOfferTask.AsTask);
+
+            // then
+            actualShelterOfferValidationException.Should().BeEquivalentTo(expectedShelterOfferValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectShelterOfferByIdAsync(invalidShelterOffer.Id),
+                    Times.Once);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogError(It.Is(SameExceptionAs(
+                   expectedShelterOfferValidationException))),
+                       Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
