@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
 using RefugeeLand.Core.Api.Models.ShelterOffers;
 using RefugeeLand.Core.Api.Models.ShelterOffers.Exceptions;
@@ -31,6 +32,13 @@ namespace RefugeeLand.Core.Api.Services.Foundations.ShelterOffers
 
                 throw CreateAndLogCriticalDependencyException(failedShelterOfferStorageException);
             }
+            catch (DuplicateKeyException duplicateKeyException)
+            {
+                var alreadyExistsShelterOfferException =
+                    new AlreadyExistsShelterOfferException(duplicateKeyException);
+
+                throw CreateAndLogDependencyValidationException(alreadyExistsShelterOfferException);
+            }
         }
 
         private ShelterOfferValidationException CreateAndLogValidationException(Xeption exception)
@@ -49,6 +57,16 @@ namespace RefugeeLand.Core.Api.Services.Foundations.ShelterOffers
             this.loggingBroker.LogCritical(shelterOfferDependencyException);
 
             return shelterOfferDependencyException;
+        }
+
+        private ShelterOfferDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
+        {
+            var shelterOfferDependencyValidationException =
+                new ShelterOfferDependencyValidationException(exception);
+
+            this.loggingBroker.LogError(shelterOfferDependencyValidationException);
+
+            return shelterOfferDependencyValidationException;
         }
     }
 }
