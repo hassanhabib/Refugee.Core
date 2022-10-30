@@ -106,7 +106,8 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.ShelterOffers
                     modifyShelterOfferTask.AsTask);
 
             //then
-            actualShelterOfferValidationException.Should().BeEquivalentTo(expectedShelterOfferValidationException);
+            actualShelterOfferValidationException.Should()
+                .BeEquivalentTo(expectedShelterOfferValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -147,7 +148,8 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.ShelterOffers
                     modifyShelterOfferTask.AsTask);
 
             // then
-            actualShelterOfferValidationException.Should().BeEquivalentTo(expectedShelterOfferValidationException);
+            actualShelterOfferValidationException.Should()
+                .BeEquivalentTo(expectedShelterOfferValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -161,6 +163,58 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.ShelterOffers
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [MemberData(nameof(MinutesBeforeOrAfter))]
+        public async Task ShouldThrowValidationExceptionOnModifyIfUpdatedDateIsNotRecentAndLogItAsync(int minutes)
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            ShelterOffer randomShelterOffer = CreateRandomShelterOffer(randomDateTimeOffset);
+            randomShelterOffer.UpdatedDate = randomDateTimeOffset.AddMinutes(minutes);
+
+            var invalidShelterOfferException =
+                new InvalidShelterOfferException();
+
+            invalidShelterOfferException.AddData(
+                key: nameof(ShelterOffer.UpdatedDate),
+                values: "Date is not recent");
+
+            var expectedShelterOfferValidatonException =
+                new ShelterOfferValidationException(invalidShelterOfferException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                .Returns(randomDateTimeOffset);
+
+            // when
+            ValueTask<ShelterOffer> modifyShelterOfferTask =
+                this.shelterOfferService.ModifyShelterOfferAsync(randomShelterOffer);
+
+            ShelterOfferValidationException actualShelterOfferValidationException =
+                await Assert.ThrowsAsync<ShelterOfferValidationException>(
+                    modifyShelterOfferTask.AsTask);
+
+            // then
+            actualShelterOfferValidationException.Should().BeEquivalentTo(expectedShelterOfferValidatonException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedShelterOfferValidatonException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectShelterOfferByIdAsync(It.IsAny<Guid>()),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
         }
     }
 }
