@@ -54,6 +54,12 @@ namespace RefugeeLand.Core.Api.Services.Foundations.ShelterOffers
 
                 throw CreateAndLogDependencyValidationException(invalidShelterOfferReferenceException);
             }
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedShelterOfferException = new LockedShelterOfferException(dbUpdateConcurrencyException);
+
+                throw CreateAndLogDependencyValidationException(lockedShelterOfferException);
+            }
             catch (DbUpdateException databaseUpdateException)
             {
                 var failedShelterOfferStorageException =
