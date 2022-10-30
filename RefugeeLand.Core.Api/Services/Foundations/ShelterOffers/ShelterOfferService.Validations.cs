@@ -77,6 +77,16 @@ namespace RefugeeLand.Core.Api.Services.Foundations.ShelterOffers
             }
         }
 
+        private static void ValidateAgainstStorageShelterOfferOnModify(ShelterOffer inputShelterOffer, ShelterOffer storageShelterOffer)
+        {
+            Validate(
+                (Rule: IsNotSame(
+                    firstDate: inputShelterOffer.CreatedDate,
+                    secondDate: storageShelterOffer.CreatedDate,
+                    secondDateName: nameof(ShelterOffer.CreatedDate)),
+                Parameter: nameof(ShelterOffer.CreatedDate)));
+        }
+
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,
