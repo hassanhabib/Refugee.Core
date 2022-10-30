@@ -160,5 +160,50 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.ShelterOffers
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnAddIfCreateAndUpdateUserIdsIsNotSameAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            ShelterOffer randomShelterOffer = CreateRandomShelterOffer(randomDateTimeOffset);
+            ShelterOffer invalidShelterOffer = randomShelterOffer;
+            invalidShelterOffer.UpdatedByUserId = Guid.NewGuid();
+
+            var invalidShelterOfferException =
+                new InvalidShelterOfferException();
+
+            invalidShelterOfferException.AddData(
+                key: nameof(ShelterOffer.UpdatedByUserId),
+                values: $"Id is not the same as {nameof(ShelterOffer.CreatedByUserId)}");
+
+            var expectedShelterOfferValidationException =
+                new ShelterOfferValidationException(invalidShelterOfferException);
+
+            // when
+            ValueTask<ShelterOffer> addShelterOfferTask =
+                this.shelterOfferService.AddShelterOfferAsync(invalidShelterOffer);
+
+            ShelterOfferValidationException actualShelterOfferValidationException =
+                await Assert.ThrowsAsync<ShelterOfferValidationException>(
+                    addShelterOfferTask.AsTask);
+
+            // then
+            actualShelterOfferValidationException.Should()
+                .BeEquivalentTo(expectedShelterOfferValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedShelterOfferValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertShelterOfferAsync(It.IsAny<ShelterOffer>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
