@@ -36,6 +36,10 @@ namespace RefugeeLand.Core.Api.Services.Foundations.ShelterOffers
 
                 throw CreateAndLogCriticalDependencyException(failedShelterOfferStorageException);
             }
+            catch (NotFoundShelterOfferException notFoundShelterOfferException)
+            {
+                throw CreateAndLogValidationException(notFoundShelterOfferException);
+            }
             catch (DuplicateKeyException duplicateKeyException)
             {
                 var alreadyExistsShelterOfferException =
