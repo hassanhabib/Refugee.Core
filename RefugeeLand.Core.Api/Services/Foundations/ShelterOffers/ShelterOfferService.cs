@@ -32,6 +32,6 @@ namespace RefugeeLand.Core.Api.Services.Foundations.ShelterOffers
             });
 
         public IQueryable<ShelterOffer> RetrieveAllShelterOffers() =>
-            this.storageBroker.SelectAllShelterOffers();
+            TryCatch(() => this.storageBroker.SelectAllShelterOffers());
     }
 }
