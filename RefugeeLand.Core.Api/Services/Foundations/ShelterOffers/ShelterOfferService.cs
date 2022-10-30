@@ -48,7 +48,7 @@ namespace RefugeeLand.Core.Api.Services.Foundations.ShelterOffers
                 return maybeShelterOffer;
             });
 
-        public ValueTask<ShelterOffer> ModifyShelterOfferAsync(ShelterOffer shelterOffer) =>
-            throw new NotImplementedException();
+        public async ValueTask<ShelterOffer> ModifyShelterOfferAsync(ShelterOffer shelterOffer) =>
+            await this.storageBroker.UpdateShelterOfferAsync(shelterOffer);
     }
 }
