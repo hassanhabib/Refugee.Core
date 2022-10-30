@@ -64,6 +64,17 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.ShelterOffers
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
+        private static ShelterOffer CreateRandomModifyShelterOffer(DateTimeOffset dateTimeOffset)
+        {
+            int randomDaysInPast = GetRandomNegativeNumber();
+            ShelterOffer randomShelterOffer = CreateRandomShelterOffer(dateTimeOffset);
+
+            randomShelterOffer.CreatedDate =
+                randomShelterOffer.CreatedDate.AddDays(randomDaysInPast);
+
+            return randomShelterOffer;
+        }
+
         private static IQueryable<ShelterOffer> CreateRandomShelterOffers()
         {
             return CreateShelterOfferFiller(dateTimeOffset: GetRandomDateTimeOffset())
