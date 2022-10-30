@@ -62,12 +62,15 @@ namespace RefugeeLand.Core.Api.Services.Foundations.ShelterOffers
                 return await this.storageBroker.UpdateShelterOfferAsync(shelterOffer);
             });
 
-        public async ValueTask<ShelterOffer> RemoveShelterOfferByIdAsync(Guid shelterOfferId)
-        {
-            ShelterOffer maybeShelterOffer = await this.storageBroker
+        public ValueTask<ShelterOffer> RemoveShelterOfferByIdAsync(Guid shelterOfferId) =>
+            TryCatch(async () =>
+            {
+                ValidateShelterOfferId(shelterOfferId);
+
+                ShelterOffer maybeShelterOffer = await this.storageBroker
                     .SelectShelterOfferByIdAsync(shelterOfferId);
 
-            return await this.storageBroker.DeleteShelterOfferAsync(maybeShelterOffer);
-        }
+                return await this.storageBroker.DeleteShelterOfferAsync(maybeShelterOffer);
+            });
     }
 }
