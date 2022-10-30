@@ -28,6 +28,10 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.ShelterOffers
                     .Returns(randomDateTimeOffset);
 
             this.storageBrokerMock.Setup(broker =>
+                broker.SelectShelterOfferByIdAsync(shelterOfferId))
+                    .ReturnsAsync(storageShelterOffer);
+
+            this.storageBrokerMock.Setup(broker =>
                 broker.UpdateShelterOfferAsync(inputShelterOffer))
                     .ReturnsAsync(updatedShelterOffer);
 
@@ -43,12 +47,16 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.ShelterOffers
                     Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
+                broker.SelectShelterOfferByIdAsync(inputShelterOffer.Id),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
                 broker.UpdateShelterOfferAsync(inputShelterOffer),
                     Times.Once);
 
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
 }
