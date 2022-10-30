@@ -24,7 +24,13 @@ namespace RefugeeLand.Core.Api.Services.Foundations.ShelterOffers
                     firstDate: shelterOffer.UpdatedDate,
                     secondDate: shelterOffer.CreatedDate,
                     secondDateName: nameof(ShelterOffer.CreatedDate)),
-                Parameter: nameof(ShelterOffer.UpdatedDate)));
+                Parameter: nameof(ShelterOffer.UpdatedDate)),
+
+                (Rule: IsNotSame(
+                    firstId: shelterOffer.UpdatedByUserId,
+                    secondId: shelterOffer.CreatedByUserId,
+                    secondIdName: nameof(ShelterOffer.CreatedByUserId)),
+                Parameter: nameof(ShelterOffer.UpdatedByUserId)));
         }
 
         private static void ValidateShelterOfferIsNotNull(ShelterOffer shelterOffer)
@@ -54,6 +60,15 @@ namespace RefugeeLand.Core.Api.Services.Foundations.ShelterOffers
             {
                 Condition = firstDate != secondDate,
                 Message = $"Date is not the same as {secondDateName}"
+            };
+
+        private static dynamic IsNotSame(
+            Guid firstId,
+            Guid secondId,
+            string secondIdName) => new
+            {
+                Condition = firstId != secondId,
+                Message = $"Id is not the same as {secondIdName}"
             };
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
