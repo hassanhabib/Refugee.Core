@@ -30,7 +30,9 @@ namespace RefugeeLand.Core.Api.Services.Foundations.ShelterOffers
                     firstId: shelterOffer.UpdatedByUserId,
                     secondId: shelterOffer.CreatedByUserId,
                     secondIdName: nameof(ShelterOffer.CreatedByUserId)),
-                Parameter: nameof(ShelterOffer.UpdatedByUserId)));
+                Parameter: nameof(ShelterOffer.UpdatedByUserId)),
+
+                (Rule: IsNotRecent(shelterOffer.CreatedDate), Parameter: nameof(ShelterOffer.CreatedDate)));
         }
 
         private static void ValidateShelterOfferIsNotNull(ShelterOffer shelterOffer)
@@ -70,6 +72,23 @@ namespace RefugeeLand.Core.Api.Services.Foundations.ShelterOffers
                 Condition = firstId != secondId,
                 Message = $"Id is not the same as {secondIdName}"
             };
+
+        private dynamic IsNotRecent(DateTimeOffset date) => new
+        {
+            Condition = IsDateNotRecent(date),
+            Message = "Date is not recent"
+        };
+
+        private bool IsDateNotRecent(DateTimeOffset date)
+        {
+            DateTimeOffset currentDateTime =
+                this.dateTimeBroker.GetCurrentDateTimeOffset();
+
+            TimeSpan timeDifference = currentDateTime.Subtract(date);
+            TimeSpan oneMinute = TimeSpan.FromMinutes(1);
+
+            return timeDifference.Duration() > oneMinute;
+        }
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
