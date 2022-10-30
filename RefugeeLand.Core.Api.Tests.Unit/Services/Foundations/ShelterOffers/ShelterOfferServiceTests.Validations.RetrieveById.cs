@@ -51,5 +51,47 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.ShelterOffers
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowNotFoundExceptionOnRetrieveByIdIfShelterOfferIsNotFoundAndLogItAsync()
+        {
+            //given
+            Guid someShelterOfferId = Guid.NewGuid();
+            ShelterOffer noShelterOffer = null;
+
+            var notFoundShelterOfferException =
+                new NotFoundShelterOfferException(someShelterOfferId);
+
+            var expectedShelterOfferValidationException =
+                new ShelterOfferValidationException(notFoundShelterOfferException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectShelterOfferByIdAsync(It.IsAny<Guid>()))
+                    .ReturnsAsync(noShelterOffer);
+
+            //when
+            ValueTask<ShelterOffer> retrieveShelterOfferByIdTask =
+                this.shelterOfferService.RetrieveShelterOfferByIdAsync(someShelterOfferId);
+
+            ShelterOfferValidationException actualShelterOfferValidationException =
+                await Assert.ThrowsAsync<ShelterOfferValidationException>(
+                    retrieveShelterOfferByIdTask.AsTask);
+
+            //then
+            actualShelterOfferValidationException.Should().BeEquivalentTo(expectedShelterOfferValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectShelterOfferByIdAsync(It.IsAny<Guid>()),
+                    Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedShelterOfferValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
