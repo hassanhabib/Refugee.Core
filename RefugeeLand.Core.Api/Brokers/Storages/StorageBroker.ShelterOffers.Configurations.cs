@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------
+// -------------------------------------------------------
 // Copyright (c) Coalition of the Good-Hearted Engineers
 // FREE TO USE TO DELIVER HUMANITARIAN AID, HOPE AND LOVE
 // -------------------------------------------------------
@@ -10,7 +10,7 @@ namespace RefugeeLand.Core.Api.Brokers.Storages
 {
     public partial class StorageBroker
     {
-        private static void SetShelterOfferReferences(ModelBuilder modelBuilder)
+        private static void AddShelterOfferConfigurations(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<ShelterOffer>()
                 .HasOne(shelterOffer => shelterOffer.Shelter)

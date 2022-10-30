@@ -11,7 +11,7 @@ namespace RefugeeLand.Core.Api.Brokers.Storages
 {
     public partial class StorageBroker
     {
-        private static void SetPetMedicalConditionReferences(ModelBuilder modelBuilder)
+        private static void AddPetMedicalConditionConfigurations(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<PetMedicalCondition>()
                 .HasOne(petMedicalCondition => petMedicalCondition.Pet)
