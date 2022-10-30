@@ -19,6 +19,10 @@ namespace RefugeeLand.Core.Api.Services.Foundations.ShelterOffers
             {
                 throw CreateAndLogValidationException(nullShelterOfferException);
             }
+            catch (InvalidShelterOfferException invalidShelterOfferException)
+            {
+                throw CreateAndLogValidationException(invalidShelterOfferException);
+            }
         }
 
         private ShelterOfferValidationException CreateAndLogValidationException(Xeption exception)
