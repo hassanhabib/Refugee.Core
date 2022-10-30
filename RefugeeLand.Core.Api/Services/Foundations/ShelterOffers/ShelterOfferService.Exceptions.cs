@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using RefugeeLand.Core.Api.Models.ShelterOffers;
 using RefugeeLand.Core.Api.Models.ShelterOffers.Exceptions;
 using Xeptions;
@@ -46,6 +47,13 @@ namespace RefugeeLand.Core.Api.Services.Foundations.ShelterOffers
 
                 throw CreateAndLogDependencyValidationException(invalidShelterOfferReferenceException);
             }
+            catch (DbUpdateException databaseUpdateException)
+            {
+                var failedShelterOfferStorageException =
+                    new FailedShelterOfferStorageException(databaseUpdateException);
+
+                throw CreateAndLogDependencyException(failedShelterOfferStorageException);
+            }
         }
 
         private ShelterOfferValidationException CreateAndLogValidationException(Xeption exception)
@@ -74,6 +82,15 @@ namespace RefugeeLand.Core.Api.Services.Foundations.ShelterOffers
             this.loggingBroker.LogError(shelterOfferDependencyValidationException);
 
             return shelterOfferDependencyValidationException;
+        }
+
+        private ShelterOfferDependencyException CreateAndLogDependencyException(
+            Xeption exception)
+        {
+            var shelterOfferDependencyException = new ShelterOfferDependencyException(exception);
+            this.loggingBroker.LogError(shelterOfferDependencyException);
+
+            return shelterOfferDependencyException;
         }
     }
 }
