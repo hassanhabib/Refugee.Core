@@ -17,6 +17,7 @@ using RefugeeLand.Core.Api.Services.Foundations.Hosts;
 using RefugeeLand.Core.Api.Services.Foundations.Nationalities;
 using RefugeeLand.Core.Api.Services.Foundations.RefugeeGroups;
 using RefugeeLand.Core.Api.Services.Foundations.Refugees;
+using RefugeeLand.Core.Api.Services.Foundations.ShelterOffers;
 
 namespace RefugeeLand.Core.Api
 {
@@ -82,6 +83,7 @@ namespace RefugeeLand.Core.Api
             services.AddTransient<IRefugeeGroupService, RefugeeGroupService>();
             services.AddTransient<IHostService, HostService>();
             services.AddTransient<INationalityService, NationalityService>();
+            services.AddTransient<IShelterOfferService, ShelterOfferService>();
         }
     }
 }
