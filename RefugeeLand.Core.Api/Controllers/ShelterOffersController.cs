@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -60,6 +61,34 @@ namespace RefugeeLand.Core.Api.Controllers
                     this.shelterOfferService.RetrieveAllShelterOffers();
 
                 return Ok(retrievedShelterOffers);
+            }
+            catch (ShelterOfferDependencyException shelterOfferDependencyException)
+            {
+                return InternalServerError(shelterOfferDependencyException);
+            }
+            catch (ShelterOfferServiceException shelterOfferServiceException)
+            {
+                return InternalServerError(shelterOfferServiceException);
+            }
+        }
+
+        [HttpGet("{shelterOfferId}")]
+        public async ValueTask<ActionResult<ShelterOffer>> GetShelterOfferByIdAsync(Guid shelterOfferId)
+        {
+            try
+            {
+                ShelterOffer shelterOffer = await this.shelterOfferService.RetrieveShelterOfferByIdAsync(shelterOfferId);
+
+                return Ok(shelterOffer);
+            }
+            catch (ShelterOfferValidationException shelterOfferValidationException)
+                when (shelterOfferValidationException.InnerException is NotFoundShelterOfferException)
+            {
+                return NotFound(shelterOfferValidationException.InnerException);
+            }
+            catch (ShelterOfferValidationException shelterOfferValidationException)
+            {
+                return BadRequest(shelterOfferValidationException.InnerException);
             }
             catch (ShelterOfferDependencyException shelterOfferDependencyException)
             {
