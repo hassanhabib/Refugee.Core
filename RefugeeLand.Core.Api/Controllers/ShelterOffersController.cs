@@ -138,5 +138,43 @@ namespace RefugeeLand.Core.Api.Controllers
                 return InternalServerError(shelterOfferServiceException);
             }
         }
+
+        [HttpDelete("{shelterOfferId}")]
+        public async ValueTask<ActionResult<ShelterOffer>> DeleteShelterOfferByIdAsync(Guid shelterOfferId)
+        {
+            try
+            {
+                ShelterOffer deletedShelterOffer =
+                    await this.shelterOfferService.RemoveShelterOfferByIdAsync(shelterOfferId);
+
+                return Ok(deletedShelterOffer);
+            }
+            catch (ShelterOfferValidationException shelterOfferValidationException)
+                when (shelterOfferValidationException.InnerException is NotFoundShelterOfferException)
+            {
+                return NotFound(shelterOfferValidationException.InnerException);
+            }
+            catch (ShelterOfferValidationException shelterOfferValidationException)
+            {
+                return BadRequest(shelterOfferValidationException.InnerException);
+            }
+            catch (ShelterOfferDependencyValidationException shelterOfferDependencyValidationException)
+                when (shelterOfferDependencyValidationException.InnerException is LockedShelterOfferException)
+            {
+                return Locked(shelterOfferDependencyValidationException.InnerException);
+            }
+            catch (ShelterOfferDependencyValidationException shelterOfferDependencyValidationException)
+            {
+                return BadRequest(shelterOfferDependencyValidationException);
+            }
+            catch (ShelterOfferDependencyException shelterOfferDependencyException)
+            {
+                return InternalServerError(shelterOfferDependencyException);
+            }
+            catch (ShelterOfferServiceException shelterOfferServiceException)
+            {
+                return InternalServerError(shelterOfferServiceException);
+            }
+        }
     }
 }
