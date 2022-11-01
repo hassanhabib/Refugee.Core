@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
@@ -39,6 +40,26 @@ namespace RefugeeLand.Core.Api.Controllers
                when (shelterOfferDependencyValidationException.InnerException is AlreadyExistsShelterOfferException)
             {
                 return Conflict(shelterOfferDependencyValidationException.InnerException);
+            }
+            catch (ShelterOfferDependencyException shelterOfferDependencyException)
+            {
+                return InternalServerError(shelterOfferDependencyException);
+            }
+            catch (ShelterOfferServiceException shelterOfferServiceException)
+            {
+                return InternalServerError(shelterOfferServiceException);
+            }
+        }
+
+        [HttpGet]
+        public ActionResult<IQueryable<ShelterOffer>> GetAllShelterOffers()
+        {
+            try
+            {
+                IQueryable<ShelterOffer> retrievedShelterOffers =
+                    this.shelterOfferService.RetrieveAllShelterOffers();
+
+                return Ok(retrievedShelterOffers);
             }
             catch (ShelterOfferDependencyException shelterOfferDependencyException)
             {
