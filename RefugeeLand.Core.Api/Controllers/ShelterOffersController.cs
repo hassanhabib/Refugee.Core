@@ -99,5 +99,44 @@ namespace RefugeeLand.Core.Api.Controllers
                 return InternalServerError(shelterOfferServiceException);
             }
         }
+
+        [HttpPut]
+        public async ValueTask<ActionResult<ShelterOffer>> PutShelterOfferAsync(ShelterOffer shelterOffer)
+        {
+            try
+            {
+                ShelterOffer modifiedShelterOffer =
+                    await this.shelterOfferService.ModifyShelterOfferAsync(shelterOffer);
+
+                return Ok(modifiedShelterOffer);
+            }
+            catch (ShelterOfferValidationException shelterOfferValidationException)
+                when (shelterOfferValidationException.InnerException is NotFoundShelterOfferException)
+            {
+                return NotFound(shelterOfferValidationException.InnerException);
+            }
+            catch (ShelterOfferValidationException shelterOfferValidationException)
+            {
+                return BadRequest(shelterOfferValidationException.InnerException);
+            }
+            catch (ShelterOfferDependencyValidationException shelterOfferValidationException)
+                when (shelterOfferValidationException.InnerException is InvalidShelterOfferReferenceException)
+            {
+                return FailedDependency(shelterOfferValidationException.InnerException);
+            }
+            catch (ShelterOfferDependencyValidationException shelterOfferDependencyValidationException)
+               when (shelterOfferDependencyValidationException.InnerException is AlreadyExistsShelterOfferException)
+            {
+                return Conflict(shelterOfferDependencyValidationException.InnerException);
+            }
+            catch (ShelterOfferDependencyException shelterOfferDependencyException)
+            {
+                return InternalServerError(shelterOfferDependencyException);
+            }
+            catch (ShelterOfferServiceException shelterOfferServiceException)
+            {
+                return InternalServerError(shelterOfferServiceException);
+            }
+        }
     }
 }
