@@ -10,5 +10,6 @@ namespace RefugeeLand.Core.Api.Brokers.Storages
         ValueTask<ShelterRefugeeOccupant> InsertShelterRefugeeOccupantAsync(ShelterRefugeeOccupant shelterRefugeeOccupant);
         IQueryable<ShelterRefugeeOccupant> SelectAllShelterRefugeeOccupants();
         ValueTask<ShelterRefugeeOccupant> SelectShelterRefugeeOccupantByIdAsync(Guid shelterRefugeeOccupantId);
+        ValueTask<ShelterRefugeeOccupant> UpdateShelterRefugeeOccupantAsync(ShelterRefugeeOccupant shelterRefugeeOccupant);
     }
 }
