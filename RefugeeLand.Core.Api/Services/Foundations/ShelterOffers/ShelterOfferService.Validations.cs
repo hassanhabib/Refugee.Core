@@ -46,7 +46,11 @@ namespace RefugeeLand.Core.Api.Services.Foundations.ShelterOffers
             Validate(
                 (Rule: IsInvalid(shelterOffer.Id), Parameter: nameof(ShelterOffer.Id)),
 
-                // TODO: Add any other required validation rules
+                (Rule: IsInvalid(shelterOffer.StartDate), Parameter: nameof(ShelterOffer.StartDate)),
+                (Rule: IsInvalid(shelterOffer.EndDate), Parameter: nameof(ShelterOffer.EndDate)),
+                (Rule: IsInvalid(shelterOffer.Status), Parameter: nameof(ShelterOffer.Status)),
+                (Rule: IsInvalid(shelterOffer.ShelterId), Parameter: nameof(ShelterOffer.ShelterId)),
+                (Rule: IsInvalid(shelterOffer.HostId), Parameter: nameof(ShelterOffer.HostId)),
 
                 (Rule: IsInvalid(shelterOffer.CreatedDate), Parameter: nameof(ShelterOffer.CreatedDate)),
                 (Rule: IsInvalid(shelterOffer.CreatedByUserId), Parameter: nameof(ShelterOffer.CreatedByUserId)),
