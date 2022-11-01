@@ -44,16 +44,15 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.ShelterOffers
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData(" ")]
-        public async Task ShouldThrowValidationExceptionOnAddIfShelterOfferIsInvalidAndLogItAsync(string invalidText)
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnAddIfShelterOfferIsInvalidAndLogItAsync()
         {
             // given
+            ShelterOfferStatus invalidStatus = (ShelterOfferStatus)42; // Forcing out of range enum by casting
+            
             var invalidShelterOffer = new ShelterOffer
             {
-                // TODO:  Add default values for your properties i.e. Name = invalidText
+                Status = invalidStatus
             };
 
             var invalidShelterOfferException =
@@ -63,11 +62,25 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.ShelterOffers
                 key: nameof(ShelterOffer.Id),
                 values: "Id is required");
 
-            //invalidShelterOfferException.AddData(
-            //    key: nameof(ShelterOffer.Name),
-            //    values: "Text is required");
-
-            // TODO: Add or remove data here to suit the validation needs for the ShelterOffer model
+            invalidShelterOfferException.AddData(
+                key: nameof(ShelterOffer.StartDate),
+                values: "Date is required");
+            
+            invalidShelterOfferException.AddData(
+                key: nameof(ShelterOffer.EndDate),
+                values: "Date is required");
+            
+            invalidShelterOfferException.AddData(
+                key: nameof(ShelterOffer.Status),
+                values: "Value is invalid");
+            
+            invalidShelterOfferException.AddData(
+                key: nameof(ShelterOffer.ShelterId),
+                values: "Id is required");
+            
+            invalidShelterOfferException.AddData(
+                key: nameof(ShelterOffer.HostId),
+                values: "Id is required");
 
             invalidShelterOfferException.AddData(
                 key: nameof(ShelterOffer.CreatedDate),
