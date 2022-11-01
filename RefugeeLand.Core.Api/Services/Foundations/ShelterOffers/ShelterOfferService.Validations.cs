@@ -36,7 +36,13 @@ namespace RefugeeLand.Core.Api.Services.Foundations.ShelterOffers
                     secondIdName: nameof(ShelterOffer.CreatedByUserId)),
                 Parameter: nameof(ShelterOffer.UpdatedByUserId)),
 
-                (Rule: IsNotRecent(shelterOffer.CreatedDate), Parameter: nameof(ShelterOffer.CreatedDate)));
+                (Rule: IsNotRecent(shelterOffer.CreatedDate), Parameter: nameof(ShelterOffer.CreatedDate)),
+                
+                (Rule: IsLater(
+                    firstDate: shelterOffer.StartDate,
+                    secondDate: shelterOffer.EndDate,
+                    secondDateName: nameof(ShelterOffer.EndDate)),
+                Parameter: nameof(ShelterOffer.StartDate)));
         }
 
         private void ValidateShelterOfferOnModify(ShelterOffer shelterOffer)
@@ -142,6 +148,16 @@ namespace RefugeeLand.Core.Api.Services.Foundations.ShelterOffers
                 Condition = firstDate != secondDate,
                 Message = $"Date is not the same as {secondDateName}"
             };
+
+        private static dynamic IsLater(
+            DateTimeOffset firstDate,
+            DateTimeOffset secondDate,
+            string secondDateName) => new
+            {
+                Condition = firstDate > secondDate,
+                Message =  $"Date is later than {nameof(ShelterOffer.EndDate)}"
+            };
+
 
         private static dynamic IsNotSame(
             Guid firstId,
