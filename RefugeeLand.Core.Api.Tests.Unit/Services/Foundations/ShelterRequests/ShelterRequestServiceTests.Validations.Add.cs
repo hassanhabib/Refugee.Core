@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -83,6 +84,53 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.ShelterRequests
             invalidShelterRequestException.AddData(
                 key: nameof(ShelterRequest.UpdatedByUserId),
                 values: "Id is required");
+
+            var expectedShelterRequestValidationException =
+                new ShelterRequestValidationException(invalidShelterRequestException);
+
+            // when
+            ValueTask<ShelterRequest> addShelterRequestTask =
+                this.shelterRequestService.AddShelterRequestAsync(invalidShelterRequest);
+
+            ShelterRequestValidationException actualShelterRequestValidationException =
+                await Assert.ThrowsAsync<ShelterRequestValidationException>(
+                    addShelterRequestTask.AsTask);
+
+            // then
+            actualShelterRequestValidationException.Should()
+                .BeEquivalentTo(expectedShelterRequestValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedShelterRequestValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertShelterRequestAsync(It.IsAny<ShelterRequest>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnAddIfCreateAndUpdateDatesIsNotSameAndLogItAsync()
+        {
+            // given
+            int randomNumber = GetRandomNumber();
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            ShelterRequest randomShelterRequest = CreateRandomShelterRequest(randomDateTimeOffset);
+            ShelterRequest invalidShelterRequest = randomShelterRequest;
+
+            invalidShelterRequest.UpdatedDate =
+                invalidShelterRequest.CreatedDate.AddDays(randomNumber);
+
+            var invalidShelterRequestException = new InvalidShelterRequestException();
+
+            invalidShelterRequestException.AddData(
+                key: nameof(ShelterRequest.UpdatedDate),
+                values: $"Date is not the same as {nameof(ShelterRequest.CreatedDate)}");
 
             var expectedShelterRequestValidationException =
                 new ShelterRequestValidationException(invalidShelterRequestException);
