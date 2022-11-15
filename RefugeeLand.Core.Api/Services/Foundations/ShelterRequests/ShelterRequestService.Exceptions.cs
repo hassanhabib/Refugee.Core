@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -54,6 +55,13 @@ namespace RefugeeLand.Core.Api.Services.Foundations.ShelterRequests
 
                 throw CreateAndLogDependencyException(failedShelterRequestStorageException);
             }
+            catch (Exception exception)
+            {
+                var failedShelterRequestServiceException =
+                    new FailedShelterRequestServiceException(exception);
+
+                throw CreateAndLogServiceException(failedShelterRequestServiceException);
+            }
         }
 
         private ShelterRequestValidationException CreateAndLogValidationException(Xeption exception)
@@ -91,6 +99,15 @@ namespace RefugeeLand.Core.Api.Services.Foundations.ShelterRequests
             this.loggingBroker.LogError(shelterRequestDependencyException);
 
             return shelterRequestDependencyException;
+        }
+
+        private ShelterRequestServiceException CreateAndLogServiceException(
+            Xeption exception)
+        {
+            var shelterRequestServiceException = new ShelterRequestServiceException(exception);
+            this.loggingBroker.LogError(shelterRequestServiceException);
+
+            return shelterRequestServiceException;
         }
     }
 }
