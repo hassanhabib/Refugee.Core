@@ -1,5 +1,7 @@
 using System;
 using System.Linq.Expressions;
+using System.Runtime.Serialization;
+using Microsoft.Data.SqlClient;
 using Moq;
 using RefugeeLand.Core.Api.Brokers.DateTimes;
 using RefugeeLand.Core.Api.Brokers.Loggings;
@@ -46,6 +48,9 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.ShelterRequests
             };
         }
 
+        private static SqlException GetSqlException() =>
+            (SqlException)FormatterServices.GetUninitializedObject(typeof(SqlException));
+
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
 
@@ -54,6 +59,9 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.ShelterRequests
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
+
+        private static ShelterRequest CreateRandomShelterRequest() =>
+            CreateShelterRequestFiller(dateTimeOffset: GetRandomDateTimeOffset()).Create();
 
         private static ShelterRequest CreateRandomShelterRequest(DateTimeOffset dateTimeOffset) =>
             CreateShelterRequestFiller(dateTimeOffset).Create();
