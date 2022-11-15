@@ -167,5 +167,56 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.ShelterRequests
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowDependencyValidationExceptionOnModifyIfDbUpdateConcurrencyErrorOccursAndLogAsync()
+        {
+            // given
+            ShelterRequest randomShelterRequest = CreateRandomShelterRequest();
+            var databaseUpdateConcurrencyException = new DbUpdateConcurrencyException();
+
+            var lockedShelterRequestException =
+                new LockedShelterRequestException(databaseUpdateConcurrencyException);
+
+            var expectedShelterRequestDependencyValidationException =
+                new ShelterRequestDependencyValidationException(lockedShelterRequestException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(databaseUpdateConcurrencyException);
+
+            // when
+            ValueTask<ShelterRequest> modifyShelterRequestTask =
+                this.shelterRequestService.ModifyShelterRequestAsync(randomShelterRequest);
+
+            ShelterRequestDependencyValidationException actualShelterRequestDependencyValidationException =
+                await Assert.ThrowsAsync<ShelterRequestDependencyValidationException>(
+                    modifyShelterRequestTask.AsTask);
+
+            // then
+            actualShelterRequestDependencyValidationException.Should()
+                .BeEquivalentTo(expectedShelterRequestDependencyValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectShelterRequestByIdAsync(randomShelterRequest.Id),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedShelterRequestDependencyValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateShelterRequestAsync(randomShelterRequest),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
