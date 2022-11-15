@@ -111,5 +111,48 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.ShelterRequests
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowDependencyExceptionOnRemoveWhenSqlExceptionOccursAndLogItAsync()
+        {
+            // given
+            Guid someShelterRequestId = Guid.NewGuid();
+            SqlException sqlException = GetSqlException();
+
+            var failedShelterRequestStorageException =
+                new FailedShelterRequestStorageException(sqlException);
+
+            var expectedShelterRequestDependencyException =
+                new ShelterRequestDependencyException(failedShelterRequestStorageException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectShelterRequestByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(sqlException);
+
+            // when
+            ValueTask<ShelterRequest> deleteShelterRequestTask =
+                this.shelterRequestService.RemoveShelterRequestByIdAsync(someShelterRequestId);
+
+            ShelterRequestDependencyException actualShelterRequestDependencyException =
+                await Assert.ThrowsAsync<ShelterRequestDependencyException>(
+                    deleteShelterRequestTask.AsTask);
+
+            // then
+            actualShelterRequestDependencyException.Should()
+                .BeEquivalentTo(expectedShelterRequestDependencyException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectShelterRequestByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogCritical(It.Is(SameExceptionAs(
+                    expectedShelterRequestDependencyException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
