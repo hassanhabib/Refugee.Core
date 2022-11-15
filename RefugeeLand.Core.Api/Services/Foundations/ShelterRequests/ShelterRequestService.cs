@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using RefugeeLand.Core.Api.Brokers.DateTimes;
 using RefugeeLand.Core.Api.Brokers.Loggings;
@@ -29,5 +30,8 @@ namespace RefugeeLand.Core.Api.Services.Foundations.ShelterRequests
 
                 return await this.storageBroker.InsertShelterRequestAsync(shelterRequest);
             });
+
+        public IQueryable<ShelterRequest> RetrieveAllShelterRequests() =>
+            throw new System.NotImplementedException();
     }
 }
