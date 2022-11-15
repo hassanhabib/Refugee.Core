@@ -78,6 +78,13 @@ namespace RefugeeLand.Core.Api.Services.Foundations.ShelterRequests
                     new FailedShelterRequestStorageException(sqlException);
                 throw CreateAndLogCriticalDependencyException(failedShelterRequestStorageException);
             }
+            catch (Exception exception)
+            {
+                var failedShelterRequestServiceException =
+                    new FailedShelterRequestServiceException(exception);
+
+                throw CreateAndLogServiceException(failedShelterRequestServiceException);
+            }
         }
 
         private ShelterRequestValidationException CreateAndLogValidationException(Xeption exception)
