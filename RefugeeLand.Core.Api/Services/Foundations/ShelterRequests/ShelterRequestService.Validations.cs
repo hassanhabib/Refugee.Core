@@ -35,6 +35,11 @@ namespace RefugeeLand.Core.Api.Services.Foundations.ShelterRequests
                 (Rule: IsNotRecent(shelterRequest.CreatedDate), Parameter: nameof(ShelterRequest.CreatedDate)));
         }
 
+        private void ValidateShelterRequestOnModify(ShelterRequest shelterRequest)
+        {
+            ValidateShelterRequestIsNotNull(shelterRequest);
+        }
+
         public void ValidateShelterRequestId(Guid shelterRequestId) =>
             Validate((Rule: IsInvalid(shelterRequestId), Parameter: nameof(ShelterRequest.Id)));
 
