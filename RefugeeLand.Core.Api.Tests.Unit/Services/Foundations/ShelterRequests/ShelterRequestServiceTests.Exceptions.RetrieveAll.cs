@@ -49,5 +49,46 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.ShelterRequests
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public void ShouldThrowServiceExceptionOnRetrieveAllIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            string exceptionMessage = GetRandomMessage();
+            var serviceException = new Exception(exceptionMessage);
+
+            var failedShelterRequestServiceException =
+                new FailedShelterRequestServiceException(serviceException);
+
+            var expectedShelterRequestServiceException =
+                new ShelterRequestServiceException(failedShelterRequestServiceException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectAllShelterRequests())
+                    .Throws(serviceException);
+
+            // when
+            Action retrieveAllShelterRequestsAction = () =>
+                this.shelterRequestService.RetrieveAllShelterRequests();
+
+            ShelterRequestServiceException actualShelterRequestServiceException =
+                Assert.Throws<ShelterRequestServiceException>(retrieveAllShelterRequestsAction);
+
+            // then
+            actualShelterRequestServiceException.Should()
+                .BeEquivalentTo(expectedShelterRequestServiceException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectAllShelterRequests(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedShelterRequestServiceException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
