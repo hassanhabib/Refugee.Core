@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------
+// -------------------------------------------------------
 // Copyright (c) Coalition of the Good-Hearted Engineers
 // FREE TO USE TO DELIVER HUMANITARIAN AID, HOPE AND LOVE
 // -------------------------------------------------------
@@ -10,7 +10,6 @@ namespace RefugeeLand.Core.Api.Brokers.Storages
 {
     public partial class StorageBroker
     {
-        
         private static void AddShelterRequestConfigurations(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<ShelterRequest>()
@@ -31,6 +30,5 @@ namespace RefugeeLand.Core.Api.Brokers.Storages
                 .HasForeignKey(shelterRequest => shelterRequest.RefugeeApplicantId)
                 .OnDelete(DeleteBehavior.NoAction);
         }
-        
     }
 }
