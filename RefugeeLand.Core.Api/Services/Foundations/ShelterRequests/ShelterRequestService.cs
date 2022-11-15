@@ -70,6 +70,8 @@ namespace RefugeeLand.Core.Api.Services.Foundations.ShelterRequests
                 ShelterRequest maybeShelterRequest = await this.storageBroker
                     .SelectShelterRequestByIdAsync(shelterRequestId);
 
+                ValidateStorageShelterRequest(maybeShelterRequest, shelterRequestId);
+
                 return await this.storageBroker.DeleteShelterRequestAsync(maybeShelterRequest);
             });
     }
