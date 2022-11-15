@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using EFxceptions.Models.Exceptions;
 using FluentAssertions;
 using Microsoft.Data.SqlClient;
 using Moq;
@@ -54,6 +55,60 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.ShelterRequests
 
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateShelterRequestAsync(randomShelterRequest),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async void ShouldThrowValidationExceptionOnModifyIfReferenceErrorOccursAndLogItAsync()
+        {
+            // given
+            ShelterRequest someShelterRequest = CreateRandomShelterRequest();
+            string randomMessage = GetRandomMessage();
+            string exceptionMessage = randomMessage;
+
+            var foreignKeyConstraintConflictException =
+                new ForeignKeyConstraintConflictException(exceptionMessage);
+
+            var invalidShelterRequestReferenceException =
+                new InvalidShelterRequestReferenceException(foreignKeyConstraintConflictException);
+
+            ShelterRequestDependencyValidationException expectedShelterRequestDependencyValidationException =
+                new ShelterRequestDependencyValidationException(invalidShelterRequestReferenceException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(foreignKeyConstraintConflictException);
+
+            // when
+            ValueTask<ShelterRequest> modifyShelterRequestTask =
+                this.shelterRequestService.ModifyShelterRequestAsync(someShelterRequest);
+
+            ShelterRequestDependencyValidationException actualShelterRequestDependencyValidationException =
+                await Assert.ThrowsAsync<ShelterRequestDependencyValidationException>(
+                    modifyShelterRequestTask.AsTask);
+
+            // then
+            actualShelterRequestDependencyValidationException.Should()
+                .BeEquivalentTo(expectedShelterRequestDependencyValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectShelterRequestByIdAsync(someShelterRequest.Id),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(expectedShelterRequestDependencyValidationException))),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateShelterRequestAsync(someShelterRequest),
                     Times.Never);
 
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
