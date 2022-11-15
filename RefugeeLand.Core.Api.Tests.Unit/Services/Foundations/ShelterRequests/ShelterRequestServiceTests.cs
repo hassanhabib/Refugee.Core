@@ -64,6 +64,17 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.ShelterRequests
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
 
+        private static ShelterRequest CreateRandomModifyShelterRequest(DateTimeOffset dateTimeOffset)
+        {
+            int randomDaysInPast = GetRandomNegativeNumber();
+            ShelterRequest randomShelterRequest = CreateRandomShelterRequest(dateTimeOffset);
+
+            randomShelterRequest.CreatedDate =
+                randomShelterRequest.CreatedDate.AddDays(randomDaysInPast);
+
+            return randomShelterRequest;
+        }
+
         private static IQueryable<ShelterRequest> CreateRandomShelterRequests()
         {
             return CreateShelterRequestFiller(dateTimeOffset: GetRandomDateTimeOffset())
