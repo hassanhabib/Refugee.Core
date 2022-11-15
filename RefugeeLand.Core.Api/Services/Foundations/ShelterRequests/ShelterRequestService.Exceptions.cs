@@ -39,6 +39,13 @@ namespace RefugeeLand.Core.Api.Services.Foundations.ShelterRequests
 
                 throw CreateAndLogDependencyValidationException(alreadyExistsShelterRequestException);
             }
+            catch (ForeignKeyConstraintConflictException foreignKeyConstraintConflictException)
+            {
+                var invalidShelterRequestReferenceException =
+                    new InvalidShelterRequestReferenceException(foreignKeyConstraintConflictException);
+
+                throw CreateAndLogDependencyValidationException(invalidShelterRequestReferenceException);
+            }
         }
 
         private ShelterRequestValidationException CreateAndLogValidationException(Xeption exception)
