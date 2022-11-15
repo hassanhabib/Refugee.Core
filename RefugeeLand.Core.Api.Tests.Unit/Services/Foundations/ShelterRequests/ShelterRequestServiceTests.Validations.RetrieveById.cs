@@ -51,5 +51,47 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.ShelterRequests
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowNotFoundExceptionOnRetrieveByIdIfShelterRequestIsNotFoundAndLogItAsync()
+        {
+            //given
+            Guid someShelterRequestId = Guid.NewGuid();
+            ShelterRequest noShelterRequest = null;
+
+            var notFoundShelterRequestException =
+                new NotFoundShelterRequestException(someShelterRequestId);
+
+            var expectedShelterRequestValidationException =
+                new ShelterRequestValidationException(notFoundShelterRequestException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectShelterRequestByIdAsync(It.IsAny<Guid>()))
+                    .ReturnsAsync(noShelterRequest);
+
+            //when
+            ValueTask<ShelterRequest> retrieveShelterRequestByIdTask =
+                this.shelterRequestService.RetrieveShelterRequestByIdAsync(someShelterRequestId);
+
+            ShelterRequestValidationException actualShelterRequestValidationException =
+                await Assert.ThrowsAsync<ShelterRequestValidationException>(
+                    retrieveShelterRequestByIdTask.AsTask);
+
+            //then
+            actualShelterRequestValidationException.Should().BeEquivalentTo(expectedShelterRequestValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectShelterRequestByIdAsync(It.IsAny<Guid>()),
+                    Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedShelterRequestValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
