@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using EFxceptions.Models.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -12,6 +13,7 @@ namespace RefugeeLand.Core.Api.Services.Foundations.ShelterRequests
     public partial class ShelterRequestService
     {
         private delegate ValueTask<ShelterRequest> ReturningShelterRequestFunction();
+        private delegate IQueryable<ShelterRequest> ReturningShelterRequestsFunction();
 
         private async ValueTask<ShelterRequest> TryCatch(ReturningShelterRequestFunction returningShelterRequestFunction)
         {
@@ -61,6 +63,20 @@ namespace RefugeeLand.Core.Api.Services.Foundations.ShelterRequests
                     new FailedShelterRequestServiceException(exception);
 
                 throw CreateAndLogServiceException(failedShelterRequestServiceException);
+            }
+        }
+
+        private IQueryable<ShelterRequest> TryCatch(ReturningShelterRequestsFunction returningShelterRequestsFunction)
+        {
+            try
+            {
+                return returningShelterRequestsFunction();
+            }
+            catch (SqlException sqlException)
+            {
+                var failedShelterRequestStorageException =
+                    new FailedShelterRequestStorageException(sqlException);
+                throw CreateAndLogCriticalDependencyException(failedShelterRequestStorageException);
             }
         }
 
