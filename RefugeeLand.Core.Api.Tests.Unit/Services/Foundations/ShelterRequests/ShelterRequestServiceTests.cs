@@ -1,7 +1,3 @@
-using System;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Runtime.Serialization;
 using Microsoft.Data.SqlClient;
 using Moq;
 using RefugeeLand.Core.Api.Brokers.DateTimes;
@@ -9,6 +5,8 @@ using RefugeeLand.Core.Api.Brokers.Loggings;
 using RefugeeLand.Core.Api.Brokers.Storages;
 using RefugeeLand.Core.Api.Models.ShelterRequests;
 using RefugeeLand.Core.Api.Services.Foundations.ShelterRequests;
+using System.Linq.Expressions;
+using System.Runtime.Serialization;
 using Tynamix.ObjectFiller;
 using Xeptions;
 using Xunit;
@@ -96,9 +94,10 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.ShelterRequests
             filler.Setup()
                 .OnType<DateTimeOffset>().Use(dateTimeOffset)
                 .OnProperty(shelterRequest => shelterRequest.CreatedByUserId).Use(userId)
-                .OnProperty(shelterRequest => shelterRequest.UpdatedByUserId).Use(userId);
-
-            // TODO: Complete the filler setup e.g. ignore related properties etc...
+                .OnProperty(shelterRequest => shelterRequest.UpdatedByUserId).Use(userId)
+                .OnProperty(shelterRequest => shelterRequest.ShelterOffer).IgnoreIt()
+                .OnProperty(shelterRequest => shelterRequest.RefugeeGroup).IgnoreIt()
+                .OnProperty(shelterRequest => shelterRequest.RefugeeApplicant).IgnoreIt();
 
             return filler;
         }
