@@ -53,7 +53,9 @@ namespace RefugeeLand.Core.Api.Services.Foundations.ShelterRequests
                     firstDate: shelterRequest.UpdatedDate,
                     secondDate: shelterRequest.CreatedDate,
                     secondDateName: nameof(ShelterRequest.CreatedDate)),
-                Parameter: nameof(ShelterRequest.UpdatedDate)));
+                Parameter: nameof(ShelterRequest.UpdatedDate)),
+
+                (Rule: IsNotRecent(shelterRequest.UpdatedDate), Parameter: nameof(shelterRequest.UpdatedDate)));
         }
 
         public void ValidateShelterRequestId(Guid shelterRequestId) =>
