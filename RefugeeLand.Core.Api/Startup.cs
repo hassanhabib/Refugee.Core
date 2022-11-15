@@ -12,12 +12,12 @@ using Microsoft.OpenApi.Models;
 using RefugeeLand.Core.Api.Brokers.DateTimes;
 using RefugeeLand.Core.Api.Brokers.Loggings;
 using RefugeeLand.Core.Api.Brokers.Storages;
-using RefugeeLand.Core.Api.Models.Nationalities;
 using RefugeeLand.Core.Api.Services.Foundations.Hosts;
 using RefugeeLand.Core.Api.Services.Foundations.Nationalities;
 using RefugeeLand.Core.Api.Services.Foundations.RefugeeGroups;
 using RefugeeLand.Core.Api.Services.Foundations.Refugees;
 using RefugeeLand.Core.Api.Services.Foundations.ShelterOffers;
+using RefugeeLand.Core.Api.Services.Foundations.ShelterRequests;
 
 namespace RefugeeLand.Core.Api
 {
@@ -84,6 +84,7 @@ namespace RefugeeLand.Core.Api
             services.AddTransient<IHostService, HostService>();
             services.AddTransient<INationalityService, NationalityService>();
             services.AddTransient<IShelterOfferService, ShelterOfferService>();
+            services.AddTransient<IShelterRequestService, ShelterRequestService>();
         }
     }
 }
