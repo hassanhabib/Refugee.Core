@@ -53,5 +53,48 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.ShelterRequests
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnRetrieveByIdIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            Guid someId = Guid.NewGuid();
+            var serviceException = new Exception();
+
+            var failedShelterRequestServiceException =
+                new FailedShelterRequestServiceException(serviceException);
+
+            var expectedShelterRequestServiceException =
+                new ShelterRequestServiceException(failedShelterRequestServiceException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectShelterRequestByIdAsync(It.IsAny<Guid>()))
+                    .ThrowsAsync(serviceException);
+
+            // when
+            ValueTask<ShelterRequest> retrieveShelterRequestByIdTask =
+                this.shelterRequestService.RetrieveShelterRequestByIdAsync(someId);
+
+            ShelterRequestServiceException actualShelterRequestServiceException =
+                await Assert.ThrowsAsync<ShelterRequestServiceException>(
+                    retrieveShelterRequestByIdTask.AsTask);
+
+            // then
+            actualShelterRequestServiceException.Should()
+                .BeEquivalentTo(expectedShelterRequestServiceException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectShelterRequestByIdAsync(It.IsAny<Guid>()),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogError(It.Is(SameExceptionAs(
+                   expectedShelterRequestServiceException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
