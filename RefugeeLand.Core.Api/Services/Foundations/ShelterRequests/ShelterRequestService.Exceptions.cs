@@ -54,6 +54,12 @@ namespace RefugeeLand.Core.Api.Services.Foundations.ShelterRequests
 
                 throw CreateAndLogDependencyValidationException(invalidShelterRequestReferenceException);
             }
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedShelterRequestException = new LockedShelterRequestException(dbUpdateConcurrencyException);
+
+                throw CreateAndLogDependencyValidationException(lockedShelterRequestException);
+            }
             catch (DbUpdateException databaseUpdateException)
             {
                 var failedShelterRequestStorageException =
