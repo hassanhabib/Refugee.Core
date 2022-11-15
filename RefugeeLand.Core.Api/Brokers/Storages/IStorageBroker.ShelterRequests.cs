@@ -10,5 +10,6 @@ namespace RefugeeLand.Core.Api.Brokers.Storages
         ValueTask<ShelterRequest> InsertShelterRequestAsync(ShelterRequest shelterRequest);
         IQueryable<ShelterRequest> SelectAllShelterRequests();
         ValueTask<ShelterRequest> SelectShelterRequestByIdAsync(Guid shelterRequestId);
+        ValueTask<ShelterRequest> UpdateShelterRequestAsync(ShelterRequest shelterRequest);
     }
 }

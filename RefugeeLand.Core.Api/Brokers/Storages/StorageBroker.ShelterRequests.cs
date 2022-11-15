@@ -18,5 +18,8 @@ namespace RefugeeLand.Core.Api.Brokers.Storages
 
         public async ValueTask<ShelterRequest> SelectShelterRequestByIdAsync(Guid shelterRequestId) =>
             await SelectAsync<ShelterRequest>(shelterRequestId);
+
+        public async ValueTask<ShelterRequest> UpdateShelterRequestAsync(ShelterRequest shelterRequest) =>
+            await UpdateAsync(shelterRequest);
     }
 }
