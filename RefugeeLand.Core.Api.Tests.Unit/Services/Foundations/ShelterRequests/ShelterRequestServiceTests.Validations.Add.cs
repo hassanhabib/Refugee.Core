@@ -160,5 +160,50 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.ShelterRequests
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnAddIfCreateAndUpdateUserIdsIsNotSameAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            ShelterRequest randomShelterRequest = CreateRandomShelterRequest(randomDateTimeOffset);
+            ShelterRequest invalidShelterRequest = randomShelterRequest;
+            invalidShelterRequest.UpdatedByUserId = Guid.NewGuid();
+
+            var invalidShelterRequestException =
+                new InvalidShelterRequestException();
+
+            invalidShelterRequestException.AddData(
+                key: nameof(ShelterRequest.UpdatedByUserId),
+                values: $"Id is not the same as {nameof(ShelterRequest.CreatedByUserId)}");
+
+            var expectedShelterRequestValidationException =
+                new ShelterRequestValidationException(invalidShelterRequestException);
+
+            // when
+            ValueTask<ShelterRequest> addShelterRequestTask =
+                this.shelterRequestService.AddShelterRequestAsync(invalidShelterRequest);
+
+            ShelterRequestValidationException actualShelterRequestValidationException =
+                await Assert.ThrowsAsync<ShelterRequestValidationException>(
+                    addShelterRequestTask.AsTask);
+
+            // then
+            actualShelterRequestValidationException.Should()
+                .BeEquivalentTo(expectedShelterRequestValidationException);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedShelterRequestValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertShelterRequestAsync(It.IsAny<ShelterRequest>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
