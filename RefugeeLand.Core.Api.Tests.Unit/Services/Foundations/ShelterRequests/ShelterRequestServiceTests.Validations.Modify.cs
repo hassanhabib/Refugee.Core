@@ -173,9 +173,9 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.ShelterRequests
                 broker.SelectShelterRequestByIdAsync(invalidShelterRequest.Id),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -279,8 +279,8 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.ShelterRequests
                     expectedShelterRequestValidationException))),
                         Times.Once);
 
-            this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -338,8 +338,65 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.ShelterRequests
                    expectedShelterRequestValidationException))),
                        Times.Once);
 
-            this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfCreatedUserIdDontMacthStorageAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            ShelterRequest randomShelterRequest = CreateRandomModifyShelterRequest(randomDateTimeOffset);
+            ShelterRequest invalidShelterRequest = randomShelterRequest.DeepClone();
+            ShelterRequest storageShelterRequest = invalidShelterRequest.DeepClone();
+            invalidShelterRequest.CreatedByUserId = Guid.NewGuid();
+            storageShelterRequest.UpdatedDate = storageShelterRequest.CreatedDate;
+
+            var invalidShelterRequestException = new InvalidShelterRequestException();
+
+            invalidShelterRequestException.AddData(
+                key: nameof(ShelterRequest.CreatedByUserId),
+                values: $"Id is not the same as {nameof(ShelterRequest.CreatedByUserId)}");
+
+            var expectedShelterRequestValidationException =
+                new ShelterRequestValidationException(invalidShelterRequestException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectShelterRequestByIdAsync(invalidShelterRequest.Id))
+                .ReturnsAsync(storageShelterRequest);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                .Returns(randomDateTimeOffset);
+
+            // when
+            ValueTask<ShelterRequest> modifyShelterRequestTask =
+                this.shelterRequestService.ModifyShelterRequestAsync(invalidShelterRequest);
+
+            ShelterRequestValidationException actualShelterRequestValidationException =
+                await Assert.ThrowsAsync<ShelterRequestValidationException>(
+                    modifyShelterRequestTask.AsTask);
+
+            // then
+            actualShelterRequestValidationException.Should().BeEquivalentTo(expectedShelterRequestValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectShelterRequestByIdAsync(invalidShelterRequest.Id),
+                    Times.Once);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogError(It.Is(SameExceptionAs(
+                   expectedShelterRequestValidationException))),
+                       Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
