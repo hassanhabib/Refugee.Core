@@ -35,7 +35,7 @@ namespace RefugeeLand.Core.Api.Services.Foundations.ShelterRequests
         public IQueryable<ShelterRequest> RetrieveAllShelterRequests() =>
             TryCatch(() => this.storageBroker.SelectAllShelterRequests());
 
-        public ValueTask<ShelterRequest> RetrieveShelterRequestByIdAsync(Guid shelterRequestId) =>
-            throw new NotImplementedException();
+        public async ValueTask<ShelterRequest> RetrieveShelterRequestByIdAsync(Guid shelterRequestId) =>
+            await this.storageBroker.SelectShelterRequestByIdAsync(shelterRequestId);
     }
 }
