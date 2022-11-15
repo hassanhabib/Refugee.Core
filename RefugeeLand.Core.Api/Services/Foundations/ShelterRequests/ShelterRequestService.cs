@@ -61,5 +61,8 @@ namespace RefugeeLand.Core.Api.Services.Foundations.ShelterRequests
 
                 return await this.storageBroker.UpdateShelterRequestAsync(shelterRequest);
             });
+
+        public ValueTask<ShelterRequest> RemoveShelterRequestByIdAsync(Guid shelterRequestId) =>
+            throw new NotImplementedException();
     }
 }
