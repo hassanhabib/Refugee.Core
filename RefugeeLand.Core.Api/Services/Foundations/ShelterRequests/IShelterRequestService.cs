@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using RefugeeLand.Core.Api.Models.ShelterRequests;
@@ -8,5 +9,6 @@ namespace RefugeeLand.Core.Api.Services.Foundations.ShelterRequests
     {
         ValueTask<ShelterRequest> AddShelterRequestAsync(ShelterRequest shelterRequest);
         IQueryable<ShelterRequest> RetrieveAllShelterRequests();
+        ValueTask<ShelterRequest> RetrieveShelterRequestByIdAsync(Guid shelterRequestId);
     }
 }
