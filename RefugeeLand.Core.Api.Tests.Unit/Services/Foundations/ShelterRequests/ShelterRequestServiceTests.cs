@@ -1,4 +1,5 @@
 using System;
+using System.Linq.Expressions;
 using Moq;
 using RefugeeLand.Core.Api.Brokers.DateTimes;
 using RefugeeLand.Core.Api.Brokers.Loggings;
@@ -6,6 +7,7 @@ using RefugeeLand.Core.Api.Brokers.Storages;
 using RefugeeLand.Core.Api.Models.ShelterRequests;
 using RefugeeLand.Core.Api.Services.Foundations.ShelterRequests;
 using Tynamix.ObjectFiller;
+using Xeptions;
 
 namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.ShelterRequests
 {
@@ -27,6 +29,9 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.ShelterRequests
                 dateTimeBroker: this.dateTimeBrokerMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object);
         }
+
+        private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
+            actualException => actualException.SameExceptionAs(expectedException);
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
