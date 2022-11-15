@@ -38,6 +38,14 @@ namespace RefugeeLand.Core.Api.Services.Foundations.ShelterRequests
         public void ValidateShelterRequestId(Guid shelterRequestId) =>
             Validate((Rule: IsInvalid(shelterRequestId), Parameter: nameof(ShelterRequest.Id)));
 
+        private static void ValidateStorageShelterRequest(ShelterRequest maybeShelterRequest, Guid shelterRequestId)
+        {
+            if (maybeShelterRequest is null)
+            {
+                throw new NotFoundShelterRequestException(shelterRequestId);
+            }
+        }
+
         private static void ValidateShelterRequestIsNotNull(ShelterRequest shelterRequest)
         {
             if (shelterRequest is null)
