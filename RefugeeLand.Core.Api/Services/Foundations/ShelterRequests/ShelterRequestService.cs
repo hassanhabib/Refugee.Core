@@ -1,59 +1,62 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
-using RefugeeLand.Core.Api.Brokers.DateTimes;
-using RefugeeLand.Core.Api.Brokers.Loggings;
-using RefugeeLand.Core.Api.Brokers.Storages;
+using FluentAssertions;
+using Force.DeepCloner;
+using Moq;
 using RefugeeLand.Core.Api.Models.ShelterRequests;
+using Xunit;
 
-namespace RefugeeLand.Core.Api.Services.Foundations.ShelterRequests
+namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.ShelterRequests
 {
-    public partial class ShelterRequestService : IShelterRequestService
+    public partial class ShelterRequestServiceTests
     {
-        private readonly IStorageBroker storageBroker;
-        private readonly IDateTimeBroker dateTimeBroker;
-        private readonly ILoggingBroker loggingBroker;
-
-        public ShelterRequestService(
-            IStorageBroker storageBroker,
-            IDateTimeBroker dateTimeBroker,
-            ILoggingBroker loggingBroker)
+        [Fact]
+        public async Task ShouldModifyShelterRequestAsync()
         {
-            this.storageBroker = storageBroker;
-            this.dateTimeBroker = dateTimeBroker;
-            this.loggingBroker = loggingBroker;
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            ShelterRequest randomShelterRequest = CreateRandomModifyShelterRequest(randomDateTimeOffset);
+            ShelterRequest inputShelterRequest = randomShelterRequest;
+            ShelterRequest storageShelterRequest = inputShelterRequest.DeepClone();
+            storageShelterRequest.UpdatedDate = randomShelterRequest.CreatedDate;
+            ShelterRequest updatedShelterRequest = inputShelterRequest;
+            ShelterRequest expectedShelterRequest = updatedShelterRequest.DeepClone();
+            Guid shelterRequestId = inputShelterRequest.Id;
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectShelterRequestByIdAsync(shelterRequestId))
+                    .ReturnsAsync(storageShelterRequest);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.UpdateShelterRequestAsync(inputShelterRequest))
+                    .ReturnsAsync(updatedShelterRequest);
+
+            // when
+            ShelterRequest actualShelterRequest =
+                await this.shelterRequestService.ModifyShelterRequestAsync(inputShelterRequest);
+
+            // then
+            actualShelterRequest.Should().BeEquivalentTo(expectedShelterRequest);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectShelterRequestByIdAsync(inputShelterRequest.Id),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateShelterRequestAsync(inputShelterRequest),
+                    Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
-
-        public ValueTask<ShelterRequest> AddShelterRequestAsync(ShelterRequest shelterRequest) =>
-            TryCatch(async () =>
-            {
-                ValidateShelterRequestOnAdd(shelterRequest);
-
-                return await this.storageBroker.InsertShelterRequestAsync(shelterRequest);
-            });
-
-        public IQueryable<ShelterRequest> RetrieveAllShelterRequests() =>
-            TryCatch(() => this.storageBroker.SelectAllShelterRequests());
-
-        public ValueTask<ShelterRequest> RetrieveShelterRequestByIdAsync(Guid shelterRequestId) =>
-            TryCatch(async () =>
-            {
-                ValidateShelterRequestId(shelterRequestId);
-
-                ShelterRequest maybeShelterRequest = await this.storageBroker
-                    .SelectShelterRequestByIdAsync(shelterRequestId);
-
-                ValidateStorageShelterRequest(maybeShelterRequest, shelterRequestId);
-
-                return maybeShelterRequest;
-            });
-
-        public ValueTask<ShelterRequest> ModifyShelterRequestAsync(ShelterRequest shelterRequest) =>
-            TryCatch(async () =>
-            {
-                ValidateShelterRequestOnModify(shelterRequest);
-
-                return await this.storageBroker.UpdateShelterRequestAsync(shelterRequest);
-            });
     }
 }
