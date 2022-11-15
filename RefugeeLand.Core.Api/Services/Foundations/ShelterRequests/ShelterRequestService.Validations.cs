@@ -18,7 +18,13 @@ namespace RefugeeLand.Core.Api.Services.Foundations.ShelterRequests
                 (Rule: IsInvalid(shelterRequest.CreatedDate), Parameter: nameof(ShelterRequest.CreatedDate)),
                 (Rule: IsInvalid(shelterRequest.CreatedByUserId), Parameter: nameof(ShelterRequest.CreatedByUserId)),
                 (Rule: IsInvalid(shelterRequest.UpdatedDate), Parameter: nameof(ShelterRequest.UpdatedDate)),
-                (Rule: IsInvalid(shelterRequest.UpdatedByUserId), Parameter: nameof(ShelterRequest.UpdatedByUserId)));
+                (Rule: IsInvalid(shelterRequest.UpdatedByUserId), Parameter: nameof(ShelterRequest.UpdatedByUserId)),
+
+                (Rule: IsNotSame(
+                    firstDate: shelterRequest.UpdatedDate,
+                    secondDate: shelterRequest.CreatedDate,
+                    secondDateName: nameof(ShelterRequest.CreatedDate)),
+                Parameter: nameof(ShelterRequest.UpdatedDate)));
         }
 
         private static void ValidateShelterRequestIsNotNull(ShelterRequest shelterRequest)
@@ -40,6 +46,15 @@ namespace RefugeeLand.Core.Api.Services.Foundations.ShelterRequests
             Condition = date == default,
             Message = "Date is required"
         };
+
+        private static dynamic IsNotSame(
+            DateTimeOffset firstDate,
+            DateTimeOffset secondDate,
+            string secondDateName) => new
+            {
+                Condition = firstDate != secondDate,
+                Message = $"Date is not the same as {secondDateName}"
+            };
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
