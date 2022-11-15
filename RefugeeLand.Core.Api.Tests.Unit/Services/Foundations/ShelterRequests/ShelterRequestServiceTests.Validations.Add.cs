@@ -27,8 +27,8 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.ShelterRequests
                 this.shelterRequestService.AddShelterRequestAsync(nullShelterRequest);
 
             ShelterRequestValidationException actualShelterRequestValidationException =
-                await Assert.ThrowsAsync<ShelterRequestValidationException>(
-                    addShelterRequestTask.AsTask);
+                await Assert.ThrowsAsync<ShelterRequestValidationException>(() =>
+                    addShelterRequestTask.AsTask());
 
             // then
             actualShelterRequestValidationException.Should()
@@ -93,12 +93,16 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.ShelterRequests
                 this.shelterRequestService.AddShelterRequestAsync(invalidShelterRequest);
 
             ShelterRequestValidationException actualShelterRequestValidationException =
-                await Assert.ThrowsAsync<ShelterRequestValidationException>(
-                    addShelterRequestTask.AsTask);
+                await Assert.ThrowsAsync<ShelterRequestValidationException>(() =>
+                    addShelterRequestTask.AsTask());
 
             // then
             actualShelterRequestValidationException.Should()
                 .BeEquivalentTo(expectedShelterRequestValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -135,17 +139,25 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.ShelterRequests
             var expectedShelterRequestValidationException =
                 new ShelterRequestValidationException(invalidShelterRequestException);
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
             // when
             ValueTask<ShelterRequest> addShelterRequestTask =
                 this.shelterRequestService.AddShelterRequestAsync(invalidShelterRequest);
 
             ShelterRequestValidationException actualShelterRequestValidationException =
-                await Assert.ThrowsAsync<ShelterRequestValidationException>(
-                    addShelterRequestTask.AsTask);
+                await Assert.ThrowsAsync<ShelterRequestValidationException>(() =>
+                    addShelterRequestTask.AsTask());
 
             // then
             actualShelterRequestValidationException.Should()
                 .BeEquivalentTo(expectedShelterRequestValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -156,9 +168,9 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.ShelterRequests
                 broker.InsertShelterRequestAsync(It.IsAny<ShelterRequest>()),
                     Times.Never);
 
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
-            this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -180,17 +192,25 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.ShelterRequests
             var expectedShelterRequestValidationException =
                 new ShelterRequestValidationException(invalidShelterRequestException);
 
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
+
             // when
             ValueTask<ShelterRequest> addShelterRequestTask =
                 this.shelterRequestService.AddShelterRequestAsync(invalidShelterRequest);
 
             ShelterRequestValidationException actualShelterRequestValidationException =
-                await Assert.ThrowsAsync<ShelterRequestValidationException>(
-                    addShelterRequestTask.AsTask);
+                await Assert.ThrowsAsync<ShelterRequestValidationException>(() =>
+                    addShelterRequestTask.AsTask());
 
             // then
             actualShelterRequestValidationException.Should()
                 .BeEquivalentTo(expectedShelterRequestValidationException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once());
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -239,8 +259,8 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.ShelterRequests
                 this.shelterRequestService.AddShelterRequestAsync(invalidShelterRequest);
 
             ShelterRequestValidationException actualShelterRequestValidationException =
-                await Assert.ThrowsAsync<ShelterRequestValidationException>(
-                    addShelterRequestTask.AsTask);
+                await Assert.ThrowsAsync<ShelterRequestValidationException>(() =>
+                    addShelterRequestTask.AsTask());
 
             // then
             actualShelterRequestValidationException.Should()
