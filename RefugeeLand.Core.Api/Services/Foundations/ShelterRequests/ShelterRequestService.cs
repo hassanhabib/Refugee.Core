@@ -22,7 +22,12 @@ namespace RefugeeLand.Core.Api.Services.Foundations.ShelterRequests
             this.loggingBroker = loggingBroker;
         }
 
-        public async ValueTask<ShelterRequest> AddShelterRequestAsync(ShelterRequest shelterRequest) =>
-            await this.storageBroker.InsertShelterRequestAsync(shelterRequest);
+        public ValueTask<ShelterRequest> AddShelterRequestAsync(ShelterRequest shelterRequest) =>
+            TryCatch(async () =>
+            {
+                ValidateShelterRequestOnAdd(shelterRequest);
+
+                return await this.storageBroker.InsertShelterRequestAsync(shelterRequest);
+            });
     }
 }
