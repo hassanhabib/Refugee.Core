@@ -1,3 +1,8 @@
+// -------------------------------------------------------
+// Copyright (c) Coalition of the Good-Hearted Engineers
+// FREE TO USE TO DELIVER HUMANITARIAN AID, HOPE AND LOVE
+// -------------------------------------------------------
+
 using System;
 using RefugeeLand.Core.Api.Models.ShelterRequests;
 using RefugeeLand.Core.Api.Models.ShelterRequests.Exceptions;
@@ -13,8 +18,13 @@ namespace RefugeeLand.Core.Api.Services.Foundations.ShelterRequests
             Validate(
                 (Rule: IsInvalid(shelterRequest.Id), Parameter: nameof(ShelterRequest.Id)),
 
-                // TODO: Add any other required validation rules
-
+                (Rule: IsInvalid(shelterRequest.RefugeeApplicantId), Parameter: nameof(ShelterRequest.RefugeeApplicantId)),
+                (Rule: IsInvalid(shelterRequest.RefugeeGroupId), Parameter: nameof(ShelterRequest.RefugeeGroupId)),
+                (Rule: IsInvalid(shelterRequest.ShelterOfferId), Parameter: nameof(ShelterRequest.ShelterOfferId)),  
+                (Rule: IsInvalid(shelterRequest.StartDate), Parameter: nameof(ShelterRequest.StartDate)),
+                (Rule: IsInvalid(shelterRequest.EndDate), Parameter: nameof(ShelterRequest.EndDate)),
+                (Rule: IsInvalid(shelterRequest.Status), Parameter: nameof(ShelterRequest.Status)),
+                
                 (Rule: IsInvalid(shelterRequest.CreatedDate), Parameter: nameof(ShelterRequest.CreatedDate)),
                 (Rule: IsInvalid(shelterRequest.CreatedByUserId), Parameter: nameof(ShelterRequest.CreatedByUserId)),
                 (Rule: IsInvalid(shelterRequest.UpdatedDate), Parameter: nameof(ShelterRequest.UpdatedDate)),
@@ -105,6 +115,11 @@ namespace RefugeeLand.Core.Api.Services.Foundations.ShelterRequests
             Message = "Id is required"
         };
 
+        private static dynamic IsInvalid(ShelterRequestStatus status) => new
+        {
+            Condition = Enum.IsDefined(status) is false,
+            Message = "Value is invalid"
+        };
         private static dynamic IsInvalid(DateTimeOffset date) => new
         {
             Condition = date == default,
