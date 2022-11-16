@@ -90,7 +90,7 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.ShelterRequests
 
             invalidShelterRequestException.AddData(
                 key: nameof(ShelterRequest.Status),
-                values: "Status is required");
+                values: "Value is invalid");
 
             invalidShelterRequestException.AddData(
                 key: nameof(ShelterRequest.ShelterOfferId),
