@@ -3,17 +3,17 @@
 // FREE TO USE TO DELIVER HUMANITARIAN AID, HOPE AND LOVE
 // -------------------------------------------------------
 
-using System;
 using RefugeeLand.Core.Api.Models.RefugeeGroups;
 using RefugeeLand.Core.Api.Models.Refugees;
 using RefugeeLand.Core.Api.Models.ShelterOffers;
+using System;
 
 namespace RefugeeLand.Core.Api.Models.ShelterRequests
 {
     public class ShelterRequest
     {
         public Guid Id { get; set; }
-    
+
         public DateTimeOffset StartDate { get; set; }
         public DateTimeOffset EndDate { get; set; }
         public ShelterRequestStatus Status { get; set; }
