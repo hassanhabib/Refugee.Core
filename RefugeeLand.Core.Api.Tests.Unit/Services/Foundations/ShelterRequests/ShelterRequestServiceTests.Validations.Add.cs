@@ -1,5 +1,8 @@
-using System;
-using System.Threading.Tasks;
+// -------------------------------------------------------
+// Copyright (c) Coalition of the Good-Hearted Engineers
+// FREE TO USE TO DELIVER HUMANITARIAN AID, HOPE AND LOVE
+// -------------------------------------------------------
+
 using FluentAssertions;
 using Moq;
 using RefugeeLand.Core.Api.Models.ShelterRequests;
@@ -51,9 +54,23 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.ShelterRequests
         public async Task ShouldThrowValidationExceptionOnAddIfShelterRequestIsInvalidAndLogItAsync(string invalidText)
         {
             // given
+            Guid invalidId = Guid.Empty;
+            ShelterRequestStatus invalidStatus = (ShelterRequestStatus)42;
+            DateTimeOffset invalidDateTime = default; 
+            
             var invalidShelterRequest = new ShelterRequest
             {
-                // TODO:  Add default values for your properties i.e. Name = invalidText
+                Id = invalidId,
+                StartDate = invalidDateTime,
+                EndDate = invalidDateTime,
+                Status = invalidStatus,
+                ShelterOfferId = invalidId,
+                RefugeeGroupId = invalidId,
+                RefugeeApplicantId = invalidId,
+                CreatedDate = invalidDateTime,  
+                UpdatedDate = invalidDateTime,
+                CreatedByUserId = invalidId,
+                UpdatedByUserId = invalidId
             };
 
             var invalidShelterRequestException =
@@ -63,12 +80,30 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.ShelterRequests
                 key: nameof(ShelterRequest.Id),
                 values: "Id is required");
 
-            //invalidShelterRequestException.AddData(
-            //    key: nameof(ShelterRequest.Name),
-            //    values: "Text is required");
+            invalidShelterRequestException.AddData(
+                key: nameof(ShelterRequest.StartDate),
+                values: "Date is required");
 
-            // TODO: Add or remove data here to suit the validation needs for the ShelterRequest model
+            invalidShelterRequestException.AddData(
+                key: nameof(ShelterRequest.EndDate),
+                values: "Date is required");
 
+            invalidShelterRequestException.AddData(
+                key: nameof(ShelterRequest.Status),
+                values: "Status is required");
+
+            invalidShelterRequestException.AddData(
+                key: nameof(ShelterRequest.ShelterOfferId),
+                values: "Id is required");
+
+            invalidShelterRequestException.AddData(
+                key: nameof(ShelterRequest.RefugeeGroupId),
+                values: "Id is required");
+
+            invalidShelterRequestException.AddData(
+                key: nameof(ShelterRequest.RefugeeApplicantId),
+                values: "Id is required");
+           
             invalidShelterRequestException.AddData(
                 key: nameof(ShelterRequest.CreatedDate),
                 values: "Date is required");
