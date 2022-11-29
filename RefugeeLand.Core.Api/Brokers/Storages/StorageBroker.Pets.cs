@@ -18,5 +18,8 @@ namespace RefugeeLand.Core.Api.Brokers.Storages
 
         public async ValueTask<Pet> SelectPetByIdAsync(Guid petId) =>
             await SelectAsync<Pet>(petId);
+
+        public async ValueTask<Pet> UpdatePetAsync(Pet pet) =>
+            await UpdateAsync(pet);
     }
 }
