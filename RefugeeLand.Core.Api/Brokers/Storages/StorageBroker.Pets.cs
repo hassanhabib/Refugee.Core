@@ -15,5 +15,8 @@ namespace RefugeeLand.Core.Api.Brokers.Storages
             await InsertAsync(pet);
 
         public IQueryable<Pet> SelectAllPets()=> SelectAll<Pet>();
+
+        public async ValueTask<Pet> SelectPetByIdAsync(Guid petId) =>
+            await SelectAsync<Pet>(petId);
     }
 }

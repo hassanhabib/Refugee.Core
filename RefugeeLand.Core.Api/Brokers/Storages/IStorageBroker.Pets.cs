@@ -9,5 +9,6 @@ namespace RefugeeLand.Core.Api.Brokers.Storages
     {
         ValueTask<Pet> InsertPetAsync(Pet pet);
         IQueryable<Pet> SelectAllPets();
+        ValueTask<Pet> SelectPetByIdAsync(Guid petId);
     }
 }
