@@ -75,106 +75,112 @@ namespace RefugeeLand.Core.Api.Controllers
         [HttpGet("{refugeeGroupId}")]
         public async ValueTask<ActionResult<RefugeeGroup>> GetRefugeeGroupByIdAsync(Guid refugeeGroupId)
         {
-            try
-            {
-                RefugeeGroup refugeeGroup = await this.refugeeGroupService.RetrieveRefugeeGroupByIdAsync(refugeeGroupId);
-
-                return Ok(refugeeGroup);
-            }
-            catch (RefugeeGroupValidationException refugeeGroupValidationException)
-                when (refugeeGroupValidationException.InnerException is NotFoundRefugeeGroupException)
-            {
-                return NotFound(refugeeGroupValidationException.InnerException);
-            }
-            catch (RefugeeGroupValidationException refugeeGroupValidationException)
-            {
-                return BadRequest(refugeeGroupValidationException.InnerException);
-            }
-            catch (RefugeeGroupDependencyException refugeeGroupDependencyException)
-            {
-                return InternalServerError(refugeeGroupDependencyException);
-            }
-            catch (RefugeeGroupServiceException refugeeGroupServiceException)
-            {
-                return InternalServerError(refugeeGroupServiceException);
-            }
+            //TODO: Implement RetrieveRefugeeGroupByIdAsync in RefugeeGroupService
+            throw new NotImplementedException();
+            // try
+            // {
+            //     RefugeeGroup refugeeGroup = await this.refugeeGroupService.RetrieveRefugeeGroupByIdAsync(refugeeGroupId);
+            //
+            //     return Ok(refugeeGroup);
+            // }
+            // catch (RefugeeGroupValidationException refugeeGroupValidationException)
+            //     when (refugeeGroupValidationException.InnerException is NotFoundRefugeeGroupException)
+            // {
+            //     return NotFound(refugeeGroupValidationException.InnerException);
+            // }
+            // catch (RefugeeGroupValidationException refugeeGroupValidationException)
+            // {
+            //     return BadRequest(refugeeGroupValidationException.InnerException);
+            // }
+            // catch (RefugeeGroupDependencyException refugeeGroupDependencyException)
+            // {
+            //     return InternalServerError(refugeeGroupDependencyException);
+            // }
+            // catch (RefugeeGroupServiceException refugeeGroupServiceException)
+            // {
+            //     return InternalServerError(refugeeGroupServiceException);
+            // }
         }
 
         [HttpPut]
         public async ValueTask<ActionResult<RefugeeGroup>> PutRefugeeGroupAsync(RefugeeGroup refugeeGroup)
         {
-            try
-            {
-                RefugeeGroup modifiedRefugeeGroup =
-                    await this.refugeeGroupService.ModifyRefugeeGroupAsync(refugeeGroup);
-
-                return Ok(modifiedRefugeeGroup);
-            }
-            catch (RefugeeGroupValidationException refugeeGroupValidationException)
-                when (refugeeGroupValidationException.InnerException is NotFoundRefugeeGroupException)
-            {
-                return NotFound(refugeeGroupValidationException.InnerException);
-            }
-            catch (RefugeeGroupValidationException refugeeGroupValidationException)
-            {
-                return BadRequest(refugeeGroupValidationException.InnerException);
-            }
-            catch (RefugeeGroupDependencyValidationException refugeeGroupValidationException)
-                when (refugeeGroupValidationException.InnerException is InvalidRefugeeGroupReferenceException)
-            {
-                return FailedDependency(refugeeGroupValidationException.InnerException);
-            }
-            catch (RefugeeGroupDependencyValidationException refugeeGroupDependencyValidationException)
-               when (refugeeGroupDependencyValidationException.InnerException is AlreadyExistsRefugeeGroupException)
-            {
-                return Conflict(refugeeGroupDependencyValidationException.InnerException);
-            }
-            catch (RefugeeGroupDependencyException refugeeGroupDependencyException)
-            {
-                return InternalServerError(refugeeGroupDependencyException);
-            }
-            catch (RefugeeGroupServiceException refugeeGroupServiceException)
-            {
-                return InternalServerError(refugeeGroupServiceException);
-            }
+            //TODO: Implement PutRefugeeGroupAsync in RefugeeGroupService
+            throw new NotImplementedException();
+            // try
+            // {
+            //     RefugeeGroup modifiedRefugeeGroup =
+            //         await this.refugeeGroupService.ModifyRefugeeGroupAsync(refugeeGroup);
+            //
+            //     return Ok(modifiedRefugeeGroup);
+            // }
+            // catch (RefugeeGroupValidationException refugeeGroupValidationException)
+            //     when (refugeeGroupValidationException.InnerException is NotFoundRefugeeGroupException)
+            // {
+            //     return NotFound(refugeeGroupValidationException.InnerException);
+            // }
+            // catch (RefugeeGroupValidationException refugeeGroupValidationException)
+            // {
+            //     return BadRequest(refugeeGroupValidationException.InnerException);
+            // }
+            // catch (RefugeeGroupDependencyValidationException refugeeGroupValidationException)
+            //     when (refugeeGroupValidationException.InnerException is InvalidRefugeeGroupReferenceException)
+            // {
+            //     return FailedDependency(refugeeGroupValidationException.InnerException);
+            // }
+            // catch (RefugeeGroupDependencyValidationException refugeeGroupDependencyValidationException)
+            //    when (refugeeGroupDependencyValidationException.InnerException is AlreadyExistsRefugeeGroupException)
+            // {
+            //     return Conflict(refugeeGroupDependencyValidationException.InnerException);
+            // }
+            // catch (RefugeeGroupDependencyException refugeeGroupDependencyException)
+            // {
+            //     return InternalServerError(refugeeGroupDependencyException);
+            // }
+            // catch (RefugeeGroupServiceException refugeeGroupServiceException)
+            // {
+            //     return InternalServerError(refugeeGroupServiceException);
+            // }
         }
 
         [HttpDelete("{refugeeGroupId}")]
         public async ValueTask<ActionResult<RefugeeGroup>> DeleteRefugeeGroupByIdAsync(Guid refugeeGroupId)
         {
-            try
-            {
-                RefugeeGroup deletedRefugeeGroup =
-                    await this.refugeeGroupService.RemoveRefugeeGroupByIdAsync(refugeeGroupId);
-
-                return Ok(deletedRefugeeGroup);
-            }
-            catch (RefugeeGroupValidationException refugeeGroupValidationException)
-                when (refugeeGroupValidationException.InnerException is NotFoundRefugeeGroupException)
-            {
-                return NotFound(refugeeGroupValidationException.InnerException);
-            }
-            catch (RefugeeGroupValidationException refugeeGroupValidationException)
-            {
-                return BadRequest(refugeeGroupValidationException.InnerException);
-            }
-            catch (RefugeeGroupDependencyValidationException refugeeGroupDependencyValidationException)
-                when (refugeeGroupDependencyValidationException.InnerException is LockedRefugeeGroupException)
-            {
-                return Locked(refugeeGroupDependencyValidationException.InnerException);
-            }
-            catch (RefugeeGroupDependencyValidationException refugeeGroupDependencyValidationException)
-            {
-                return BadRequest(refugeeGroupDependencyValidationException);
-            }
-            catch (RefugeeGroupDependencyException refugeeGroupDependencyException)
-            {
-                return InternalServerError(refugeeGroupDependencyException);
-            }
-            catch (RefugeeGroupServiceException refugeeGroupServiceException)
-            {
-                return InternalServerError(refugeeGroupServiceException);
-            }
+            //TODO: Implement DeleteRefugeeGroupByIdAsync in RefugeeGroupService
+            throw new NotImplementedException();
+            // try
+            // {
+            //     RefugeeGroup deletedRefugeeGroup =
+            //         await this.refugeeGroupService.RemoveRefugeeGroupByIdAsync(refugeeGroupId);
+            //
+            //     return Ok(deletedRefugeeGroup);
+            // }
+            // catch (RefugeeGroupValidationException refugeeGroupValidationException)
+            //     when (refugeeGroupValidationException.InnerException is NotFoundRefugeeGroupException)
+            // {
+            //     return NotFound(refugeeGroupValidationException.InnerException);
+            // }
+            // catch (RefugeeGroupValidationException refugeeGroupValidationException)
+            // {
+            //     return BadRequest(refugeeGroupValidationException.InnerException);
+            // }
+            // catch (RefugeeGroupDependencyValidationException refugeeGroupDependencyValidationException)
+            //     when (refugeeGroupDependencyValidationException.InnerException is LockedRefugeeGroupException)
+            // {
+            //     return Locked(refugeeGroupDependencyValidationException.InnerException);
+            // }
+            // catch (RefugeeGroupDependencyValidationException refugeeGroupDependencyValidationException)
+            // {
+            //     return BadRequest(refugeeGroupDependencyValidationException);
+            // }
+            // catch (RefugeeGroupDependencyException refugeeGroupDependencyException)
+            // {
+            //     return InternalServerError(refugeeGroupDependencyException);
+            // }
+            // catch (RefugeeGroupServiceException refugeeGroupServiceException)
+            // {
+            //     return InternalServerError(refugeeGroupServiceException);
+            // }
         }
     }
 }
