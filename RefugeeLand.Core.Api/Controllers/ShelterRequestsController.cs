@@ -138,5 +138,43 @@ namespace RefugeeLand.Core.Api.Controllers
                 return InternalServerError(shelterRequestServiceException);
             }
         }
+
+        [HttpDelete("{shelterRequestId}")]
+        public async ValueTask<ActionResult<ShelterRequest>> DeleteShelterRequestByIdAsync(Guid shelterRequestId)
+        {
+            try
+            {
+                ShelterRequest deletedShelterRequest =
+                    await this.shelterRequestService.RemoveShelterRequestByIdAsync(shelterRequestId);
+
+                return Ok(deletedShelterRequest);
+            }
+            catch (ShelterRequestValidationException shelterRequestValidationException)
+                when (shelterRequestValidationException.InnerException is NotFoundShelterRequestException)
+            {
+                return NotFound(shelterRequestValidationException.InnerException);
+            }
+            catch (ShelterRequestValidationException shelterRequestValidationException)
+            {
+                return BadRequest(shelterRequestValidationException.InnerException);
+            }
+            catch (ShelterRequestDependencyValidationException shelterRequestDependencyValidationException)
+                when (shelterRequestDependencyValidationException.InnerException is LockedShelterRequestException)
+            {
+                return Locked(shelterRequestDependencyValidationException.InnerException);
+            }
+            catch (ShelterRequestDependencyValidationException shelterRequestDependencyValidationException)
+            {
+                return BadRequest(shelterRequestDependencyValidationException);
+            }
+            catch (ShelterRequestDependencyException shelterRequestDependencyException)
+            {
+                return InternalServerError(shelterRequestDependencyException);
+            }
+            catch (ShelterRequestServiceException shelterRequestServiceException)
+            {
+                return InternalServerError(shelterRequestServiceException);
+            }
+        }
     }
 }
