@@ -138,5 +138,43 @@ namespace RefugeeLand.Core.Api.Controllers
                 return InternalServerError(refugeeGroupServiceException);
             }
         }
+
+        [HttpDelete("{refugeeGroupId}")]
+        public async ValueTask<ActionResult<RefugeeGroup>> DeleteRefugeeGroupByIdAsync(Guid refugeeGroupId)
+        {
+            try
+            {
+                RefugeeGroup deletedRefugeeGroup =
+                    await this.refugeeGroupService.RemoveRefugeeGroupByIdAsync(refugeeGroupId);
+
+                return Ok(deletedRefugeeGroup);
+            }
+            catch (RefugeeGroupValidationException refugeeGroupValidationException)
+                when (refugeeGroupValidationException.InnerException is NotFoundRefugeeGroupException)
+            {
+                return NotFound(refugeeGroupValidationException.InnerException);
+            }
+            catch (RefugeeGroupValidationException refugeeGroupValidationException)
+            {
+                return BadRequest(refugeeGroupValidationException.InnerException);
+            }
+            catch (RefugeeGroupDependencyValidationException refugeeGroupDependencyValidationException)
+                when (refugeeGroupDependencyValidationException.InnerException is LockedRefugeeGroupException)
+            {
+                return Locked(refugeeGroupDependencyValidationException.InnerException);
+            }
+            catch (RefugeeGroupDependencyValidationException refugeeGroupDependencyValidationException)
+            {
+                return BadRequest(refugeeGroupDependencyValidationException);
+            }
+            catch (RefugeeGroupDependencyException refugeeGroupDependencyException)
+            {
+                return InternalServerError(refugeeGroupDependencyException);
+            }
+            catch (RefugeeGroupServiceException refugeeGroupServiceException)
+            {
+                return InternalServerError(refugeeGroupServiceException);
+            }
+        }
     }
 }
