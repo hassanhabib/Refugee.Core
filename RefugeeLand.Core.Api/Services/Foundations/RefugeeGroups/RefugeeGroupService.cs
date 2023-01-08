@@ -40,5 +40,9 @@ namespace RefugeeLand.Core.Api.Services.Foundations.RefugeeGroups
         public IQueryable<RefugeeGroup> RetrieveAllRefugeeGroups() =>
         TryCatch(() => this.storageBroker.SelectAllRefugeeGroups());
 
+        public ValueTask<RefugeeGroup> RetrieveRefugeeGroupByIdAsync(Guid refugeeGroupId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
