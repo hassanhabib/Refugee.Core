@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -60,6 +61,34 @@ namespace RefugeeLand.Core.Api.Controllers
                     this.refugeeGroupService.RetrieveAllRefugeeGroups();
 
                 return Ok(retrievedRefugeeGroups);
+            }
+            catch (RefugeeGroupDependencyException refugeeGroupDependencyException)
+            {
+                return InternalServerError(refugeeGroupDependencyException);
+            }
+            catch (RefugeeGroupServiceException refugeeGroupServiceException)
+            {
+                return InternalServerError(refugeeGroupServiceException);
+            }
+        }
+
+        [HttpGet("{refugeeGroupId}")]
+        public async ValueTask<ActionResult<RefugeeGroup>> GetRefugeeGroupByIdAsync(Guid refugeeGroupId)
+        {
+            try
+            {
+                RefugeeGroup refugeeGroup = await this.refugeeGroupService.RetrieveRefugeeGroupByIdAsync(refugeeGroupId);
+
+                return Ok(refugeeGroup);
+            }
+            catch (RefugeeGroupValidationException refugeeGroupValidationException)
+                when (refugeeGroupValidationException.InnerException is NotFoundRefugeeGroupException)
+            {
+                return NotFound(refugeeGroupValidationException.InnerException);
+            }
+            catch (RefugeeGroupValidationException refugeeGroupValidationException)
+            {
+                return BadRequest(refugeeGroupValidationException.InnerException);
             }
             catch (RefugeeGroupDependencyException refugeeGroupDependencyException)
             {
