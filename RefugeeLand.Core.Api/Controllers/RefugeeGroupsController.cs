@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RESTFulSense.Controllers;
@@ -39,6 +40,26 @@ namespace RefugeeLand.Core.Api.Controllers
                when (refugeeGroupDependencyValidationException.InnerException is AlreadyExistsRefugeeGroupException)
             {
                 return Conflict(refugeeGroupDependencyValidationException.InnerException);
+            }
+            catch (RefugeeGroupDependencyException refugeeGroupDependencyException)
+            {
+                return InternalServerError(refugeeGroupDependencyException);
+            }
+            catch (RefugeeGroupServiceException refugeeGroupServiceException)
+            {
+                return InternalServerError(refugeeGroupServiceException);
+            }
+        }
+
+        [HttpGet]
+        public ActionResult<IQueryable<RefugeeGroup>> GetAllRefugeeGroups()
+        {
+            try
+            {
+                IQueryable<RefugeeGroup> retrievedRefugeeGroups =
+                    this.refugeeGroupService.RetrieveAllRefugeeGroups();
+
+                return Ok(retrievedRefugeeGroups);
             }
             catch (RefugeeGroupDependencyException refugeeGroupDependencyException)
             {
