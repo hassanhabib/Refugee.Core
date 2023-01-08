@@ -99,5 +99,44 @@ namespace RefugeeLand.Core.Api.Controllers
                 return InternalServerError(shelterRequestServiceException);
             }
         }
+
+        [HttpPut]
+        public async ValueTask<ActionResult<ShelterRequest>> PutShelterRequestAsync(ShelterRequest shelterRequest)
+        {
+            try
+            {
+                ShelterRequest modifiedShelterRequest =
+                    await this.shelterRequestService.ModifyShelterRequestAsync(shelterRequest);
+
+                return Ok(modifiedShelterRequest);
+            }
+            catch (ShelterRequestValidationException shelterRequestValidationException)
+                when (shelterRequestValidationException.InnerException is NotFoundShelterRequestException)
+            {
+                return NotFound(shelterRequestValidationException.InnerException);
+            }
+            catch (ShelterRequestValidationException shelterRequestValidationException)
+            {
+                return BadRequest(shelterRequestValidationException.InnerException);
+            }
+            catch (ShelterRequestDependencyValidationException shelterRequestValidationException)
+                when (shelterRequestValidationException.InnerException is InvalidShelterRequestReferenceException)
+            {
+                return FailedDependency(shelterRequestValidationException.InnerException);
+            }
+            catch (ShelterRequestDependencyValidationException shelterRequestDependencyValidationException)
+               when (shelterRequestDependencyValidationException.InnerException is AlreadyExistsShelterRequestException)
+            {
+                return Conflict(shelterRequestDependencyValidationException.InnerException);
+            }
+            catch (ShelterRequestDependencyException shelterRequestDependencyException)
+            {
+                return InternalServerError(shelterRequestDependencyException);
+            }
+            catch (ShelterRequestServiceException shelterRequestServiceException)
+            {
+                return InternalServerError(shelterRequestServiceException);
+            }
+        }
     }
 }
