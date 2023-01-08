@@ -34,6 +34,9 @@ namespace RefugeeLand.Core.Api.Services.Foundations.RefugeeGroups
                 (Rule: IsNotRecent(refugeeGroup.CreatedDate), Parameter: nameof(RefugeeGroup.CreatedDate)));
         }
 
+        public void ValidateRefugeeGroupId(Guid refugeeGroupId) =>
+            Validate((Rule: IsInvalid(refugeeGroupId), Parameter: nameof(RefugeeGroup.Id)));
+
         private static void ValidateRefugeeGroupIsNotNull(RefugeeGroup refugeeGroup)
         {
             if (refugeeGroup is null)
