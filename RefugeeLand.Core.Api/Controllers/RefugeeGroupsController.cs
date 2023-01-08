@@ -99,5 +99,44 @@ namespace RefugeeLand.Core.Api.Controllers
                 return InternalServerError(refugeeGroupServiceException);
             }
         }
+
+        [HttpPut]
+        public async ValueTask<ActionResult<RefugeeGroup>> PutRefugeeGroupAsync(RefugeeGroup refugeeGroup)
+        {
+            try
+            {
+                RefugeeGroup modifiedRefugeeGroup =
+                    await this.refugeeGroupService.ModifyRefugeeGroupAsync(refugeeGroup);
+
+                return Ok(modifiedRefugeeGroup);
+            }
+            catch (RefugeeGroupValidationException refugeeGroupValidationException)
+                when (refugeeGroupValidationException.InnerException is NotFoundRefugeeGroupException)
+            {
+                return NotFound(refugeeGroupValidationException.InnerException);
+            }
+            catch (RefugeeGroupValidationException refugeeGroupValidationException)
+            {
+                return BadRequest(refugeeGroupValidationException.InnerException);
+            }
+            catch (RefugeeGroupDependencyValidationException refugeeGroupValidationException)
+                when (refugeeGroupValidationException.InnerException is InvalidRefugeeGroupReferenceException)
+            {
+                return FailedDependency(refugeeGroupValidationException.InnerException);
+            }
+            catch (RefugeeGroupDependencyValidationException refugeeGroupDependencyValidationException)
+               when (refugeeGroupDependencyValidationException.InnerException is AlreadyExistsRefugeeGroupException)
+            {
+                return Conflict(refugeeGroupDependencyValidationException.InnerException);
+            }
+            catch (RefugeeGroupDependencyException refugeeGroupDependencyException)
+            {
+                return InternalServerError(refugeeGroupDependencyException);
+            }
+            catch (RefugeeGroupServiceException refugeeGroupServiceException)
+            {
+                return InternalServerError(refugeeGroupServiceException);
+            }
+        }
     }
 }
