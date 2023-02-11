@@ -42,7 +42,11 @@ namespace RefugeeLand.Core.Api.Brokers.Storages
             return await broker.Shelters.FindAsync(shelterId);
         }
 
+        public async ValueTask<Shelter> UpdateShelterAsync(Shelter shelter) =>
+            await UpdateAsync(shelter);
+            
         public async ValueTask<Shelter> DeleteShelterAsync(Shelter shelter) =>
             await DeleteAsync(shelter);
+
     }
 }
