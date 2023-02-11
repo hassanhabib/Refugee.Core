@@ -44,16 +44,58 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.RefugeeGroups
                 .BeEquivalentTo(expectedRefugeeGroupValidationException);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogError(It.Is(SameExceptionAs(
-                    expectedRefugeeGroupValidationException))),
-                        Times.Once);
+                    broker.LogError(It.Is(SameExceptionAs(
+                        expectedRefugeeGroupValidationException))),
+                Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectRefugeeGroupByIdAsync(It.IsAny<Guid>()),
-                    Times.Never);
+                    broker.SelectRefugeeGroupByIdAsync(It.IsAny<Guid>()),
+                Times.Never);
 
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowNotFoundExceptionOnRetrieveByIdIfRefugeeGroupIsNotFoundAndLogItAsync()
+        {
+            //given
+            Guid someRefugeeGroupId = Guid.NewGuid();
+            RefugeeGroup noRefugeeGroup = null;
+
+            var notFoundRefugeeGroupException =
+                new NotFoundRefugeeGroupException(someRefugeeGroupId);
+
+            var expectedRefugeeGroupValidationException =
+                new RefugeeGroupValidationException(notFoundRefugeeGroupException);
+
+            this.storageBrokerMock.Setup(broker =>
+                    broker.SelectRefugeeGroupByIdAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(noRefugeeGroup);
+
+            //when
+            ValueTask<RefugeeGroup> retrieveRefugeeGroupByIdTask =
+                this.refugeeGroupService.RetrieveRefugeeGroupByIdAsync(someRefugeeGroupId);
+
+            RefugeeGroupValidationException actualRefugeeGroupValidationException =
+                await Assert.ThrowsAsync<RefugeeGroupValidationException>(
+                    retrieveRefugeeGroupByIdTask.AsTask);
+
+            //then
+            actualRefugeeGroupValidationException.Should().BeEquivalentTo(expectedRefugeeGroupValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                    broker.SelectRefugeeGroupByIdAsync(It.IsAny<Guid>()),
+                Times.Once());
+
+            this.loggingBrokerMock.Verify(broker =>
+                    broker.LogError(It.Is(SameExceptionAs(
+                        expectedRefugeeGroupValidationException))),
+                Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
     }
