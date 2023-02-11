@@ -30,6 +30,10 @@ namespace RefugeeLand.Core.Api.Services.Foundations.RefugeeGroups
             {
                 throw CreateAndLogValidationException(nullRefugeeGroupException);
             }
+            catch (NotFoundRefugeeGroupException notFoundRefugeeGroupException)
+            {
+                throw CreateAndLogValidationException(notFoundRefugeeGroupException);
+            }
             catch (SqlException sqlException)
             {
                 var failedRefugeeGroupStorageException =

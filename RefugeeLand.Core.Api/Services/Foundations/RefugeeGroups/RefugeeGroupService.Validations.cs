@@ -44,6 +44,14 @@ namespace RefugeeLand.Core.Api.Services.Foundations.RefugeeGroups
                 throw new NullRefugeeGroupException();
             }
         }
+        
+        private static void ValidateStorageRefugeeGroup(RefugeeGroup maybeRefugeeGroup, Guid refugeeGroupId)
+        {
+            if (maybeRefugeeGroup is null)
+            {
+                throw new NotFoundRefugeeGroupException(refugeeGroupId);
+            }
+        }
 
         private static dynamic IsInvalid(Guid id) => new
         {

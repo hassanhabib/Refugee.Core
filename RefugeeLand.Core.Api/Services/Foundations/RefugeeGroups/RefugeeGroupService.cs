@@ -48,6 +48,8 @@ namespace RefugeeLand.Core.Api.Services.Foundations.RefugeeGroups
             RefugeeGroup maybeRefugeeGroup = await this.storageBroker
                 .SelectRefugeeGroupByIdAsync(refugeeGroupId);
 
+            ValidateStorageRefugeeGroup(maybeRefugeeGroup, refugeeGroupId);
+
             return maybeRefugeeGroup;
         });
     }
