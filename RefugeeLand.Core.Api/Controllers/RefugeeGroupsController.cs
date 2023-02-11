@@ -75,31 +75,29 @@ namespace RefugeeLand.Core.Api.Controllers
         [HttpGet("{refugeeGroupId}")]
         public async ValueTask<ActionResult<RefugeeGroup>> GetRefugeeGroupByIdAsync(Guid refugeeGroupId)
         {
-            //TODO: Implement RetrieveRefugeeGroupByIdAsync in RefugeeGroupService
-            throw new NotImplementedException();
-            // try
-            // {
-            //     RefugeeGroup refugeeGroup = await this.refugeeGroupService.RetrieveRefugeeGroupByIdAsync(refugeeGroupId);
-            //
-            //     return Ok(refugeeGroup);
-            // }
-            // catch (RefugeeGroupValidationException refugeeGroupValidationException)
-            //     when (refugeeGroupValidationException.InnerException is NotFoundRefugeeGroupException)
-            // {
-            //     return NotFound(refugeeGroupValidationException.InnerException);
-            // }
-            // catch (RefugeeGroupValidationException refugeeGroupValidationException)
-            // {
-            //     return BadRequest(refugeeGroupValidationException.InnerException);
-            // }
-            // catch (RefugeeGroupDependencyException refugeeGroupDependencyException)
-            // {
-            //     return InternalServerError(refugeeGroupDependencyException);
-            // }
-            // catch (RefugeeGroupServiceException refugeeGroupServiceException)
-            // {
-            //     return InternalServerError(refugeeGroupServiceException);
-            // }
+            try
+            {
+                RefugeeGroup refugeeGroup = await this.refugeeGroupService.RetrieveRefugeeGroupByIdAsync(refugeeGroupId);
+            
+                return Ok(refugeeGroup);
+            }
+            catch (RefugeeGroupValidationException refugeeGroupValidationException)
+                when (refugeeGroupValidationException.InnerException is NotFoundRefugeeGroupException)
+            {
+                return NotFound(refugeeGroupValidationException.InnerException);
+            }
+            catch (RefugeeGroupValidationException refugeeGroupValidationException)
+            {
+                return BadRequest(refugeeGroupValidationException.InnerException);
+            }
+            catch (RefugeeGroupDependencyException refugeeGroupDependencyException)
+            {
+                return InternalServerError(refugeeGroupDependencyException);
+            }
+            catch (RefugeeGroupServiceException refugeeGroupServiceException)
+            {
+                return InternalServerError(refugeeGroupServiceException);
+            }
         }
 
         [HttpPut]
