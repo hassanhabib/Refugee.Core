@@ -134,6 +134,58 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.RefugeeGroups
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
         }
+        
+        [Theory]
+        [MemberData(nameof(MinutesBeforeOrAfter))]
+        public async Task ShouldThrowValidationExceptionOnModifyIfUpdatedDateIsNotRecentAndLogItAsync(int minutes)
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            RefugeeGroup randomRefugeeGroup = CreateRandomRefugeeGroup(randomDateTimeOffset);
+            randomRefugeeGroup.UpdatedDate = randomDateTimeOffset.AddMinutes(minutes);
+
+            var invalidRefugeeGroupException =
+                new InvalidRefugeeGroupException();
+
+            invalidRefugeeGroupException.AddData(
+                key: nameof(RefugeeGroup.UpdatedDate),
+                values: "Date is not recent");
+
+            var expectedRefugeeGroupValidatonException =
+                new RefugeeGroupValidationException(invalidRefugeeGroupException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                .Returns(randomDateTimeOffset);
+
+            // when
+            ValueTask<RefugeeGroup> modifyRefugeeGroupTask =
+                this.refugeeGroupService.ModifyRefugeeGroupAsync(randomRefugeeGroup);
+
+            RefugeeGroupValidationException actualRefugeeGroupValidationException =
+                await Assert.ThrowsAsync<RefugeeGroupValidationException>(
+                    modifyRefugeeGroupTask.AsTask);
+
+            // then
+            actualRefugeeGroupValidationException.Should().BeEquivalentTo(expectedRefugeeGroupValidatonException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedRefugeeGroupValidatonException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectRefugeeGroupByIdAsync(It.IsAny<Guid>()),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+        }
 
     }
 }
