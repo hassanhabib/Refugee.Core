@@ -15,5 +15,6 @@ namespace RefugeeLand.Core.Api.Services.Foundations.RefugeeGroups
         ValueTask<RefugeeGroup> AddRefugeeGroupAsync(RefugeeGroup refugeeGroup);
         IQueryable<RefugeeGroup> RetrieveAllRefugeeGroups();
         ValueTask<RefugeeGroup> RetrieveRefugeeGroupByIdAsync(Guid refugeeGroupId);
+        ValueTask<RefugeeGroup> ModifyRefugeeGroupAsync(RefugeeGroup refugeeGroup);
     }
 }
