@@ -20,10 +20,12 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.RefugeeGroups
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             RefugeeGroup randomRefugeeGroup = CreateRandomModifyRefugeeGroup(randomDateTimeOffset);
             RefugeeGroup inputRefugeeGroup = randomRefugeeGroup;
-            RefugeeGroup storageRefugeeGroup = inputRefugeeGroup.DeepClone();
-            storageRefugeeGroup.UpdatedDate = randomRefugeeGroup.CreatedDate;
             RefugeeGroup updatedRefugeeGroup = inputRefugeeGroup;
             RefugeeGroup expectedRefugeeGroup = updatedRefugeeGroup.DeepClone();
+            
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Returns(randomDateTimeOffset);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.UpdateRefugeeGroupAsync(inputRefugeeGroup))
@@ -35,6 +37,10 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.RefugeeGroups
 
             // then
             actualRefugeeGroup.Should().BeEquivalentTo(expectedRefugeeGroup);
+            
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
                 broker.UpdateRefugeeGroupAsync(inputRefugeeGroup),

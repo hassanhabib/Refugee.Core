@@ -46,9 +46,6 @@ namespace RefugeeLand.Core.Api.Services.Foundations.RefugeeGroups
                 (Rule: IsInvalid(refugeeGroup.RefugeeGroupMainRepresentativeId),
                     Parameter: nameof(RefugeeGroup.RefugeeGroupMainRepresentativeId)),
 
-                (Rule: IsInvalid(refugeeGroup.RefugeeGroupMainRepresentative),
-                    Parameter: nameof(RefugeeGroup.RefugeeGroupMainRepresentative)),
-
                 (Rule: IsInvalid(refugeeGroup.CreatedDate), Parameter: nameof(RefugeeGroup.CreatedDate)),
                 (Rule: IsInvalid(refugeeGroup.CreatedByUserId), Parameter: nameof(RefugeeGroup.CreatedByUserId)),
                 (Rule: IsInvalid(refugeeGroup.UpdatedDate), Parameter: nameof(RefugeeGroup.UpdatedDate)),
@@ -58,7 +55,9 @@ namespace RefugeeLand.Core.Api.Services.Foundations.RefugeeGroups
                         firstDate: refugeeGroup.UpdatedDate,
                         secondDate: refugeeGroup.CreatedDate,
                         secondDateName: nameof(RefugeeGroup.CreatedDate)),
-                    Parameter: nameof(RefugeeGroup.UpdatedDate)));
+                    Parameter: nameof(RefugeeGroup.UpdatedDate)),
+                
+                (Rule: IsNotRecent(refugeeGroup.UpdatedDate), Parameter: nameof(RefugeeGroup.UpdatedDate)));
         }
 
         public void ValidateRefugeeGroupId(Guid refugeeGroupId) =>
@@ -133,12 +132,6 @@ namespace RefugeeLand.Core.Api.Services.Foundations.RefugeeGroups
             return timeDifference.Duration() > oneMinute;
         }
         
-        private dynamic IsInvalid(Refugee refugee) => new
-        {
-            Condition = refugee is null,
-            Message = "Value is required"
-        };
-
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
             var invalidRefugeeGroupException =

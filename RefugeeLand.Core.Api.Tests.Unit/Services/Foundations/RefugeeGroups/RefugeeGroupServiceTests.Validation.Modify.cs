@@ -83,10 +83,6 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.RefugeeGroups
                 values: "Id is required");
             
             invalidRefugeeGroupException.AddData(
-                key: nameof(RefugeeGroup.RefugeeGroupMainRepresentative),
-                values: "Value is required");
-
-            invalidRefugeeGroupException.AddData(
                 key: nameof(RefugeeGroup.CreatedDate),
                 values: "Date is required");
 
@@ -120,6 +116,10 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.RefugeeGroups
             //then
             actualRefugeeGroupValidationException.Should()
                 .BeEquivalentTo(expectedRefugeeGroupValidationException);
+            
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
@@ -186,6 +186,7 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.RefugeeGroups
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
+        
 
     }
 }

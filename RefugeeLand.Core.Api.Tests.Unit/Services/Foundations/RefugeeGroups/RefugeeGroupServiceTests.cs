@@ -103,6 +103,7 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.RefugeeGroups
             filler.Setup()
                 .OnProperty(refugeeGroup => refugeeGroup.ShelterRequests).IgnoreIt()
                 .OnProperty(refugeeGroup => refugeeGroup.RefugeeGroupMemberships).IgnoreIt()
+                .OnProperty(refugeeGroup => refugeeGroup.RefugeeGroupMainRepresentative).IgnoreIt()
                 .OnType<DateTimeOffset>().Use(dates);
 
             return filler;
