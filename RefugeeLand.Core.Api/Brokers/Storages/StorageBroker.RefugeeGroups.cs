@@ -43,5 +43,8 @@ namespace RefugeeLand.Core.Api.Brokers.Storages
 
             return await broker.RefugeeGroups.FindAsync(refugeeGroupId);
         }
+        
+        public async ValueTask<RefugeeGroup> UpdateRefugeeGroupAsync(RefugeeGroup refugeeGroup) =>
+            await UpdateAsync(refugeeGroup);
     }
 }
