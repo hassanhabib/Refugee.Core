@@ -6,6 +6,7 @@
 using System;
 using RefugeeLand.Core.Api.Models.RefugeeGroups;
 using RefugeeLand.Core.Api.Models.RefugeeGroups.Exceptions;
+using RefugeeLand.Core.Api.Models.Refugees;
 
 namespace RefugeeLand.Core.Api.Services.Foundations.RefugeeGroups
 {
@@ -37,6 +38,27 @@ namespace RefugeeLand.Core.Api.Services.Foundations.RefugeeGroups
         private void ValidateRefugeeGroupOnModify(RefugeeGroup refugeeGroup)
         {
             ValidateRefugeeGroupIsNotNull(refugeeGroup);
+            Validate(
+                (Rule: IsInvalid(refugeeGroup.Id), Parameter: nameof(RefugeeGroup.Id)),
+
+                (Rule: IsInvalid(refugeeGroup.Name), Parameter: nameof(RefugeeGroup.Name)),
+
+                (Rule: IsInvalid(refugeeGroup.RefugeeGroupMainRepresentativeId),
+                    Parameter: nameof(RefugeeGroup.RefugeeGroupMainRepresentativeId)),
+
+                (Rule: IsInvalid(refugeeGroup.RefugeeGroupMainRepresentative),
+                    Parameter: nameof(RefugeeGroup.RefugeeGroupMainRepresentative)),
+
+                (Rule: IsInvalid(refugeeGroup.CreatedDate), Parameter: nameof(RefugeeGroup.CreatedDate)),
+                (Rule: IsInvalid(refugeeGroup.CreatedByUserId), Parameter: nameof(RefugeeGroup.CreatedByUserId)),
+                (Rule: IsInvalid(refugeeGroup.UpdatedDate), Parameter: nameof(RefugeeGroup.UpdatedDate)),
+                (Rule: IsInvalid(refugeeGroup.UpdatedByUserId), Parameter: nameof(RefugeeGroup.UpdatedByUserId)),
+
+                (Rule: IsSame(
+                        firstDate: refugeeGroup.UpdatedDate,
+                        secondDate: refugeeGroup.CreatedDate,
+                        secondDateName: nameof(RefugeeGroup.CreatedDate)),
+                    Parameter: nameof(RefugeeGroup.UpdatedDate)));
         }
 
         public void ValidateRefugeeGroupId(Guid refugeeGroupId) =>
@@ -84,6 +106,15 @@ namespace RefugeeLand.Core.Api.Services.Foundations.RefugeeGroups
             Condition = firstDate != secondDate,
             Message = $"Date is not the same as {secondDateName}"
         };
+        
+        private static dynamic IsSame(
+            DateTimeOffset firstDate,
+            DateTimeOffset secondDate,
+            string secondDateName) => new
+        {
+            Condition = firstDate == secondDate,
+            Message = $"Date is the same as {secondDateName}"
+        };
 
         private dynamic IsNotRecent(DateTimeOffset date) => new
         {
@@ -101,6 +132,12 @@ namespace RefugeeLand.Core.Api.Services.Foundations.RefugeeGroups
 
             return timeDifference.Duration() > oneMinute;
         }
+        
+        private dynamic IsInvalid(Refugee refugee) => new
+        {
+            Condition = refugee is null,
+            Message = "Value is required"
+        };
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
