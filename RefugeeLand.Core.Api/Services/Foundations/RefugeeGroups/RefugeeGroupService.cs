@@ -53,7 +53,7 @@ namespace RefugeeLand.Core.Api.Services.Foundations.RefugeeGroups
             return maybeRefugeeGroup;
         });
 
-        public ValueTask<RefugeeGroup> ModifyRefugeeGroupAsync(RefugeeGroup refugeeGroup) => 
-            throw new NotImplementedException();
+        public async ValueTask<RefugeeGroup> ModifyRefugeeGroupAsync(RefugeeGroup refugeeGroup) =>
+            await this.storageBroker.UpdateRefugeeGroupAsync(refugeeGroup);
     }
 }
