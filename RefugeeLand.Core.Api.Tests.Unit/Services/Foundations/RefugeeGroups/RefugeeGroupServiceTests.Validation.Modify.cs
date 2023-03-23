@@ -203,7 +203,7 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.RefugeeGroups
                 new RefugeeGroupValidationException(notFoundRefugeeGroupException);
 
             this.storageBrokerMock.Setup(broker =>
-                broker.SelectRefugeeGroupByIdAsync(nonExistRefugeeGroup.Id))
+                broker.UpdateRefugeeGroupAsync(nonExistRefugeeGroup))
                 .ReturnsAsync(nullRefugeeGroup);
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -223,7 +223,7 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.RefugeeGroups
                 .BeEquivalentTo(expectedRefugeeGroupValidationException);
 
             this.storageBrokerMock.Verify(broker =>
-                broker.SelectRefugeeGroupByIdAsync(nonExistRefugeeGroup.Id),
+                broker.UpdateRefugeeGroupAsync(nonExistRefugeeGroup),
                     Times.Once);
 
             this.dateTimeBrokerMock.Verify(broker =>
