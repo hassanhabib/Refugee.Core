@@ -57,6 +57,7 @@ namespace RefugeeLand.Core.Api.Services.Foundations.RefugeeGroups
                         secondDateName: nameof(RefugeeGroup.CreatedDate)),
                     Parameter: nameof(RefugeeGroup.UpdatedDate)),
                 
+                
                 (Rule: IsNotRecent(refugeeGroup.UpdatedDate), Parameter: nameof(RefugeeGroup.UpdatedDate)));
         }
 
@@ -78,6 +79,22 @@ namespace RefugeeLand.Core.Api.Services.Foundations.RefugeeGroups
                 throw new NotFoundRefugeeGroupException(refugeeGroupId);
             }
         }
+        
+        private static void ValidateStorageRefugeeGroup(RefugeeGroup maybeRefugeeGroup, RefugeeGroup refugeeGroup)
+        {
+            ValidateStorageRefugeeGroup(maybeRefugeeGroup, refugeeGroup.Id);
+            
+            Validate(
+                (Rule: IsNotSame(
+                        firstDate: maybeRefugeeGroup.CreatedDate,
+                        secondDate: refugeeGroup.CreatedDate,
+                        secondDateName: nameof(RefugeeGroup.CreatedDate)),
+                    Parameter: nameof(RefugeeGroup.CreatedDate))
+            );
+        }
+        
+        
+        
 
         private static dynamic IsInvalid(Guid id) => new
         {

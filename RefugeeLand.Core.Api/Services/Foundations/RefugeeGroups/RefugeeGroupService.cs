@@ -61,7 +61,7 @@ namespace RefugeeLand.Core.Api.Services.Foundations.RefugeeGroups
             RefugeeGroup maybeRefugeeGroup = await this.storageBroker
                 .UpdateRefugeeGroupAsync(refugeeGroup);
 
-            ValidateStorageRefugeeGroup(maybeRefugeeGroup, refugeeGroup.Id);
+            ValidateStorageRefugeeGroup(maybeRefugeeGroup, refugeeGroup);
 
             return maybeRefugeeGroup;
         });
