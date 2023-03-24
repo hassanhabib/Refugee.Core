@@ -80,10 +80,8 @@ namespace RefugeeLand.Core.Api.Services.Foundations.RefugeeGroups
             }
         }
         
-        private static void ValidateStorageRefugeeGroup(RefugeeGroup maybeRefugeeGroup, RefugeeGroup refugeeGroup)
+        private static void ValidateAgainstStorageRefugeeGroup(RefugeeGroup maybeRefugeeGroup, RefugeeGroup refugeeGroup)
         {
-            ValidateStorageRefugeeGroup(maybeRefugeeGroup, refugeeGroup.Id);
-            
             Validate(
                 (Rule: IsNotSame(
                         firstDate: maybeRefugeeGroup.CreatedDate,
