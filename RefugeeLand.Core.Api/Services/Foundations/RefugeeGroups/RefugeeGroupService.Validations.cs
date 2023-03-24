@@ -88,12 +88,19 @@ namespace RefugeeLand.Core.Api.Services.Foundations.RefugeeGroups
                         secondDate: refugeeGroup.CreatedDate,
                         secondDateName: nameof(RefugeeGroup.CreatedDate)),
                     Parameter: nameof(RefugeeGroup.CreatedDate)),
-
+                
                 (Rule: IsNotSame(
                         firstId: maybeRefugeeGroup.CreatedByUserId,
                         secondId: refugeeGroup.CreatedByUserId,
                         secondIdName: nameof(RefugeeGroup.CreatedByUserId)),
-                    Parameter: nameof(RefugeeGroup.CreatedByUserId)));
+                    Parameter: nameof(RefugeeGroup.CreatedByUserId)),
+                
+                (Rule: IsSame(
+                        firstDate: maybeRefugeeGroup.UpdatedDate,
+                        secondDate: refugeeGroup.UpdatedDate,
+                        secondDateName: nameof(RefugeeGroup.UpdatedDate)),
+                    Parameter: nameof(RefugeeGroup.UpdatedDate))
+                );
         }
 
         private static dynamic IsInvalid(Guid id) => new
