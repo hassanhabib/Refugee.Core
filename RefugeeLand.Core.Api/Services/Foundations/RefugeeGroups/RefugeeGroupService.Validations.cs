@@ -31,7 +31,7 @@ namespace RefugeeLand.Core.Api.Services.Foundations.RefugeeGroups
                         secondDate: refugeeGroup.CreatedDate,
                         secondDateName: nameof(RefugeeGroup.CreatedDate)),
                     Parameter: nameof(RefugeeGroup.UpdatedDate)),
-                
+
                 (Rule: IsNotRecent(refugeeGroup.CreatedDate), Parameter: nameof(RefugeeGroup.CreatedDate)));
         }
 
@@ -56,8 +56,8 @@ namespace RefugeeLand.Core.Api.Services.Foundations.RefugeeGroups
                         secondDate: refugeeGroup.CreatedDate,
                         secondDateName: nameof(RefugeeGroup.CreatedDate)),
                     Parameter: nameof(RefugeeGroup.UpdatedDate)),
-                
-                
+
+
                 (Rule: IsNotRecent(refugeeGroup.UpdatedDate), Parameter: nameof(RefugeeGroup.UpdatedDate)));
         }
 
@@ -71,7 +71,7 @@ namespace RefugeeLand.Core.Api.Services.Foundations.RefugeeGroups
                 throw new NullRefugeeGroupException();
             }
         }
-        
+
         private static void ValidateStorageRefugeeGroup(RefugeeGroup maybeRefugeeGroup, Guid refugeeGroupId)
         {
             if (maybeRefugeeGroup is null)
@@ -79,7 +79,7 @@ namespace RefugeeLand.Core.Api.Services.Foundations.RefugeeGroups
                 throw new NotFoundRefugeeGroupException(refugeeGroupId);
             }
         }
-        
+
         private static void ValidateAgainstStorageRefugeeGroup(RefugeeGroup maybeRefugeeGroup, RefugeeGroup refugeeGroup)
         {
             Validate(
@@ -88,11 +88,10 @@ namespace RefugeeLand.Core.Api.Services.Foundations.RefugeeGroups
                         secondDate: refugeeGroup.CreatedDate,
                         secondDateName: nameof(RefugeeGroup.CreatedDate)),
                     Parameter: nameof(RefugeeGroup.CreatedDate))
+
+   
             );
         }
-        
-        
-        
 
         private static dynamic IsInvalid(Guid id) => new
         {
@@ -116,19 +115,28 @@ namespace RefugeeLand.Core.Api.Services.Foundations.RefugeeGroups
             DateTimeOffset firstDate,
             DateTimeOffset secondDate,
             string secondDateName) => new
-        {
-            Condition = firstDate != secondDate,
-            Message = $"Date is not the same as {secondDateName}"
-        };
-        
+            {
+                Condition = firstDate != secondDate,
+                Message = $"Date is not the same as {secondDateName}"
+            };
+
+        private static dynamic IsNotSame(
+          Guid firstId,
+          Guid secondId,
+          string secondIdName) => new
+          {
+              Condition = firstId != secondId,
+              Message = $"Id is not the same as {secondIdName}"
+          };
+
         private static dynamic IsSame(
             DateTimeOffset firstDate,
             DateTimeOffset secondDate,
             string secondDateName) => new
-        {
-            Condition = firstDate == secondDate,
-            Message = $"Date is the same as {secondDateName}"
-        };
+            {
+                Condition = firstDate == secondDate,
+                Message = $"Date is the same as {secondDateName}"
+            };
 
         private dynamic IsNotRecent(DateTimeOffset date) => new
         {
@@ -146,7 +154,7 @@ namespace RefugeeLand.Core.Api.Services.Foundations.RefugeeGroups
 
             return timeDifference.Duration() > oneMinute;
         }
-        
+
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)
         {
             var invalidRefugeeGroupException =
