@@ -298,5 +298,62 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.RefugeeGroups
             this.dateTimeBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+        
+         [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfCreatedUserIdDontMatchStorageAndLogItAsync()
+        {
+            // given
+            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
+            RefugeeGroup randomRefugeeGroup = CreateRandomModifyRefugeeGroup(randomDateTimeOffset);
+            RefugeeGroup invalidRefugeeGroup = randomRefugeeGroup.DeepClone();
+            RefugeeGroup storageRefugeeGroup = invalidRefugeeGroup.DeepClone();
+            invalidRefugeeGroup.CreatedByUserId = Guid.NewGuid();
+            storageRefugeeGroup.UpdatedDate = storageRefugeeGroup.CreatedDate;
+
+            var invalidRefugeeGroupException = new InvalidRefugeeGroupException();
+
+            invalidRefugeeGroupException.AddData(
+                key: nameof(RefugeeGroup.CreatedByUserId),
+                values: $"Id is not the same as {nameof(RefugeeGroup.CreatedByUserId)}");
+
+            var expectedRefugeeGroupValidationException =
+                new RefugeeGroupValidationException(invalidRefugeeGroupException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.UpdateRefugeeGroupAsync(invalidRefugeeGroup))
+                .ReturnsAsync(storageRefugeeGroup);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                .Returns(randomDateTimeOffset);
+
+            // when
+            ValueTask<RefugeeGroup> modifyRefugeeGroupTask =
+                this.refugeeGroupService.ModifyRefugeeGroupAsync(invalidRefugeeGroup);
+
+            RefugeeGroupValidationException actualRefugeeGroupValidationException =
+                await Assert.ThrowsAsync<RefugeeGroupValidationException>(
+                    modifyRefugeeGroupTask.AsTask);
+
+            // then
+            actualRefugeeGroupValidationException.Should().BeEquivalentTo(expectedRefugeeGroupValidationException);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateRefugeeGroupAsync(invalidRefugeeGroup),
+                    Times.Once);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+               broker.LogError(It.Is(SameExceptionAs(
+                   expectedRefugeeGroupValidationException))),
+                       Times.Once);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
