@@ -356,22 +356,18 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.RefugeeGroups
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
         [Fact]
-        public async Task ShouldThrowValidationExceptionOnModifyIfStorageUpdatedDateNotSameAsUpdatedDateAndLogItAsync()
+        public async Task ShouldThrowValidationExceptionOnModifyIfStorageUpdatedDateSameAsUpdatedDateAndLogItAsync()
         {
             // given
-            int randomNumber = GetRandomNegativeNumber();
-            int randomMinutes = randomNumber;
             DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
             RefugeeGroup randomRefugeeGroup = CreateRandomModifyRefugeeGroup(randomDateTimeOffset);
-            RefugeeGroup invalidRefugeeGroup = randomRefugeeGroup.DeepClone();
+            RefugeeGroup invalidRefugeeGroup = randomRefugeeGroup;
             RefugeeGroup storageRefugeeGroup = invalidRefugeeGroup.DeepClone();
-            storageRefugeeGroup.CreatedDate = storageRefugeeGroup.CreatedDate.AddMinutes(randomMinutes);
-            storageRefugeeGroup.UpdatedDate = storageRefugeeGroup.UpdatedDate.AddMinutes(randomMinutes);
             var invalidRefugeeGroupException = new InvalidRefugeeGroupException();
 
             invalidRefugeeGroupException.AddData(
                 key: nameof(RefugeeGroup.UpdatedDate),
-                values: $"Date is not the same as {nameof(RefugeeGroup.UpdatedDate)}");
+                values: $"Date is the same as {nameof(RefugeeGroup.UpdatedDate)}");
 
             var expectedRefugeeGroupValidationException =
                 new RefugeeGroupValidationException(invalidRefugeeGroupException);
