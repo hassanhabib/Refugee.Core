@@ -52,6 +52,12 @@ namespace RefugeeLand.Core.Api.Services.Foundations.RefugeeGroups
 
                 throw CreateAndLogDependencyValidationException(alreadyExistsRefugeeGroupException);
             }
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedRefugeeGroupException = new LockedRefugeeGroupException(dbUpdateConcurrencyException);
+
+                throw CreateAndLogDependencyValidationException(lockedRefugeeGroupException);
+            }
             catch (DbUpdateException databaseUpdateException)
             {
                 var failedRefugeeGroupStorageException =
