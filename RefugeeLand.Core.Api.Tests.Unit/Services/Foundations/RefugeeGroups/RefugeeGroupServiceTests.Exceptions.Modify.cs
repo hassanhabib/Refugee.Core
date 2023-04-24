@@ -222,5 +222,56 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.RefugeeGroups
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+        
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnModifyIfServiceErrorOccursAndLogItAsync()
+        {
+            // given
+            RefugeeGroup randomRefugeeGroup = CreateRandomRefugeeGroup();
+            var serviceException = new Exception();
+
+            var failedRefugeeGroupServiceException =
+                new FailedRefugeeGroupServiceException(serviceException);
+
+            var expectedRefugeeGroupServiceException =
+                new RefugeeGroupServiceException(failedRefugeeGroupServiceException);
+
+            this.dateTimeBrokerMock.Setup(broker =>
+                broker.GetCurrentDateTimeOffset())
+                    .Throws(serviceException);
+
+            // when
+            ValueTask<RefugeeGroup> modifyRefugeeGroupTask =
+                this.refugeeGroupService.ModifyRefugeeGroupAsync(randomRefugeeGroup);
+
+            RefugeeGroupServiceException actualRefugeeGroupServiceException =
+                await Assert.ThrowsAsync<RefugeeGroupServiceException>(
+                    modifyRefugeeGroupTask.AsTask);
+
+            // then
+            actualRefugeeGroupServiceException.Should()
+                .BeEquivalentTo(expectedRefugeeGroupServiceException);
+
+            this.dateTimeBrokerMock.Verify(broker =>
+                broker.GetCurrentDateTimeOffset(),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateRefugeeGroupAsync(randomRefugeeGroup),
+                    Times.Never);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedRefugeeGroupServiceException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.UpdateRefugeeGroupAsync(randomRefugeeGroup),
+                    Times.Never);
+
+            this.dateTimeBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
