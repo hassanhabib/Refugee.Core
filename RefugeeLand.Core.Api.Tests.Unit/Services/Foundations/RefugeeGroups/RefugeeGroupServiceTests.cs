@@ -68,6 +68,9 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.RefugeeGroups
         private static string GetRandomString() =>
             new MnemonicString().GetValue();
         
+        private static string GetRandomMessage() =>
+            new MnemonicString(wordCount: GetRandomNumber()).GetValue();
+        
         private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException)
         {
             return actualException =>
@@ -85,6 +88,17 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.RefugeeGroups
         private static IQueryable<RefugeeGroup> CreateRandomRefugeeGroups(DateTimeOffset dates) =>
             CreateRefugeeGroupFiller(dates).Create(count: GetRandomNumber()).AsQueryable();
         
+        private static RefugeeGroup CreateRandomModifyRefugeeGroup(DateTimeOffset dateTimeOffset)
+        {
+            int randomDaysInPast = GetRandomNegativeNumber();
+            RefugeeGroup randomRefugeeGroup = CreateRandomRefugeeGroup(dateTimeOffset);
+
+            randomRefugeeGroup.CreatedDate =
+                randomRefugeeGroup.CreatedDate.AddDays(randomDaysInPast);
+
+            return randomRefugeeGroup;
+        }
+        
         private static Filler<RefugeeGroup> CreateRefugeeGroupFiller(DateTimeOffset dates)
         {
             var filler = new Filler<RefugeeGroup>();
@@ -92,6 +106,7 @@ namespace RefugeeLand.Core.Api.Tests.Unit.Services.Foundations.RefugeeGroups
             filler.Setup()
                 .OnProperty(refugeeGroup => refugeeGroup.ShelterRequests).IgnoreIt()
                 .OnProperty(refugeeGroup => refugeeGroup.RefugeeGroupMemberships).IgnoreIt()
+                .OnProperty(refugeeGroup => refugeeGroup.RefugeeGroupMainRepresentative).IgnoreIt()
                 .OnType<DateTimeOffset>().Use(dates);
 
             return filler;

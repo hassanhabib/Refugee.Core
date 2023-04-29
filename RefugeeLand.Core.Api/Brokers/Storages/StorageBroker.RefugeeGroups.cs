@@ -3,6 +3,7 @@
 // FREE TO USE TO DELIVER HUMANITARIAN AID, HOPE AND LOVE
 // -------------------------------------------------------
 
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -29,10 +30,21 @@ namespace RefugeeLand.Core.Api.Brokers.Storages
 
         public IQueryable<RefugeeGroup> SelectAllRefugeeGroups()
         {
-            using var broker = 
+            using var broker =
                 new StorageBroker(this.configuration);
 
             return broker.RefugeeGroups;
         }
+
+        public async ValueTask<RefugeeGroup> SelectRefugeeGroupByIdAsync(Guid refugeeGroupId)
+        {
+            using var broker =
+                new StorageBroker(this.configuration);
+
+            return await broker.RefugeeGroups.FindAsync(refugeeGroupId);
+        }
+        
+        public async ValueTask<RefugeeGroup> UpdateRefugeeGroupAsync(RefugeeGroup refugeeGroup) =>
+            await UpdateAsync(refugeeGroup);
     }
 }

@@ -40,5 +40,31 @@ namespace RefugeeLand.Core.Api.Services.Foundations.RefugeeGroups
         public IQueryable<RefugeeGroup> RetrieveAllRefugeeGroups() =>
         TryCatch(() => this.storageBroker.SelectAllRefugeeGroups());
 
+        public ValueTask<RefugeeGroup> RetrieveRefugeeGroupByIdAsync(Guid refugeeGroupId) =>
+        TryCatch(async () =>
+        {
+            ValidateRefugeeGroupId(refugeeGroupId);
+
+            RefugeeGroup maybeRefugeeGroup = await this.storageBroker
+                .SelectRefugeeGroupByIdAsync(refugeeGroupId);
+
+            ValidateStorageRefugeeGroup(maybeRefugeeGroup, refugeeGroupId);
+
+            return maybeRefugeeGroup;
+        });
+
+        public ValueTask<RefugeeGroup> ModifyRefugeeGroupAsync(RefugeeGroup refugeeGroup) =>
+        TryCatch(async () =>
+        {
+            ValidateRefugeeGroupOnModify(refugeeGroup);
+
+            RefugeeGroup maybeRefugeeGroup = await this.storageBroker
+                .UpdateRefugeeGroupAsync(refugeeGroup);
+
+            ValidateStorageRefugeeGroup(maybeRefugeeGroup, refugeeGroup.Id);
+            ValidateAgainstStorageRefugeeGroup(maybeRefugeeGroup, refugeeGroup);
+
+            return maybeRefugeeGroup;
+        });
     }
 }
