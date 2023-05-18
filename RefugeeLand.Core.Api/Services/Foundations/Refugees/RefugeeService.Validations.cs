@@ -106,5 +106,8 @@ namespace RefugeeLand.Core.Api.Services.Foundations.Refugees
 
             invalidRefugeeException.ThrowIfContainsErrors();
         }
+
+        public void ValidateRefugeeId(Guid refugeeId) =>
+            Validate((Rule: IsInvalid(refugeeId), Parameter: nameof(Refugee.Id)));
     }
 }
